@@ -1,0 +1,27 @@
+{
+    "update_id": 473995177,
+    "message": {
+        "message_id": 8,
+        "from": {
+            "id": 772517840,
+            "is_bot": false,
+            "first_name": "Artem",
+            "username": "temkaawow",
+            "language_code": "ru"
+        },
+        "chat": {
+            "id": 772517840,
+            "first_name": "Artem",
+            "username": "temkaawow",
+            "type": "private"
+        },
+        "date": 1715701634,
+        "voice": {
+            "duration": 1,
+            "mime_type": "audio\/ogg",
+            "file_id": "AwACAgIAAxkBAAMIZkOHghku3mA2dNaZUVL5xU4IMD4AAgtLAALxYSBKMicOfdBTHKQ1BA",
+            "file_unique_id": "AgADC0sAAvFhIEo",
+            "file_size": 3182
+        }
+    }
+}

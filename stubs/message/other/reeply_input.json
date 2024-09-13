@@ -1,0 +1,38 @@
+{
+    "update_id": 473995181,
+    "message": {
+        "message_id": 16,
+        "from": {
+            "id": 772517840,
+            "is_bot": false,
+            "first_name": "Artem",
+            "username": "temkaawow",
+            "language_code": "ru"
+        },
+        "chat": {
+            "id": 772517840,
+            "first_name": "Artem",
+            "username": "temkaawow",
+            "type": "private"
+        },
+        "date": 1715702261,
+        "reply_to_message": {
+            "message_id": 15,
+            "from": {
+                "id": 7011170386,
+                "is_bot": true,
+                "first_name": "ExperimentBot",
+                "username": "temkaa_experiment_bot"
+            },
+            "chat": {
+                "id": 772517840,
+                "first_name": "Artem",
+                "username": "temkaawow",
+                "type": "private"
+            },
+            "date": 1715702213,
+            "text": "{\"update_id\":473995180,\"message\":{\"message_id\":14,\"from\":{\"id\":772517840,\"is_bot\":false,\"first_name\":\"Artem\",\"username\":\"temkaawow\",\"language_code\":\"ru\"},\"chat\":{\"id\":772517840,\"first_name\":\"Artem\",\"username\":\"temkaawow\",\"type\":\"private\"},\"date\":1715702204,\"photo\":[{\"file_id\":\"AgACAgIAAxkBAAMOZkOJvEFaCRYSzirh8lX17BV--fUAAhvaMRvxYSBKU-HuI9TMc7MBAAMCAANzAAM1BA\",\"file_unique_id\":\"AQADG9oxG_FhIEp4\",\"file_size\":752,\"width\":42,\"height\":90},{\"file_id\":\"AgACAgIAAxkBAAMOZkOJvEFaCRYSzirh8lX17BV--fUAAhvaMRvxYSBKU-HuI9TMc7MBAAMCAANtAAM1BA\",\"file_unique_id\":\"AQADG9oxG_FhIEpy\",\"file_size\":6719,\"width\":148,\"height\":320},{\"file_id\":\"AgACAgIAAxkBAAMOZkOJvEFaCRYSzirh8lX17BV--fUAAhvaMRvxYSBKU-HuI9TMc7MBAAMCAAN4AAM1BA\",\"file_unique_id\":\"AQADG9oxG_FhIEp9\",\"file_size\":27384,\"width\":369,\"height\":800},{\"file_id\":\"AgACAgIAAxkBAAMOZkOJvEFaCRYSzirh8lX17BV--fUAAhvaMRvxYSBKU-HuI9TMc7MBAAMCAAN5AAM1BA\",\"file_unique_id\":\"AQADG9oxG_FhIEp-\",\"file_size\":34161,\"width\":591,\"height\":1280}]}}"
+        },
+        "text": "reply"
+    }
+}

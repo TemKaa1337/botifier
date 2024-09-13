@@ -1,0 +1,7 @@
+1. base implementation
+1.1 add tests
+2. remove phpbench? or determine what do we want to benchmark (also remove from config, gitattributes etc)
+3. add docs
+4. add examples
+5. update readme
+6. add sensitive parameter on token

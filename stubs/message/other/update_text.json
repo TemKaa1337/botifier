@@ -1,0 +1,22 @@
+{
+    "update_id": 473995184,
+    "edited_message": {
+        "message_id": 19,
+        "from": {
+            "id": 772517840,
+            "is_bot": false,
+            "first_name": "Artem",
+            "username": "temkaawow",
+            "language_code": "ru"
+        },
+        "chat": {
+            "id": 772517840,
+            "first_name": "Artem",
+            "username": "temkaawow",
+            "type": "private"
+        },
+        "date": 1715702360,
+        "edit_date": 1715702367,
+        "text": "test update"
+    }
+}

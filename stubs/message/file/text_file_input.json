@@ -1,0 +1,27 @@
+{
+    "update_id": 473995179,
+    "message": {
+        "message_id": 12,
+        "from": {
+            "id": 772517840,
+            "is_bot": false,
+            "first_name": "Artem",
+            "username": "temkaawow",
+            "language_code": "ru"
+        },
+        "chat": {
+            "id": 772517840,
+            "first_name": "Artem",
+            "username": "temkaawow",
+            "type": "private"
+        },
+        "date": 1715701742,
+        "document": {
+            "file_name": "wsl_ubuntu_creds.txt",
+            "mime_type": "text\/plain",
+            "file_id": "BQACAgIAAxkBAAMMZkOH7naSP45ECBrOSm5nKbWlZmgAAhZLAALxYSBKRNQdIc-E0f81BA",
+            "file_unique_id": "AgADFksAAvFhIEo",
+            "file_size": 34
+        }
+    }
+}

@@ -1,0 +1,46 @@
+{
+    "update_id": 473995178,
+    "message": {
+        "message_id": 10,
+        "from": {
+            "id": 772517840,
+            "is_bot": false,
+            "first_name": "Artem",
+            "username": "temkaawow",
+            "language_code": "ru"
+        },
+        "chat": {
+            "id": 772517840,
+            "first_name": "Artem",
+            "username": "temkaawow",
+            "type": "private"
+        },
+        "date": 1715701678,
+        "sticker": {
+            "width": 512,
+            "height": 512,
+            "emoji": "\ud83d\udc38",
+            "set_name": "Zverinets_ebaniy",
+            "is_animated": false,
+            "is_video": false,
+            "type": "regular",
+            "thumbnail": {
+                "file_id": "AAMCAgADGQEAAwpmQ4euNlcZozKnqdwc3wRX2FXdLgACfwsAAqyPAAFIOWYtAY053j0BAAdtAAM1BA",
+                "file_unique_id": "AQADfwsAAqyPAAFIcg",
+                "file_size": 10812,
+                "width": 320,
+                "height": 320
+            },
+            "thumb": {
+                "file_id": "AAMCAgADGQEAAwpmQ4euNlcZozKnqdwc3wRX2FXdLgACfwsAAqyPAAFIOWYtAY053j0BAAdtAAM1BA",
+                "file_unique_id": "AQADfwsAAqyPAAFIcg",
+                "file_size": 10812,
+                "width": 320,
+                "height": 320
+            },
+            "file_id": "CAACAgIAAxkBAAMKZkOHrjZXGaMyp6ncHN8EV9hV3S4AAn8LAAKsjwABSDlmLQGNOd49NQQ",
+            "file_unique_id": "AgADfwsAAqyPAAFI",
+            "file_size": 19712
+        }
+    }
+}
