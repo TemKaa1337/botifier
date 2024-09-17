@@ -45,9 +45,6 @@
       <path value="$PROJECT_DIR$/vendor/sebastian/complexity" />
       <path value="$PROJECT_DIR$/vendor/sebastian/code-unit" />
       <path value="$PROJECT_DIR$/vendor/sebastian/cli-parser" />
-      <path value="$PROJECT_DIR$/vendor/temkaa/simple-container" />
-      <path value="$PROJECT_DIR$/vendor/temkaa/simple-collections" />
-      <path value="$PROJECT_DIR$/vendor/symfony/yaml" />
       <path value="$PROJECT_DIR$/vendor/symfony/polyfill-ctype" />
       <path value="$PROJECT_DIR$/vendor/symfony/deprecation-contracts" />
       <path value="$PROJECT_DIR$/vendor/psr/http-message" />
@@ -107,6 +104,7 @@
       <path value="$PROJECT_DIR$/vendor/doctrine/annotations" />
       <path value="$PROJECT_DIR$/vendor/psr/cache" />
       <path value="$PROJECT_DIR$/vendor/rregeer/phpunit-coverage-check" />
+      <path value="$PROJECT_DIR$/vendor/temkaa/simple-container" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="8.3" />

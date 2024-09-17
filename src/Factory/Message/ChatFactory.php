@@ -6,16 +6,17 @@ namespace Temkaa\Botifier\Factory\Message;
 
 use Temkaa\Botifier\Model\Input\Message\Chat;
 
-final class ChatFactory
+final readonly class ChatFactory
 {
     public function create(array $message): Chat
     {
         $chat = $message['chat'];
 
-        return (new Chat())
-            ->setFirstName($chat['first_name'])
-            ->setId($chat['id'])
-            ->setType($chat['type'])
-            ->setUsername($chat['username']);
+        return new Chat(
+            $chat['id'],
+            $chat['username'],
+            $chat['first_name'],
+            $chat['type'],
+        );
     }
 }

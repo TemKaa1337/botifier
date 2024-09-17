@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace Temkaa\Botifier\Factory\Message;
 
-use Temkaa\Botifier\Exception\Message\Factory\NotFoundException;
-use Temkaa\Botifier\Model\Input\ContentInterface;
-use Temkaa\SimpleContainer\Attribute\Bind\Tagged;
+use Temkaa\Botifier\Exception\Factory\NotFoundException;
+use Temkaa\Botifier\Model\Input\Message\ContentInterface;
+use Temkaa\SimpleContainer\Attribute\Bind\InstanceOfIterator;
 
-final class ContentFactory
+final readonly class ContentFactory
 {
     public function __construct(
-        #[Tagged(tag: 'content_factory')]
-        private readonly iterable $factories,
+        #[InstanceOfIterator(ContentFactoryInterface::class)]
+        private iterable $factories,
     ) {
     }
 

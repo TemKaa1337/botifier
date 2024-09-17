@@ -7,28 +7,20 @@ namespace Temkaa\Botifier\Model\Input\Message;
 use DateTimeImmutable;
 use Temkaa\Botifier\Model\Input\Message;
 
-final class Reply
+final readonly class Reply
 {
-    private Chat $chat;
-
-    private DateTimeImmutable $createdAt;
-
-    private int $id;
-
-    private Message $message;
-
-    private User $user;
+    public function __construct(
+        private int $id,
+        private Chat $chat,
+        private Message $message,
+        private User $user,
+        private DateTimeImmutable $createdAt,
+    ) {
+    }
 
     public function getChat(): Chat
     {
         return $this->chat;
-    }
-
-    public function setChat(Chat $chat): self
-    {
-        $this->chat = $chat;
-
-        return $this;
     }
 
     public function getCreatedAt(): DateTimeImmutable
@@ -36,23 +28,9 @@ final class Reply
         return $this->createdAt;
     }
 
-    public function setCreatedAt(DateTimeImmutable $createdAt): self
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
     public function getId(): int
     {
         return $this->id;
-    }
-
-    public function setId(int $id): self
-    {
-        $this->id = $id;
-
-        return $this;
     }
 
     public function getMessage(): Message
@@ -60,22 +38,8 @@ final class Reply
         return $this->message;
     }
 
-    public function setMessage(Message $message): self
-    {
-        $this->message = $message;
-
-        return $this;
-    }
-
     public function getUser(): User
     {
         return $this->user;
-    }
-
-    public function setUser(User $user): self
-    {
-        $this->user = $user;
-
-        return $this;
     }
 }

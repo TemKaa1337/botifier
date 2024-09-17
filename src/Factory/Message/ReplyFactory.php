@@ -5,23 +5,20 @@ declare(strict_types=1);
 namespace Temkaa\Botifier\Factory\Message;
 
 use DateTimeImmutable;
-use Exception;
 use JsonException;
 use Temkaa\Botifier\Factory\MessageFactory;
 use Temkaa\Botifier\Model\Input\Message\Reply;
 
-final class ReplyFactory
+final readonly class ReplyFactory
 {
     public function __construct(
-        private readonly MessageFactory $messageFactory,
-        private readonly ChatFactory $chatFactory,
-        private readonly UserFactory $userFactory,
-    )
-    {
+        private MessageFactory $messageFactory,
+        private ChatFactory $chatFactory,
+        private UserFactory $userFactory,
+    ) {
     }
 
     /**
-     * @throws Exception
      * @throws JsonException
      */
     public function create(array $message): Reply
@@ -30,11 +27,12 @@ final class ReplyFactory
 
         $createdAt = (new DateTimeImmutable())->setTimestamp($message['created_at']);
 
-        return (new Reply())
-            ->setId($message['message_id'])
-            ->setMessage($this->messageFactory->create($nestedMessage))
-            ->setCreatedAt($createdAt)
-            ->setUser($this->userFactory->create($message))
-            ->setChat($this->chatFactory->create($message));
+        return new Reply(
+            $message['message_id'],
+            $this->chatFactory->create($message),
+            $this->messageFactory->create($nestedMessage),
+            $this->userFactory->create($message),
+            $createdAt,
+        );
     }
 }

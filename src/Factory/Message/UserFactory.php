@@ -7,17 +7,18 @@ namespace Temkaa\Botifier\Factory\Message;
 use Temkaa\Botifier\Enum\Language;
 use Temkaa\Botifier\Model\Input\Message\User;
 
-final class UserFactory
+final readonly class UserFactory
 {
     public function create(array $message): User
     {
         $user = $message['from'];
 
-        return (new User())
-            ->setFirstName($user['first_name'])
-            ->setId($user['id'])
-            ->setIsBot($user['is_bot'])
-            ->setLanguage(Language::from($user['language_code']))
-            ->setUsername($user['username']);
+        return new User(
+            $user['id'],
+            $user['username'],
+            $user['first_name'],
+            $user['is_bot'],
+            Language::from($user['language_code']),
+        );
     }
 }

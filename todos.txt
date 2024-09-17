@@ -5,3 +5,5 @@
 4. add examples
 5. update readme
 6. add sensitive parameter on token
+7. add cli command to set/unset webhook
+8. add everywhere where possible logger interface
