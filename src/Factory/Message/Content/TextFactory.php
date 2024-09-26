@@ -6,8 +6,8 @@ namespace Temkaa\Botifier\Factory\Message\Content;
 
 use Temkaa\Botifier\Enum\Message\Content\Type;
 use Temkaa\Botifier\Factory\Message\ContentFactoryInterface;
-use Temkaa\Botifier\Model\Input\Message\Content\Text;
-use Temkaa\Botifier\Model\Input\Message\ContentInterface;
+use Temkaa\Botifier\Model\Shared\Message\Content\Text;
+use Temkaa\Botifier\Model\Shared\Message\ContentInterface;
 
 final readonly class TextFactory implements ContentFactoryInterface
 {
@@ -18,6 +18,6 @@ final readonly class TextFactory implements ContentFactoryInterface
 
     public function supports(array $message): bool
     {
-        return isset($message['text']);
+        return isset($message['text']) && !str_starts_with($message['text'], '/');
     }
 }

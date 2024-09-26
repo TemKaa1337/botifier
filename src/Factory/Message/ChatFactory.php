@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Temkaa\Botifier\Factory\Message;
 
-use Temkaa\Botifier\Model\Input\Message\Chat;
+use Temkaa\Botifier\Model\Shared\Message\Chat;
 
 final readonly class ChatFactory
 {

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Temkaa\Botifier\Exception;
 
-interface BotifierExceptionInterface
+use Throwable;
+
+interface BotifierExceptionInterface extends Throwable
 {
 }

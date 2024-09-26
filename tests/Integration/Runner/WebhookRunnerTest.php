@@ -2,10 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Tests\Integration\Runner;
+namespace Runner;
 
-use PHPUnit\Framework\TestCase;
+use Tests\Integration\Runner\AbstractRunnerTestCase;
 
-final class WebhookRunnerTest extends TestCase
+final class WebhookRunnerTest extends AbstractRunnerTestCase
 {
+    public function testRun(): void
+    {
+
+    }
 }

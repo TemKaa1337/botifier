@@ -10,17 +10,19 @@ use Temkaa\Botifier\Factory\Message\ChatFactory;
 use Temkaa\Botifier\Factory\Message\ContentFactory;
 use Temkaa\Botifier\Factory\Message\ReplyFactory;
 use Temkaa\Botifier\Factory\Message\UserFactory;
-use Temkaa\Botifier\Model\Input\Message;
+use Temkaa\Botifier\Model\Shared\Message;
 
 // TODO: move nested objects to separate factories
 final readonly class MessageFactory
 {
+    private ReplyFactory $replyFactory;
+
     public function __construct(
         private ChatFactory $chatFactory,
         private ContentFactory $contentFactory,
-        private ReplyFactory $replyFactory,
         private UserFactory $userFactory,
     ) {
+        $this->replyFactory = new ReplyFactory($this, $this->chatFactory, $this->userFactory);
     }
 
     /**

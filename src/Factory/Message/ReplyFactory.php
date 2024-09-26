@@ -7,7 +7,7 @@ namespace Temkaa\Botifier\Factory\Message;
 use DateTimeImmutable;
 use JsonException;
 use Temkaa\Botifier\Factory\MessageFactory;
-use Temkaa\Botifier\Model\Input\Message\Reply;
+use Temkaa\Botifier\Model\Shared\Message\Reply;
 
 final readonly class ReplyFactory
 {

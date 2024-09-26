@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Temkaa\Botifier\Factory\Message;
 
 use Temkaa\Botifier\Enum\Language;
-use Temkaa\Botifier\Model\Input\Message\User;
+use Temkaa\Botifier\Model\Shared\Message\User;
 
 final readonly class UserFactory
 {

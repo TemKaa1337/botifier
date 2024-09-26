@@ -4,12 +4,65 @@ declare(strict_types=1);
 
 namespace Temkaa\Botifier\DependencyInjection;
 
-use Temkaa\SimpleContainer\Model\Config;
+use Temkaa\Botifier\Factory\Message\ContentFactory;
+use Temkaa\Botifier\Factory\Message\ContentFactoryInterface;
+use Temkaa\Botifier\Handler\HandlerInterface;
+use Temkaa\Botifier\Model\Bot;
+use Temkaa\Botifier\PollingRunner;
+use Temkaa\Botifier\Serializer\Action\SerializerInterface;
+use Temkaa\Botifier\Serializer\Serializer;
+use Temkaa\Botifier\WebhookRunner;
+use Temkaa\Container\Attribute\Bind\InstanceOfIterator;
+use Temkaa\Container\Builder\Config\ClassBuilder;
+use Temkaa\Container\Builder\ConfigBuilder;
+use Temkaa\Container\Model\Config;
+use Temkaa\Container\Provider\Config\ProviderInterface;
 
-final readonly class ConfigProvider
+final readonly class ConfigProvider implements ProviderInterface
 {
+    public function getBaseConfig(): ConfigBuilder
+    {
+        return ConfigBuilder::make()
+            ->include(__DIR__.'/../')
+            ->exclude(__DIR__.'/../Command/')
+            ->exclude(__DIR__.'/../DependencyInjection/Command')
+            ->exclude(__DIR__.'/../DependencyInjection/ConfigProvider')
+            ->exclude(__DIR__.'/../Enum/')
+            ->exclude(__DIR__.'/../Exception/')
+            ->exclude(__DIR__.'/../Model/Api/')
+            ->exclude(__DIR__.'/../Model/Shared/')
+            ->exclude(__DIR__.'/../Model/Output/')
+            ->exclude(__DIR__.'/../Utils/')
+            ->bindClass(
+                ClassBuilder::make(Bot::class)
+                    ->bindVariable('token', 'env(BOT_TOKEN)')
+                    ->build(),
+            )
+            ->bindClass(
+                ClassBuilder::make(ContentFactory::class)
+                    ->bindVariable('factories', new InstanceOfIterator(ContentFactoryInterface::class))
+                    ->build(),
+            )
+            ->bindClass(
+                ClassBuilder::make(PollingRunner::class)
+                    ->bindVariable('handlers', new InstanceOfIterator(HandlerInterface::class))
+                    ->bindVariable('pollingInterval', 'env(BOT_POLLING_INTERVAL)')
+                    ->build(),
+            )
+            ->bindClass(
+                ClassBuilder::make(Serializer::class)
+                    ->bindVariable('handlers', new InstanceOfIterator(SerializerInterface::class))
+                    ->build(),
+            )
+            ->bindClass(
+                ClassBuilder::make(WebhookRunner::class)
+                    ->bindVariable('handlers', new InstanceOfIterator(HandlerInterface::class))
+                    ->build(),
+            );
+    }
+
     public function provide(): Config
     {
-
+        return $this->getBaseConfig()->build();
     }
 }

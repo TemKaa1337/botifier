@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Temkaa\Botifier\Serializer\Action;
 
 use Temkaa\Botifier\Enum\Http\Action;
-use Temkaa\Botifier\Model\Api\ResultInterface;
+use Temkaa\Botifier\Model\Shared\ResultInterface;
 
 interface SerializerInterface
 {

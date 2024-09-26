@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace Temkaa\Botifier\Handler;
 
-// TODO: change supports method? mb we dont have signature here to check if signature is supported
-use Temkaa\Botifier\Model\Input\Message;
+use Temkaa\Botifier\Model\Shared\Message;
 
 interface HandlerInterface
 {

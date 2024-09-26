@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Temkaa\Botifier\Serializer;
 
 use Temkaa\Botifier\Enum\Http\Action;
-use Temkaa\Botifier\Model\Api\Response;
+use Temkaa\Botifier\Model\Api\Response\BaseResponse;
 
 interface SerializerInterface
 {
-    public function deserialize(Action $action, string $message): Response;
+    public function deserialize(Action $action, string $message): BaseResponse;
 }

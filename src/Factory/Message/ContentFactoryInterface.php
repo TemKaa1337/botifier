@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace Temkaa\Botifier\Factory\Message;
 
-use Temkaa\Botifier\Model\Input\Message\ContentInterface;
-use Temkaa\SimpleContainer\Attribute\Tag;
+use Temkaa\Botifier\Model\Shared\Message\ContentInterface;
 
-#[Tag(name: 'content_factory')]
 interface ContentFactoryInterface
 {
     public function create(array $message): ContentInterface;

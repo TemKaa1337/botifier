@@ -6,8 +6,8 @@ namespace Temkaa\Botifier\Serializer\Action;
 
 use DateTimeImmutable;
 use Temkaa\Botifier\Enum\Http\Action;
-use Temkaa\Botifier\Model\Api\ResultInterface;
-use Temkaa\Botifier\Model\Api\Webhook;
+use Temkaa\Botifier\Model\Api\Response\Webhook;
+use Temkaa\Botifier\Model\Shared\ResultInterface;
 
 final readonly class WebhookInfoSerializer implements SerializerInterface
 {
