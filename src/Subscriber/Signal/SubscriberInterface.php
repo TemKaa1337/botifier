@@ -6,6 +6,9 @@ namespace Temkaa\Botifier\Subscriber\Signal;
 
 use Temkaa\Signal\SignalSubscriberInterface;
 
+/**
+ * @internal
+ */
 interface SubscriberInterface extends SignalSubscriberInterface
 {
     public function getSubscribedSignal(): int;

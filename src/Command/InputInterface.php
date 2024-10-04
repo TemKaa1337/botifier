@@ -6,6 +6,9 @@ namespace Temkaa\Botifier\Command;
 
 use Temkaa\Botifier\Enum\Command\Argument;
 
+/**
+ * @internal
+ */
 interface InputInterface
 {
     public function getArgument(Argument $name): string;

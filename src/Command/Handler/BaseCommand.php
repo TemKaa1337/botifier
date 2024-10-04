@@ -9,6 +9,9 @@ use Temkaa\Botifier\Command\InputInterface;
 use Temkaa\Botifier\Enum\Command\Argument;
 use Temkaa\Botifier\Exception\Command\InvalidCommandArgumentException;
 
+/**
+ * @internal
+ */
 abstract readonly class BaseCommand
 {
     /**

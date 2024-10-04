@@ -6,17 +6,20 @@ namespace Temkaa\Botifier\Factory\Message\Content;
 
 use Temkaa\Botifier\Enum\Message\Content\Type;
 use Temkaa\Botifier\Factory\Message\ContentFactoryInterface;
-use Temkaa\Botifier\Model\Shared\Message\Content\Command;
-use Temkaa\Botifier\Model\Shared\Message\ContentInterface;
+use Temkaa\Botifier\Model\Response\Message\Content\Command;
+use Temkaa\Botifier\Model\Response\Message\ContentInterface;
 
+/**
+ * @internal
+ */
 final readonly class CommandFactory implements ContentFactoryInterface
 {
     public function create(array $message): ContentInterface
     {
         $text = $message['text'];
-        [$signature, $parameters] = explode(' ', $text);
+        [$signature, $parameters] = explode(' ', $text, limit: 2);
 
-        return new Command($signature, $parameters, Type::Command);
+        return new Command(ltrim($signature, '/'), $parameters, Type::Command);
     }
 
     public function supports(array $message): bool

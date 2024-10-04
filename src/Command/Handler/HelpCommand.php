@@ -9,6 +9,9 @@ use Temkaa\Botifier\Command\InputInterface;
 use Temkaa\Botifier\Command\OutputInterface;
 use Temkaa\Botifier\Enum\Command\ExitCode;
 
+/**
+ * @internal
+ */
 final readonly class HelpCommand extends BaseCommand implements CommandInterface
 {
     private const array ARGUMENTS = [];

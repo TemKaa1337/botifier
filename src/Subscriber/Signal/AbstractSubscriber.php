@@ -5,7 +5,11 @@ declare(strict_types=1);
 namespace Temkaa\Botifier\Subscriber\Signal;
 
 use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 
+/**
+ * @internal
+ */
 abstract class AbstractSubscriber implements SubscriberInterface
 {
     private const array SIGNAL_SIGNATURE_MAP = [
@@ -17,7 +21,7 @@ abstract class AbstractSubscriber implements SubscriberInterface
     private bool $isTriggered = false;
 
     public function __construct(
-        private readonly ?LoggerInterface $logger = null,
+        private readonly LoggerInterface $logger = new NullLogger(),
     ) {
     }
 
@@ -27,7 +31,7 @@ abstract class AbstractSubscriber implements SubscriberInterface
 
         $subscribedSignal = $this->getSubscribedSignal();
 
-        $this->logger?->warning(
+        $this->logger->warning(
             sprintf(
                 'Received signal with "%s" signature.',
                 self::SIGNAL_SIGNATURE_MAP[$subscribedSignal] ?? $subscribedSignal,

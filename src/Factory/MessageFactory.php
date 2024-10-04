@@ -8,21 +8,19 @@ use DateTimeImmutable;
 use JsonException;
 use Temkaa\Botifier\Factory\Message\ChatFactory;
 use Temkaa\Botifier\Factory\Message\ContentFactory;
-use Temkaa\Botifier\Factory\Message\ReplyFactory;
 use Temkaa\Botifier\Factory\Message\UserFactory;
-use Temkaa\Botifier\Model\Shared\Message;
+use Temkaa\Botifier\Model\Response\Message;
 
-// TODO: move nested objects to separate factories
+/**
+ * @internal
+ */
 final readonly class MessageFactory
 {
-    private ReplyFactory $replyFactory;
-
     public function __construct(
         private ChatFactory $chatFactory,
         private ContentFactory $contentFactory,
         private UserFactory $userFactory,
     ) {
-        $this->replyFactory = new ReplyFactory($this, $this->chatFactory, $this->userFactory);
     }
 
     /**
@@ -30,14 +28,14 @@ final readonly class MessageFactory
      */
     public function create(array $message): Message
     {
-        $messageContent = $message['message'] ?? $message['edited_message'];
+        $messageContent = $message['message'] ?? $message['edited_message'] ?? $message;
 
         $isReply = isset($messageContent['reply_to_message']);
-        $isEdit = isset($message['edit_date']);
+        $isEdit = isset($messageContent['edit_date']);
 
-        $createdAt = (new DateTimeImmutable())->setTimestamp($message['created_at']);
+        $createdAt = (new DateTimeImmutable())->setTimestamp($messageContent['date']);
         $editedAt = $isEdit
-            ? (new DateTimeImmutable())->setTimestamp($message['edit_date'])
+            ? (new DateTimeImmutable())->setTimestamp($messageContent['edit_date'])
             : null;
 
         return new Message(
@@ -45,12 +43,13 @@ final readonly class MessageFactory
             $this->userFactory->create($messageContent),
             $this->chatFactory->create($messageContent),
             $this->contentFactory->create($messageContent),
-            $message['update_id'],
+            $message['update_id'] ?? null,
             $createdAt,
             $editedAt,
             $isEdit,
             $isReply,
-            $this->replyFactory->create($messageContent['reply_to_message']),
+            $isReply ? $this->create($messageContent['reply_to_message']) : null,
+            json_encode($message, JSON_THROW_ON_ERROR)
         );
     }
 }

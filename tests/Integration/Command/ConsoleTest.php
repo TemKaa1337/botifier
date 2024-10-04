@@ -31,7 +31,7 @@ final class ConsoleTest extends TestCase
                 PHP_EOL,
                 [
                     'There is no command with signature: "non_existing_command".',
-                    'Fell free to check the list of allowed commands by using "bin/console help" command!',
+                    'Fell free to check the list of allowed commands by using "bin/botifier help" command!',
                     '',
                 ],
             ),

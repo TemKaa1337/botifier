@@ -4,16 +4,15 @@ declare(strict_types=1);
 
 namespace Tests\Helper\Service;
 
-use Temkaa\Botifier\Enum\Http\Action;
-use Temkaa\Botifier\Model\Api\Response\BaseResponse;
 use Temkaa\Botifier\Model\Bot;
-use Temkaa\Botifier\Model\Shared\RequestInterface;
+use Temkaa\Botifier\Model\Request\RequestInterface;
+use Temkaa\Botifier\Model\Response\Response;
 use Temkaa\Botifier\Service\TelegramClientInterface;
 
 final class TelegramClient implements TelegramClientInterface
 {
     /**
-     * @var BaseResponse[]
+     * @var Response[]
      */
     private array $responses = [];
 
@@ -25,13 +24,13 @@ final class TelegramClient implements TelegramClientInterface
     /**
      * @SuppressWarnings(PHPMD.UnusedParameter)
      */
-    public function send(Action $action, Bot $bot, ?RequestInterface $request = null): BaseResponse
+    public function send(RequestInterface $request, Bot $bot): Response
     {
         return array_shift($this->responses);
     }
 
     /**
-     * @param BaseResponse[] $responses
+     * @param Response[] $responses
      */
     public function setResponses(array $responses): void
     {

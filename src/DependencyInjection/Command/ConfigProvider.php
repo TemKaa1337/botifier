@@ -18,6 +18,9 @@ use Temkaa\Container\Builder\ConfigBuilder;
 use Temkaa\Container\Model\Config;
 use Temkaa\Container\Provider\Config\ProviderInterface;
 
+/**
+ * @internal
+ */
 final readonly class ConfigProvider implements ProviderInterface
 {
     public function provide(): Config
@@ -26,6 +29,7 @@ final readonly class ConfigProvider implements ProviderInterface
             ->include(__DIR__.'/../../Command/')
             ->include(__DIR__.'/../../Service/')
             ->include(__DIR__.'/../../../vendor/guzzlehttp/guzzle/src/Client.php')
+            ->include(__DIR__.'/../../../vendor/guzzlehttp/psr7/src/HttpFactory.php')
             ->include(__DIR__.'/../../Serializer/')
             ->exclude(__DIR__.'/../../Command/Input.php')
             ->exclude(__DIR__.'/../../Command/Output.php')

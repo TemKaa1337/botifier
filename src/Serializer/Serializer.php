@@ -5,11 +5,14 @@ declare(strict_types=1);
 namespace Temkaa\Botifier\Serializer;
 
 use JsonException;
-use Temkaa\Botifier\Enum\Http\Action;
-use Temkaa\Botifier\Model\Api\Response\BaseResponse;
-use Temkaa\Botifier\Model\Shared\ResultInterface;
+use Temkaa\Botifier\Enum\ApiMethod;
+use Temkaa\Botifier\Model\Response\Response;
+use Temkaa\Botifier\Model\Response\ResultInterface;
 use Temkaa\Botifier\Serializer\Action\SerializerInterface as ActionSerializerInterface;
 
+/**
+ * @internal
+ */
 final readonly class Serializer implements SerializerInterface
 {
     /**
@@ -23,11 +26,11 @@ final readonly class Serializer implements SerializerInterface
     /**
      * @throws JsonException
      */
-    public function deserialize(Action $action, string $message): BaseResponse
+    public function deserialize(ApiMethod $action, string $message): Response
     {
         $decoded = json_decode($message, true, 512, JSON_THROW_ON_ERROR);
 
-        return new BaseResponse(
+        return new Response(
             $decoded['ok'],
             $decoded['description'] ?? null,
             $decoded['error_code'] ?? null,
@@ -36,7 +39,7 @@ final readonly class Serializer implements SerializerInterface
         );
     }
 
-    private function getHandler(Action $action): ActionSerializerInterface
+    private function getHandler(ApiMethod $action): ActionSerializerInterface
     {
         foreach ($this->handlers as $handler) {
             if ($handler->supports($action)) {
@@ -47,7 +50,7 @@ final readonly class Serializer implements SerializerInterface
         // TODO: change ?logger to NullableLogger
     }
 
-    private function getResult(array $decoded, Action $action): array|bool|null|ResultInterface
+    private function getResult(array $decoded, ApiMethod $action): array|bool|null|ResultInterface
     {
         $result = $decoded['result'] ?? null;
         if (!$result || is_bool($result)) {

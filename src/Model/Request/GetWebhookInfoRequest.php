@@ -1,0 +1,29 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Temkaa\Botifier\Model\Request;
+
+use Temkaa\Botifier\Enum\ApiMethod;
+use Temkaa\Botifier\Enum\HttpMethod;
+
+/**
+ * @api
+ */
+final readonly class GetWebhookInfoRequest implements RequestInterface
+{
+    public function getApiMethod(): ApiMethod
+    {
+        return ApiMethod::GetWebhookInfo;
+    }
+
+    public function getHttpMethod(): HttpMethod
+    {
+        return HttpMethod::Get;
+    }
+
+    public function getParameters(): array
+    {
+        return [];
+    }
+}

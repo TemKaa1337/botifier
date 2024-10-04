@@ -9,8 +9,9 @@ use Temkaa\Botifier\Command\Handler\SetDescriptionCommand;
 use Temkaa\Botifier\Command\Input;
 use Temkaa\Botifier\Enum\Command\Argument;
 use Temkaa\Botifier\Enum\Command\ExitCode;
+use Temkaa\Botifier\Enum\Language;
 use Temkaa\Botifier\Exception\Command\InvalidCommandArgumentException;
-use Temkaa\Botifier\Model\Api\Response\BaseResponse;
+use Temkaa\Botifier\Model\Response\Response;
 use Tests\Helper\Service\Command\Output;
 use Tests\Helper\Service\TelegramClient;
 
@@ -36,7 +37,7 @@ final class SetDescriptionCommandTest extends AbstractCommandTestCase
 
         $this->client->setResponses(
             [
-                new BaseResponse(
+                new Response(
                     success: true,
                     description: 'description set',
                     errorCode: null,
@@ -53,7 +54,7 @@ final class SetDescriptionCommandTest extends AbstractCommandTestCase
                 'bin/botifier',
                 Argument::Token->value.'=token',
                 Argument::Description->value.'=description',
-                Argument::Language->value.'=lang',
+                Argument::Language->value.'=ru',
             ],
         );
         $output = new Output();
@@ -95,6 +96,57 @@ final class SetDescriptionCommandTest extends AbstractCommandTestCase
     /**
      * @throws JsonException
      */
+    public function testExecuteWithNonExistingLanguage(): void
+    {
+        $raw = json_encode(
+            [
+                'ok'          => true,
+                'result'      => true,
+                'description' => 'description set',
+            ],
+            JSON_THROW_ON_ERROR,
+        );
+
+        $this->client->setResponses(
+            [
+                new Response(
+                    success: true,
+                    description: 'description set',
+                    errorCode: null,
+                    result: true,
+                    raw: $raw,
+                ),
+            ],
+        );
+
+        $command = new SetDescriptionCommand($this->client);
+
+        $input = new Input(
+            [
+                'bin/botifier',
+                Argument::Token->value.'=token',
+                Argument::Description->value.'=description',
+                Argument::Language->value.'=lang',
+            ],
+        );
+        $output = new Output();
+
+        $statusCode = $command->execute($input, $output);
+        self::assertSame(ExitCode::Failure->value, $statusCode);
+        self::assertSame(
+            [
+                sprintf(
+                    'Could not convert language "lang" to enum "%s".',
+                    Language::class,
+                ),
+            ],
+            $output->getMessages(),
+        );
+    }
+
+    /**
+     * @throws JsonException
+     */
     public function testExecuteWithUnsuccessfulResponse(): void
     {
         $raw = json_encode(
@@ -108,7 +160,7 @@ final class SetDescriptionCommandTest extends AbstractCommandTestCase
 
         $this->client->setResponses(
             [
-                new BaseResponse(
+                new Response(
                     success: false,
                     description: 'description not set',
                     errorCode: 400,
@@ -125,7 +177,7 @@ final class SetDescriptionCommandTest extends AbstractCommandTestCase
                 'bin/botifier',
                 Argument::Token->value.'=token',
                 Argument::Description->value.'=description',
-                Argument::Language->value.'=lang',
+                Argument::Language->value.'=ru',
             ],
         );
         $output = new Output();

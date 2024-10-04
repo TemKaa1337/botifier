@@ -5,10 +5,13 @@ declare(strict_types=1);
 namespace Temkaa\Botifier\Serializer\Action;
 
 use DateTimeImmutable;
-use Temkaa\Botifier\Enum\Http\Action;
-use Temkaa\Botifier\Model\Api\Response\Webhook;
-use Temkaa\Botifier\Model\Shared\ResultInterface;
+use Temkaa\Botifier\Enum\ApiMethod;
+use Temkaa\Botifier\Model\Response\ResultInterface;
+use Temkaa\Botifier\Model\Response\Webhook;
 
+/**
+ * @internal
+ */
 final readonly class WebhookInfoSerializer implements SerializerInterface
 {
     public function deserialize(array $message): ResultInterface
@@ -30,8 +33,8 @@ final readonly class WebhookInfoSerializer implements SerializerInterface
         );
     }
 
-    public function supports(Action $action): bool
+    public function supports(ApiMethod $action): bool
     {
-        return $action === Action::GetWebhookInfo;
+        return $action === ApiMethod::GetWebhookInfo;
     }
 }

@@ -10,10 +10,13 @@ use Temkaa\Botifier\Command\InputInterface;
 use Temkaa\Botifier\Command\OutputInterface;
 use Temkaa\Botifier\Enum\Command\Argument;
 use Temkaa\Botifier\Enum\Command\ExitCode;
-use Temkaa\Botifier\Enum\Http\Action;
 use Temkaa\Botifier\Model\Bot;
+use Temkaa\Botifier\Model\Request\DeleteWebhookRequest;
 use Temkaa\Botifier\Service\TelegramClientInterface;
 
+/**
+ * @internal
+ */
 final readonly class UnsetWebhookCommand extends BaseCommand implements CommandInterface
 {
     // TODO: move argument names to enum
@@ -36,15 +39,15 @@ final readonly class UnsetWebhookCommand extends BaseCommand implements CommandI
         $this->validateArguments($input, self::ARGUMENTS, self::SIGNATURE);
 
         $response = $this->client->send(
-            Action::DeleteWebhook,
+            new DeleteWebhookRequest(),
             new Bot($input->getArgument(Argument::Token)),
         );
 
-        if ($response->success()) {
-            $output->writeln('Successfully deleted webhook for bot.');
-        } else {
-            $output->writeln('An error occurred when trying to delete webhook for bot.');
-        }
+        $output->writeln(
+            $response->success()
+                ? 'Successfully deleted webhook for bot.'
+                : 'An error occurred when trying to delete webhook for bot.',
+        );
 
         $output->writeln($response->raw());
 

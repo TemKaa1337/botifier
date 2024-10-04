@@ -5,8 +5,11 @@ declare(strict_types=1);
 namespace Temkaa\Botifier\Factory\Message;
 
 use Temkaa\Botifier\Enum\Language;
-use Temkaa\Botifier\Model\Shared\Message\User;
+use Temkaa\Botifier\Model\Response\Message\User;
 
+/**
+ * @internal
+ */
 final readonly class UserFactory
 {
     public function create(array $message): User

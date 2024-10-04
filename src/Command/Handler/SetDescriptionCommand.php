@@ -10,11 +10,14 @@ use Temkaa\Botifier\Command\InputInterface;
 use Temkaa\Botifier\Command\OutputInterface;
 use Temkaa\Botifier\Enum\Command\Argument;
 use Temkaa\Botifier\Enum\Command\ExitCode;
-use Temkaa\Botifier\Enum\Http\Action;
-use Temkaa\Botifier\Model\Api\Request\SetDescription;
+use Temkaa\Botifier\Enum\Language;
 use Temkaa\Botifier\Model\Bot;
+use Temkaa\Botifier\Model\Request\SetDescriptionRequest;
 use Temkaa\Botifier\Service\TelegramClientInterface;
 
+/**
+ * @internal
+ */
 final readonly class SetDescriptionCommand extends BaseCommand implements CommandInterface
 {
     private const array ARGUMENTS = [
@@ -40,22 +43,31 @@ final readonly class SetDescriptionCommand extends BaseCommand implements Comman
     {
         $this->validateArguments($input, self::ARGUMENTS, self::SIGNATURE);
 
-        $request = new SetDescription(
-            $input->getArgument(Argument::Description),
-            $input->getArgument(Argument::Language),
-        );
+        if (!$language = Language::tryFrom($input->getArgument(Argument::Language))) {
+            $output->writeln(
+                sprintf(
+                    'Could not convert language "%s" to enum "%s".',
+                    $input->getArgument(Argument::Language),
+                    Language::class,
+                ),
+            );
+
+            return ExitCode::Failure->value;
+        }
 
         $response = $this->client->send(
-            Action::SetDescription,
+            new SetDescriptionRequest(
+                $input->getArgument(Argument::Description),
+                $language,
+            ),
             new Bot($input->getArgument(Argument::Token)),
-            $request,
         );
 
-        if ($response->success()) {
-            $output->writeln('Successfully set description for bot.');
-        } else {
-            $output->writeln('An error occurred when trying to set description for bot.');
-        }
+        $output->writeln(
+            $response->success()
+                ? 'Successfully set description for bot.'
+                : 'An error occurred when trying to set description for bot.',
+        );
 
         $output->writeln($response->raw());
 

@@ -5,12 +5,15 @@ declare(strict_types=1);
 namespace Temkaa\Botifier;
 
 use Temkaa\Botifier\Handler\HandlerInterface;
-use Temkaa\Botifier\Model\Shared\Message;
+use Temkaa\Botifier\Model\Response\Message;
 
+/**
+ * @internal
+ */
 abstract readonly class AbstractRunner
 {
     /**
-     * @var HandlerInterface[] $handlers
+     * @param HandlerInterface[] $handlers
      */
     public function __construct(
         private array $handlers,

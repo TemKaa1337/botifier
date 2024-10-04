@@ -1,0 +1,40 @@
+{
+    "update_id": 473995195,
+    "edited_message": {
+        "message_id": 39,
+        "from": {
+            "id": 772517840,
+            "is_bot": false,
+            "first_name": "Artem",
+            "username": "temkaawow",
+            "language_code": "ru"
+        },
+        "chat": {
+            "id": 772517840,
+            "first_name": "Artem",
+            "username": "temkaawow",
+            "type": "private"
+        },
+        "date": 1727546998,
+        "edit_date": 1727547007,
+        "reply_to_message": {
+            "message_id": 37,
+            "from": {
+                "id": 772517840,
+                "is_bot": false,
+                "first_name": "Artem",
+                "username": "temkaawow",
+                "language_code": "ru"
+            },
+            "chat": {
+                "id": 772517840,
+                "first_name": "Artem",
+                "username": "temkaawow",
+                "type": "private"
+            },
+            "date": 1727546992,
+            "text": "test"
+        },
+        "text": "edited reply"
+    }
+}

@@ -7,6 +7,9 @@ namespace Temkaa\Botifier\Command;
 use Temkaa\Botifier\Enum\Command\ExitCode;
 use Temkaa\Botifier\Exception\Command\InvalidCommandArgumentException;
 
+/**
+ * @internal
+ */
 final readonly class Console
 {
     /**
@@ -18,7 +21,7 @@ final readonly class Console
     }
 
     /**
-     * @param list<string> $arguments
+     * @param string[] $arguments
      */
     public function execute(array $arguments): int
     {
@@ -52,7 +55,7 @@ final readonly class Console
 
         $output->writeln(
             sprintf('There is no command with signature: "%s".', $signature),
-            'Fell free to check the list of allowed commands by using "bin/console help" command!',
+            'Fell free to check the list of allowed commands by using "bin/botifier help" command!',
         );
 
         return ExitCode::Failure->value;

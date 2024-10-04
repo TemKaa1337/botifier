@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Temkaa\Botifier\Enum\Command;
 
+/**
+ * @internal
+ */
 enum Argument: string
 {
     case CertificatePath = '--certificate_path';

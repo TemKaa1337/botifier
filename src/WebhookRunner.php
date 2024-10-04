@@ -7,9 +7,12 @@ namespace Temkaa\Botifier;
 use JsonException;
 use Temkaa\Botifier\Handler\HandlerInterface;
 use Temkaa\Botifier\Handler\UnsupportedHandlerInterface;
-use Temkaa\Botifier\Model\Shared\Message;
+use Temkaa\Botifier\Model\Response\Message;
 use Temkaa\Botifier\Provider\Webhook\MessageProvider;
 
+/**
+ * @api
+ */
 final readonly class WebhookRunner extends AbstractRunner implements RunnerInterface
 {
     /**
@@ -28,10 +31,8 @@ final readonly class WebhookRunner extends AbstractRunner implements RunnerInter
      */
     public function run(): void
     {
-        $response = $this->messageProvider->provide();
-
         /** @var Message $message */
-        $message = $response->getResult();
+        $message = $this->messageProvider->provide();
 
         if ($handler = $this->getHandler($message)) {
             $handler->handle($message);

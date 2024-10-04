@@ -4,41 +4,57 @@ declare(strict_types=1);
 
 namespace Temkaa\Botifier\Service;
 
-use GuzzleHttp\ClientInterface;
-use GuzzleHttp\Exception\GuzzleException;
-use Temkaa\Botifier\Enum\Http\Action;
-use Temkaa\Botifier\Model\Api\Response\BaseResponse;
+use JsonException;
+use Psr\Http\Client\ClientExceptionInterface;
+use Psr\Http\Client\ClientInterface;
+use Psr\Http\Message\RequestFactoryInterface;
+use Psr\Http\Message\StreamFactoryInterface;
 use Temkaa\Botifier\Model\Bot;
-use Temkaa\Botifier\Model\Shared\RequestInterface;
+use Temkaa\Botifier\Model\Request\RequestInterface;
+use Temkaa\Botifier\Model\Response\Response;
 use Temkaa\Botifier\Serializer\SerializerInterface;
 
-// TODO: change this to interface and inject interface everywhere it is possible
+/**
+ * @api
+ */
 final readonly class TelegramClient implements TelegramClientInterface
 {
     private const string BASE_URL = 'https://api.telegram.org/bot';
 
     public function __construct(
-        private ClientInterface $client,
+        private ClientInterface $httpClient,
+        private RequestFactoryInterface $httpRequestFactory,
+        private StreamFactoryInterface $httpStreamFactoryInterface,
         private SerializerInterface $serializer,
     ) {
     }
 
     /**
-     * @throws GuzzleException
+     * @throws ClientExceptionInterface
+     * @throws JsonException
      */
-    public function send(Action $action, Bot $bot, ?RequestInterface $request = null): BaseResponse
+    public function send(RequestInterface $request, Bot $bot): Response
     {
         // TODO: think about settings more dependencies in constructor
         // TODO: add interface here? some sort of send/sendAsync etc
         // TODO: add some layout between here and options (to allow sending photos/text/images/videos/stickers etc)
-        $url = sprintf('%s/bot%s/%s', self::BASE_URL, $bot->getToken(), $action->value);
+        $url = sprintf('%s/bot%s/%s', self::BASE_URL, $bot->getToken(), $request->getApiMethod()->value);
 
-        $options = ['form_params' => $request?->toArray() ?? [], 'http_errors' => false];
+        $body = $this->httpStreamFactoryInterface->createStream(
+            json_encode($request->getParameters(), JSON_THROW_ON_ERROR)
+        );
 
-        $response = $this->client->request(method: 'POST', uri: $url, options: $options);
+        // TODO: handle files here
+        $httpRequest = $this->httpRequestFactory
+            ->createRequest($request->getHttpMethod()->value, $url)
+            ->withBody($body)
+            ->withHeader('Content-Type', 'application/json; charset=utf-8')
+            ->withHeader('Content-Length', (string) $body->getSize());
+
+        $response = $this->httpClient->sendRequest($httpRequest);
 
         return $this->serializer->deserialize(
-            $action,
+            $request->getApiMethod(),
             $response->getBody()->getContents(),
         );
     }

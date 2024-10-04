@@ -10,13 +10,16 @@ use Temkaa\Botifier\Command\InputInterface;
 use Temkaa\Botifier\Command\OutputInterface;
 use Temkaa\Botifier\Enum\Command\Argument;
 use Temkaa\Botifier\Enum\Command\ExitCode;
-use Temkaa\Botifier\Enum\Http\Action;
-use Temkaa\Botifier\Model\Api\Request\DeleteDescription;
+use Temkaa\Botifier\Enum\Language;
 use Temkaa\Botifier\Model\Bot;
+use Temkaa\Botifier\Model\Request\DeleteDescriptionRequest;
 use Temkaa\Botifier\Service\TelegramClientInterface;
 
 // TODO: somehow move same methods somewhere?
 // TODO: rename unset everywhere to delete
+/**
+ * @internal
+ */
 final readonly class UnsetDescriptionCommand extends BaseCommand implements CommandInterface
 {
     private const array ARGUMENTS = [
@@ -41,21 +44,31 @@ final readonly class UnsetDescriptionCommand extends BaseCommand implements Comm
     {
         $this->validateArguments($input, self::ARGUMENTS, self::SIGNATURE);
 
-        $request = $input->hasArgument(Argument::Language)
-            ? new DeleteDescription($input->getArgument(Argument::Language))
-            : null;
+        if (
+            $input->hasArgument(Argument::Language)
+            && !$language = Language::tryFrom($input->getArgument(Argument::Language))
+        ) {
+            $output->writeln(
+                sprintf(
+                    'Could not convert language "%s" to enum "%s".',
+                    $input->getArgument(Argument::Language),
+                    Language::class,
+                ),
+            );
+
+            return ExitCode::Failure->value;
+        }
 
         $response = $this->client->send(
-            Action::DeleteDescription,
+            new DeleteDescriptionRequest($language ?? null),
             new Bot($input->getArgument(Argument::Token)),
-            $request,
         );
 
-        if ($response->success()) {
-            $output->writeln('Successfully deleted description for bot.');
-        } else {
-            $output->writeln('An error occurred when trying to delete description from bot.');
-        }
+        $output->writeln(
+            $response->success()
+                ? 'Successfully deleted description for bot.'
+                : 'An error occurred when trying to delete description from bot.',
+        );
 
         $output->writeln($response->raw());
 

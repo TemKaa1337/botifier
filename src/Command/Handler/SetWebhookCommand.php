@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Temkaa\Botifier\Command\Handler;
 
-use GuzzleHttp\Psr7\LazyOpenStream;
+use Guzzle\Stream\Stream;
 use JsonException;
 use SplFileInfo;
 use Temkaa\Botifier\Command\CommandInterface;
@@ -12,12 +12,15 @@ use Temkaa\Botifier\Command\InputInterface;
 use Temkaa\Botifier\Command\OutputInterface;
 use Temkaa\Botifier\Enum\Command\Argument;
 use Temkaa\Botifier\Enum\Command\ExitCode;
-use Temkaa\Botifier\Enum\Http\Action;
 use Temkaa\Botifier\Exception\Command\InvalidCommandArgumentException;
-use Temkaa\Botifier\Model\Api\Request\SetWebhook;
 use Temkaa\Botifier\Model\Bot;
+use Temkaa\Botifier\Model\File;
+use Temkaa\Botifier\Model\Request\SetWebhookRequest;
 use Temkaa\Botifier\Service\TelegramClientInterface;
 
+/**
+ * @internal
+ */
 final readonly class SetWebhookCommand extends BaseCommand implements CommandInterface
 {
     private const array ARGUMENTS = [
@@ -45,19 +48,16 @@ final readonly class SetWebhookCommand extends BaseCommand implements CommandInt
 
         $certificate = $this->getCertificate($input);
 
-        $request = new SetWebhook($input->getArgument(Argument::Url), $certificate);
-
         $response = $this->client->send(
-            Action::SetWebhook,
+            new SetWebhookRequest($input->getArgument(Argument::Url), $certificate),
             new Bot($input->getArgument(Argument::Token)),
-            $request,
         );
 
-        if ($response->success()) {
-            $output->writeln('Successfully set webhook for bot.');
-        } else {
-            $output->writeln('An error occurred when trying to set webhook for bot.');
-        }
+        $output->writeln(
+            $response->success()
+                ? 'Successfully set webhook for bot.'
+                : 'An error occurred when trying to set webhook for bot.',
+        );
 
         $output->writeln($response->raw());
 
@@ -74,13 +74,13 @@ final readonly class SetWebhookCommand extends BaseCommand implements CommandInt
         return self::SIGNATURE;
     }
 
-    private function getCertificate(InputInterface $input): ?LazyOpenStream
+    private function getCertificate(InputInterface $input): ?File
     {
         $certificatePath = $input->hasArgument(Argument::CertificatePath)
             ? $input->getArgument(Argument::CertificatePath)
             : null;
 
-        if (!$certificatePath) {
+        if ($certificatePath === null) {
             return null;
         }
 
@@ -101,6 +101,6 @@ final readonly class SetWebhookCommand extends BaseCommand implements CommandInt
             );
         }
 
-        return new LazyOpenStream($file->getRealPath(), mode: 'rb');
+        return File::from($file->getRealPath());
     }
 }

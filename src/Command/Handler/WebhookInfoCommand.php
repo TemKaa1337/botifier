@@ -8,12 +8,16 @@ use JsonException;
 use Temkaa\Botifier\Command\CommandInterface;
 use Temkaa\Botifier\Command\InputInterface;
 use Temkaa\Botifier\Command\OutputInterface;
+use Temkaa\Botifier\Enum\ApiMethod;
 use Temkaa\Botifier\Enum\Command\Argument;
 use Temkaa\Botifier\Enum\Command\ExitCode;
-use Temkaa\Botifier\Enum\Http\Action;
 use Temkaa\Botifier\Model\Bot;
+use Temkaa\Botifier\Model\Request\GetWebhookInfoRequest;
 use Temkaa\Botifier\Service\TelegramClientInterface;
 
+/**
+ * @internal
+ */
 final readonly class WebhookInfoCommand extends BaseCommand implements CommandInterface
 {
     private const array ARGUMENTS = [
@@ -35,15 +39,15 @@ final readonly class WebhookInfoCommand extends BaseCommand implements CommandIn
         $this->validateArguments($input, self::ARGUMENTS, self::SIGNATURE);
 
         $response = $this->client->send(
-            Action::GetWebhookInfo,
+            new GetWebhookInfoRequest(),
             new Bot($input->getArgument(Argument::Token)),
         );
 
-        if ($response->success()) {
-            $output->writeln('Successfully retrieved webhook info.');
-        } else {
-            $output->writeln('An error occurred when trying retrieve bot webhook info.');
-        }
+        $output->writeln(
+            $response->success()
+                ? 'Successfully retrieved webhook info.'
+                : 'An error occurred when trying retrieve bot webhook info.',
+        );
 
         $output->writeln($response->raw());
 

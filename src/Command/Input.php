@@ -6,6 +6,9 @@ namespace Temkaa\Botifier\Command;
 
 use Temkaa\Botifier\Enum\Command\Argument;
 
+/**
+ * @internal
+ */
 final readonly class Input implements InputInterface
 {
     /**

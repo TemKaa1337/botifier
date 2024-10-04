@@ -4,13 +4,11 @@ declare(strict_types=1);
 
 namespace Temkaa\Botifier\Command;
 
-use Temkaa\Botifier\Exception\Command\InvalidCommandArgumentException;
-
+/**
+ * @internal
+ */
 interface CommandInterface
 {
-    /**
-     * @throws InvalidCommandArgumentException
-     */
     public function execute(InputInterface $input, OutputInterface $output): int;
 
     public function getDescription(): string;

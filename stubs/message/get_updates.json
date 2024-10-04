@@ -1,0 +1,26 @@
+{
+    "ok": true,
+    "result": [
+        {
+            "update_id": 473995199,
+            "message": {
+                "message_id": 47,
+                "from": {
+                    "id": 772517840,
+                    "is_bot": false,
+                    "first_name": "Artem",
+                    "username": "temkaawow",
+                    "language_code": "ru"
+                },
+                "chat": {
+                    "id": 772517840,
+                    "first_name": "Artem",
+                    "username": "temkaawow",
+                    "type": "private"
+                },
+                "date": 1727613219,
+                "text": "test"
+            }
+        }
+    ]
+}

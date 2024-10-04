@@ -11,31 +11,43 @@ use Temkaa\Botifier\Model\Bot;
 use Temkaa\Botifier\PollingRunner;
 use Temkaa\Botifier\Serializer\Action\SerializerInterface;
 use Temkaa\Botifier\Serializer\Serializer;
+use Temkaa\Botifier\Subscriber\SignalSubscriber;
 use Temkaa\Botifier\WebhookRunner;
 use Temkaa\Container\Attribute\Bind\InstanceOfIterator;
 use Temkaa\Container\Builder\Config\ClassBuilder;
 use Temkaa\Container\Builder\ConfigBuilder;
 use Temkaa\Container\Model\Config;
 use Temkaa\Container\Provider\Config\ProviderInterface;
+use Temkaa\Signal\SignalSubscriberInterface;
 
+/**
+ * @api
+ *
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ */
 final readonly class ConfigProvider implements ProviderInterface
 {
-    public function getBaseConfig(): ConfigBuilder
+    public function getBuilder(): ConfigBuilder
     {
         return ConfigBuilder::make()
             ->include(__DIR__.'/../')
+            ->include(__DIR__.'/../')
             ->exclude(__DIR__.'/../Command/')
-            ->exclude(__DIR__.'/../DependencyInjection/Command')
-            ->exclude(__DIR__.'/../DependencyInjection/ConfigProvider')
+            ->exclude(__DIR__.'/Command')
             ->exclude(__DIR__.'/../Enum/')
             ->exclude(__DIR__.'/../Exception/')
-            ->exclude(__DIR__.'/../Model/Api/')
-            ->exclude(__DIR__.'/../Model/Shared/')
-            ->exclude(__DIR__.'/../Model/Output/')
-            ->exclude(__DIR__.'/../Utils/')
+            ->exclude(__DIR__.'/../Model/Request')
+            ->exclude(__DIR__.'/../Model/Response')
+            ->exclude(__DIR__.'/../Model/File.php')
+            ->include(__DIR__.'/../../vendor/temkaa/signal/src/SignalManager.php')
             ->bindClass(
                 ClassBuilder::make(Bot::class)
                     ->bindVariable('token', 'env(BOT_TOKEN)')
+                    ->build(),
+            )
+            ->bindClass(
+                ClassBuilder::make(SignalSubscriber::class)
+                    ->bindVariable('$signalSubscribers', new InstanceOfIterator(SignalSubscriberInterface::class))
                     ->build(),
             )
             ->bindClass(
@@ -63,6 +75,6 @@ final readonly class ConfigProvider implements ProviderInterface
 
     public function provide(): Config
     {
-        return $this->getBaseConfig()->build();
+        return $this->getBuilder()->build();
     }
 }

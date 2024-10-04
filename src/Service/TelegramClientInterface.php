@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace Temkaa\Botifier\Service;
 
-use Temkaa\Botifier\Enum\Http\Action;
-use Temkaa\Botifier\Model\Api\Response\BaseResponse;
 use Temkaa\Botifier\Model\Bot;
-use Temkaa\Botifier\Model\Shared\RequestInterface;
+use Temkaa\Botifier\Model\Request\RequestInterface;
+use Temkaa\Botifier\Model\Response\Response;
 
+/**
+ * @api
+ */
 interface TelegramClientInterface
 {
-    public function send(Action $action, Bot $bot, ?RequestInterface $request = null): BaseResponse;
+    public function send(RequestInterface $request, Bot $bot): Response;
 }

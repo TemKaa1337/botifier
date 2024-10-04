@@ -8,7 +8,7 @@
         failOnNotice="true"
         failOnDeprecation="true"
         failOnEmptyTestSuite="true"
-        bootstrapFile="tests/bootstrap.php"
+        bootstrap="tests/bootstrap.php"
         failOnWarning="true"
         failOnIncomplete="true"
 >

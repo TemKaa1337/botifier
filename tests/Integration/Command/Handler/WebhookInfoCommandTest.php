@@ -11,8 +11,8 @@ use Temkaa\Botifier\Command\Input;
 use Temkaa\Botifier\Enum\Command\Argument;
 use Temkaa\Botifier\Enum\Command\ExitCode;
 use Temkaa\Botifier\Exception\Command\InvalidCommandArgumentException;
-use Temkaa\Botifier\Model\Api\Response\BaseResponse;
-use Temkaa\Botifier\Model\Api\Response\Webhook;
+use Temkaa\Botifier\Model\Response\Response;
+use Temkaa\Botifier\Model\Response\Webhook;
 use Tests\Helper\Service\Command\Output;
 use Tests\Helper\Service\TelegramClient;
 
@@ -45,7 +45,7 @@ final class WebhookInfoCommandTest extends AbstractCommandTestCase
         );
         $this->client->setResponses(
             [
-                new BaseResponse(
+                new Response(
                     success: true,
                     description: null,
                     errorCode: null,
@@ -128,7 +128,7 @@ final class WebhookInfoCommandTest extends AbstractCommandTestCase
         );
         $this->client->setResponses(
             [
-                new BaseResponse(
+                new Response(
                     success: true,
                     description: null,
                     errorCode: null,
@@ -184,7 +184,7 @@ final class WebhookInfoCommandTest extends AbstractCommandTestCase
 
         $this->client->setResponses(
             [
-                new BaseResponse(
+                new Response(
                     success: false,
                     description: 'cannot retrieve webhook info',
                     errorCode: 400,

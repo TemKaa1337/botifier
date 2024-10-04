@@ -6,6 +6,9 @@ namespace Temkaa\Botifier\Model;
 
 use SensitiveParameter;
 
+/**
+ * @api
+ */
 final readonly class Bot
 {
     public function __construct(

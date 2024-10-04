@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace Temkaa\Botifier\Serializer;
 
-use Temkaa\Botifier\Enum\Http\Action;
-use Temkaa\Botifier\Model\Api\Response\BaseResponse;
+use Temkaa\Botifier\Enum\ApiMethod;
+use Temkaa\Botifier\Model\Response\Response;
 
+/**
+ * @internal
+ */
 interface SerializerInterface
 {
-    public function deserialize(Action $action, string $message): BaseResponse;
+    public function deserialize(ApiMethod $action, string $message): Response;
 }

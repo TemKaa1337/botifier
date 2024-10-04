@@ -7,7 +7,10 @@ namespace Temkaa\Botifier\Subscriber;
 use Temkaa\Botifier\Subscriber\Signal\SubscriberInterface;
 use Temkaa\Signal\SignalManagerInterface;
 
-final readonly class SignalSubscriber
+/**
+ * @internal
+ */
+final readonly class SignalSubscriber implements SignalSubscriberInterface
 {
     /**
      * @param SubscriberInterface[] $signalSubscribers
@@ -23,7 +26,7 @@ final readonly class SignalSubscriber
         }
     }
 
-    public function isAnyTriggered(): bool
+    public function terminate(): bool
     {
         foreach ($this->signalSubscribers as $signalSubscriber) {
             if ($signalSubscriber->supportsOs(PHP_OS_FAMILY) && $signalSubscriber->isTriggered()) {

@@ -6,9 +6,12 @@ namespace Temkaa\Botifier\Factory\Message\Content;
 
 use Temkaa\Botifier\Enum\Message\Content\Type;
 use Temkaa\Botifier\Factory\Message\ContentFactoryInterface;
-use Temkaa\Botifier\Model\Shared\Message\Content\Text;
-use Temkaa\Botifier\Model\Shared\Message\ContentInterface;
+use Temkaa\Botifier\Model\Response\Message\Content\Text;
+use Temkaa\Botifier\Model\Response\Message\ContentInterface;
 
+/**
+ * @internal
+ */
 final readonly class TextFactory implements ContentFactoryInterface
 {
     public function create(array $message): ContentInterface
