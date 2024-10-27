@@ -4,18 +4,17 @@ declare(strict_types=1);
 
 namespace Temkaa\Botifier\Factory\Message;
 
-use Temkaa\Botifier\Model\Input\Message\Chat;
+use Temkaa\Botifier\Model\Response\Message\Chat;
 
-final class ChatFactory
+/**
+ * @internal
+ */
+final readonly class ChatFactory
 {
     public function create(array $message): Chat
     {
         $chat = $message['chat'];
 
-        return (new Chat())
-            ->setFirstName($chat['first_name'])
-            ->setId($chat['id'])
-            ->setType($chat['type'])
-            ->setUsername($chat['username']);
+        return new Chat($chat['id'], $chat['username'], $chat['first_name'], $chat['type']);
     }
 }

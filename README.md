@@ -1,10 +1,9 @@
 <h1 align="center">
-    PHP Telegram Bot<br>
+    Botifier - a framework for building telegram bots faster!<br>
 	<br>
-    <img src="/logo.png" title="Botifier" alt="Botofier logo" width="500">
+    <img src="/logo.png" title="Botifier" alt="Botifier logo">
 	<br>
 </h1>
-A library for building telegram bots faster.
 
 ##### TODOS:
 - add non autowirable signatures to classes

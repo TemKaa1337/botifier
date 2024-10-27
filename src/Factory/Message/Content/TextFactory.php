@@ -6,20 +6,21 @@ namespace Temkaa\Botifier\Factory\Message\Content;
 
 use Temkaa\Botifier\Enum\Message\Content\Type;
 use Temkaa\Botifier\Factory\Message\ContentFactoryInterface;
-use Temkaa\Botifier\Model\Input\ContentInterface;
-use Temkaa\Botifier\Model\Input\Message\Content\Text;
+use Temkaa\Botifier\Model\Response\Message\Content\Text;
+use Temkaa\Botifier\Model\Response\Message\ContentInterface;
 
-final class TextFactory implements ContentFactoryInterface
+/**
+ * @internal
+ */
+final readonly class TextFactory implements ContentFactoryInterface
 {
     public function create(array $message): ContentInterface
     {
-        return (new Text())
-            ->setText($message['text'])
-            ->setType(Type::Text);
+        return new Text($message['text'], Type::Text);
     }
 
     public function supports(array $message): bool
     {
-        return isset($message['text']);
+        return isset($message['text']) && !str_starts_with($message['text'], '/');
     }
 }

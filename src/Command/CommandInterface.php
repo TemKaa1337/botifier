@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace Temkaa\Botifier\Command;
 
-use Temkaa\Botifier\Model\Input\Message;
-use Temkaa\SimpleContainer\Attribute\Tag;
-
-#[Tag(name: 'command')]
+/**
+ * @internal
+ */
 interface CommandInterface
 {
-    public function handle(Message $message): void;
+    public function execute(InputInterface $input, OutputInterface $output): int;
+
+    public function getDescription(): string;
+
+    public function getSignature(): string;
 }

@@ -1,0 +1,16 @@
+#!/usr/bin/env php
+<?php
+
+use Temkaa\Botifier\Command\Console;
+use Temkaa\Botifier\DependencyInjection\Command\ConfigProvider;
+use Temkaa\Container\Builder\ContainerBuilder;
+
+require_once sprintf('%s/vendor/autoload.php', getcwd());
+
+$container = ContainerBuilder::make()->add(new ConfigProvider())->build();
+
+/** @var Console $console */
+$console = $container->get(Console::class);
+$exitCode = $console->execute($argv);
+
+exit($exitCode);

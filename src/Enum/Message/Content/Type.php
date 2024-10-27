@@ -4,7 +4,12 @@ declare(strict_types=1);
 
 namespace Temkaa\Botifier\Enum\Message\Content;
 
-enum Type: string
+/**
+ * @api
+ */
+enum Type
 {
-    case Text = 'text';
+    case Command;
+    case Text;
+    case Unknown;
 }

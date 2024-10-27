@@ -4,19 +4,24 @@ declare(strict_types=1);
 
 namespace Temkaa\Botifier\Factory\Message;
 
-use Temkaa\Botifier\Exception\Message\Factory\NotFoundException;
-use Temkaa\Botifier\Model\Input\ContentInterface;
-use Temkaa\SimpleContainer\Attribute\Bind\Tagged;
+use Temkaa\Botifier\Factory\Message\Content\UnknownContentFactory;
+use Temkaa\Botifier\Model\Response\Message\ContentInterface;
 
-final class ContentFactory
+/**
+ * @internal
+ */
+final readonly class ContentFactory
 {
+    /**
+     * @param list<ContentFactoryInterface> $factories
+     */
     public function __construct(
-        #[Tagged(tag: 'content_factory')]
-        private readonly iterable $factories,
+        private UnknownContentFactory $defaultFactory,
+        private array $factories,
     ) {
     }
 
-    public function create(string $message): ContentInterface
+    public function create(array $message): ContentInterface
     {
         foreach ($this->factories as $factory) {
             if ($factory->supports($message)) {
@@ -24,6 +29,6 @@ final class ContentFactory
             }
         }
 
-        throw new NotFoundException($message);
+        return $this->defaultFactory->create($message);
     }
 }
