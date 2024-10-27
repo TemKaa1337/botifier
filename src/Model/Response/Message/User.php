@@ -16,7 +16,7 @@ final readonly class User
         private string $username,
         private string $firstName,
         private bool $isBot,
-        private Language $language,
+        private ?Language $language,
     ) {
     }
 
@@ -30,7 +30,7 @@ final readonly class User
         return $this->id;
     }
 
-    public function getLanguage(): Language
+    public function getLanguage(): ?Language
     {
         return $this->language;
     }

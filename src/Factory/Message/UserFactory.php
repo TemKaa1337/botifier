@@ -21,7 +21,7 @@ final readonly class UserFactory
             $user['username'],
             $user['first_name'],
             $user['is_bot'],
-            Language::from($user['language_code']),
+            isset($user['language_code']) ? Language::from($user['language_code']) : null,
         );
     }
 }
