@@ -4,17 +4,13 @@ declare(strict_types=1);
 
 namespace Temkaa\Botifier\Model\Response;
 
-/**
- * @api
- */
-final readonly class Response
+abstract readonly class AbstractResponse
 {
     public function __construct(
         private bool $success,
         private ?string $description,
         private ?int $errorCode,
-        private array|bool|null|ResultInterface $result,
-        private string $raw,
+        private array $raw,
     ) {
     }
 
@@ -28,12 +24,7 @@ final readonly class Response
         return $this->errorCode;
     }
 
-    public function getResult(): array|bool|null|ResultInterface
-    {
-        return $this->result;
-    }
-
-    public function raw(): string
+    public function raw(): array
     {
         return $this->raw;
     }

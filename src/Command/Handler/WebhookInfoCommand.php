@@ -49,7 +49,7 @@ final readonly class WebhookInfoCommand extends BaseCommand implements CommandIn
                 : 'An error occurred when trying retrieve bot webhook info.',
         );
 
-        $output->writeln($response->raw());
+        $output->writeln(json_encode($response->raw(), JSON_THROW_ON_ERROR));
 
         return $response->success() ? ExitCode::Success->value : ExitCode::Failure->value;
     }

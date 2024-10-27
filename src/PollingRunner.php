@@ -30,9 +30,9 @@ final readonly class PollingRunner extends AbstractRunner implements RunnerInter
         private Bot $bot,
         private TelegramClientInterface $client,
         array $handlers,
-        private float $pollingInterval,
         private SignalSubscriberInterface $signalSubscriber,
         private UnsupportedHandlerInterface $unsupportedHandler,
+        private float $pollingInterval = 5,
     ) {
         parent::__construct($handlers);
     }
@@ -44,16 +44,9 @@ final readonly class PollingRunner extends AbstractRunner implements RunnerInter
 
             /** @var Message[] $messages */
             $messages = $updates->getResult();
-            if (count($messages) > 0) {
-                foreach ($messages as $message) {
-                    if ($handler = $this->getHandler($message)) {
-                        $handler->handle($message);
-
-                        continue;
-                    }
-
-                    $this->unsupportedHandler->handle($message);
-                }
+            foreach ($messages as $message) {
+                $handler = $this->getHandler($message) ?? $this->unsupportedHandler;
+                $handler->handle($message);
             }
 
             usleep((int) $this->pollingInterval * 1_000_000);

@@ -6,8 +6,8 @@ namespace Temkaa\Botifier\Serializer;
 
 use JsonException;
 use Temkaa\Botifier\Enum\ApiMethod;
-use Temkaa\Botifier\Model\Response\Response;
-use Temkaa\Botifier\Model\Response\ResultInterface;
+use Temkaa\Botifier\Exception\NotFoundException;
+use Temkaa\Botifier\Model\ResponseInterface;
 use Temkaa\Botifier\Serializer\Action\SerializerInterface as ActionSerializerInterface;
 
 /**
@@ -26,17 +26,11 @@ final readonly class Serializer implements SerializerInterface
     /**
      * @throws JsonException
      */
-    public function deserialize(ApiMethod $action, string $message): Response
+    public function deserialize(ApiMethod $action, string $message): ResponseInterface
     {
         $decoded = json_decode($message, true, 512, JSON_THROW_ON_ERROR);
 
-        return new Response(
-            $decoded['ok'],
-            $decoded['description'] ?? null,
-            $decoded['error_code'] ?? null,
-            $this->getResult($decoded, $action),
-            raw: $message,
-        );
+        return $this->getHandler($action)->deserialize($decoded);
     }
 
     private function getHandler(ApiMethod $action): ActionSerializerInterface
@@ -46,26 +40,9 @@ final readonly class Serializer implements SerializerInterface
                 return $handler;
             }
         }
-        // TODO: if not found throw an exception
-        // TODO: change ?logger to NullableLogger
-    }
 
-    private function getResult(array $decoded, ApiMethod $action): array|bool|null|ResultInterface
-    {
-        $result = $decoded['result'] ?? null;
-        if (!$result || is_bool($result)) {
-            return $result;
-        }
-
-        $handler = $this->getHandler($action);
-        if (is_array($result) && array_is_list($result)) {
-
-            return array_map(
-                static fn (array $entry): ResultInterface => $handler->deserialize($entry),
-                $result,
-            );
-        }
-
-        return $handler->deserialize($result);
+        throw new NotFoundException(
+            sprintf('Could not find suitable deserializer for "%s" api method.', $action->value),
+        );
     }
 }

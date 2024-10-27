@@ -6,12 +6,12 @@ namespace Tests\Integration\Command\Handler;
 
 use JsonException;
 use Temkaa\Botifier\Command\Handler\UnsetDescriptionCommand;
-use Temkaa\Botifier\Command\Handler\UnsetWebhookCommand;
 use Temkaa\Botifier\Command\Input;
 use Temkaa\Botifier\Enum\Command\Argument;
 use Temkaa\Botifier\Enum\Command\ExitCode;
+use Temkaa\Botifier\Enum\Language;
 use Temkaa\Botifier\Exception\Command\InvalidCommandArgumentException;
-use Temkaa\Botifier\Model\Response\Response;
+use Temkaa\Botifier\Model\Response\GeneralResponse;
 use Tests\Helper\Service\Command\Output;
 use Tests\Helper\Service\TelegramClient;
 
@@ -25,18 +25,15 @@ final class UnsetDescriptionCommandTest extends AbstractCommandTestCase
      */
     public function testExecute(): void
     {
-        $raw = json_encode(
-            [
-                'ok'          => true,
-                'result'      => true,
-                'description' => 'description set',
-            ],
-            JSON_THROW_ON_ERROR,
-        );
+        $raw = [
+            'ok'          => true,
+            'result'      => true,
+            'description' => 'description set',
+        ];
 
         $this->client->setResponses(
             [
-                new Response(
+                new GeneralResponse(
                     success: true,
                     description: 'description set',
                     errorCode: null,
@@ -46,7 +43,7 @@ final class UnsetDescriptionCommandTest extends AbstractCommandTestCase
             ],
         );
 
-        $command = new UnsetWebhookCommand($this->client);
+        $command = new UnsetDescriptionCommand($this->client);
 
         $input = new Input(
             [
@@ -60,8 +57,8 @@ final class UnsetDescriptionCommandTest extends AbstractCommandTestCase
         self::assertSame(ExitCode::Success->value, $statusCode);
         self::assertSame(
             [
-                'Successfully deleted webhook for bot.',
-                $raw,
+                'Successfully deleted description for bot.',
+                json_encode($raw, JSON_THROW_ON_ERROR),
             ],
             $output->getMessages(),
         );
@@ -93,20 +90,43 @@ final class UnsetDescriptionCommandTest extends AbstractCommandTestCase
     /**
      * @throws JsonException
      */
+    public function testExecuteWithNonExistingLanguage(): void
+    {
+        $command = new UnsetDescriptionCommand($this->client);
+
+        $input = new Input(
+            [
+                'bin/botifier',
+                Argument::Token->value.'=token',
+                Argument::Language->value.'=non_existing_language',
+            ],
+        );
+        $output = new Output();
+
+        $statusCode = $command->execute($input, $output);
+        self::assertSame(ExitCode::Failure->value, $statusCode);
+        self::assertSame(
+            [
+                sprintf('Could not convert language "non_existing_language" to enum "%s".', Language::class),
+            ],
+            $output->getMessages(),
+        );
+    }
+
+    /**
+     * @throws JsonException
+     */
     public function testExecuteWithUnsuccessfulResponse(): void
     {
-        $raw = json_encode(
-            [
-                'ok'          => false,
-                'error_code'  => 400,
-                'description' => 'description not set',
-            ],
-            JSON_THROW_ON_ERROR,
-        );
+        $raw = [
+            'ok'          => false,
+            'error_code'  => 400,
+            'description' => 'description not set',
+        ];
 
         $this->client->setResponses(
             [
-                new Response(
+                new GeneralResponse(
                     success: false,
                     description: 'description not set',
                     errorCode: 400,
@@ -131,7 +151,7 @@ final class UnsetDescriptionCommandTest extends AbstractCommandTestCase
         self::assertSame(
             [
                 'An error occurred when trying to delete description from bot.',
-                $raw,
+                json_encode($raw, JSON_THROW_ON_ERROR),
             ],
             $output->getMessages(),
         );

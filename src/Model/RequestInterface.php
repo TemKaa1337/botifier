@@ -2,13 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Temkaa\Botifier\Model\Request;
+namespace Temkaa\Botifier\Model;
 
 use Temkaa\Botifier\Enum\ApiMethod;
 use Temkaa\Botifier\Enum\HttpMethod;
 
 /**
  * @api
+ * @template TResponse of ResponseInterface
  */
 interface RequestInterface
 {

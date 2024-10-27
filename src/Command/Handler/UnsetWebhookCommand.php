@@ -49,7 +49,7 @@ final readonly class UnsetWebhookCommand extends BaseCommand implements CommandI
                 : 'An error occurred when trying to delete webhook for bot.',
         );
 
-        $output->writeln($response->raw());
+        $output->writeln(json_encode($response->raw(), JSON_THROW_ON_ERROR));
 
         return $response->success() ? ExitCode::Success->value : ExitCode::Failure->value;
     }

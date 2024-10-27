@@ -6,6 +6,7 @@ namespace Temkaa\Botifier\Model\Request;
 
 use Temkaa\Botifier\Enum\ApiMethod;
 use Temkaa\Botifier\Enum\HttpMethod;
+use Temkaa\Botifier\Model\RequestInterface;
 
 /**
  * @api

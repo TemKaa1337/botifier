@@ -24,7 +24,7 @@ final readonly class UnknownContentFactory implements ContentFactoryInterface
         $contentMessage = $message;
         $contentKey = null;
         foreach ($messageKeys as $messageKey) {
-            if (!in_array($messageKey, self::RESERVED_KEYS)) {
+            if (!in_array($messageKey, self::RESERVED_KEYS, true)) {
                 $contentMessage = $message[$messageKey];
                 $contentKey = $messageKey;
 
@@ -37,6 +37,6 @@ final readonly class UnknownContentFactory implements ContentFactoryInterface
 
     public function supports(array $message): bool
     {
-        return !isset($message['text']);
+        return true;
     }
 }

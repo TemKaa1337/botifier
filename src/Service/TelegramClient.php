@@ -10,8 +10,8 @@ use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\StreamFactoryInterface;
 use Temkaa\Botifier\Model\Bot;
-use Temkaa\Botifier\Model\Request\RequestInterface;
-use Temkaa\Botifier\Model\Response\Response;
+use Temkaa\Botifier\Model\RequestInterface;
+use Temkaa\Botifier\Model\ResponseInterface;
 use Temkaa\Botifier\Serializer\SerializerInterface;
 
 /**
@@ -24,7 +24,7 @@ final readonly class TelegramClient implements TelegramClientInterface
     public function __construct(
         private ClientInterface $httpClient,
         private RequestFactoryInterface $httpRequestFactory,
-        private StreamFactoryInterface $httpStreamFactoryInterface,
+        private StreamFactoryInterface $httpStreamFactory,
         private SerializerInterface $serializer,
     ) {
     }
@@ -33,14 +33,17 @@ final readonly class TelegramClient implements TelegramClientInterface
      * @throws ClientExceptionInterface
      * @throws JsonException
      */
-    public function send(RequestInterface $request, Bot $bot): Response
+    public function send(RequestInterface $request, Bot $bot): ResponseInterface
     {
+        // TODO: move hydrators somewhere separately
+        // TODO: create dto for each response (and create base response)
+
         // TODO: think about settings more dependencies in constructor
         // TODO: add interface here? some sort of send/sendAsync etc
         // TODO: add some layout between here and options (to allow sending photos/text/images/videos/stickers etc)
         $url = sprintf('%s/bot%s/%s', self::BASE_URL, $bot->getToken(), $request->getApiMethod()->value);
 
-        $body = $this->httpStreamFactoryInterface->createStream(
+        $body = $this->httpStreamFactory->createStream(
             json_encode($request->getParameters(), JSON_THROW_ON_ERROR)
         );
 

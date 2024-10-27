@@ -12,7 +12,7 @@ use Temkaa\Botifier\Command\Input;
 use Temkaa\Botifier\Enum\Command\Argument;
 use Temkaa\Botifier\Enum\Command\ExitCode;
 use Temkaa\Botifier\Exception\Command\InvalidCommandArgumentException;
-use Temkaa\Botifier\Model\Response\Response;
+use Temkaa\Botifier\Model\Response\GeneralResponse;
 use Tests\Helper\Service\Command\Output;
 use Tests\Helper\Service\TelegramClient;
 
@@ -51,18 +51,15 @@ final class SetWebhookCommandTest extends AbstractCommandTestCase
      */
     public function testExecute(): void
     {
-        $raw = json_encode(
-            [
-                'ok'          => true,
-                'result'      => true,
-                'description' => 'webhook set',
-            ],
-            JSON_THROW_ON_ERROR,
-        );
+        $raw = [
+            'ok'          => true,
+            'result'      => true,
+            'description' => 'webhook set',
+        ];
 
         $this->client->setResponses(
             [
-                new Response(
+                new GeneralResponse(
                     success: true,
                     description: 'webhook set',
                     errorCode: null,
@@ -91,7 +88,7 @@ final class SetWebhookCommandTest extends AbstractCommandTestCase
         self::assertSame(
             [
                 'Successfully set webhook for bot.',
-                $raw,
+                json_encode($raw, JSON_THROW_ON_ERROR),
             ],
             $output->getMessages(),
         );
@@ -142,18 +139,15 @@ final class SetWebhookCommandTest extends AbstractCommandTestCase
      */
     public function testExecuteWithUnsuccessfulResponse(): void
     {
-        $raw = json_encode(
-            [
-                'ok'          => false,
-                'error_code'  => 400,
-                'description' => 'description not set',
-            ],
-            JSON_THROW_ON_ERROR,
-        );
+        $raw = [
+            'ok'          => false,
+            'error_code'  => 400,
+            'description' => 'description not set',
+        ];
 
         $this->client->setResponses(
             [
-                new Response(
+                new GeneralResponse(
                     success: false,
                     description: 'description not set',
                     errorCode: 400,
@@ -179,7 +173,7 @@ final class SetWebhookCommandTest extends AbstractCommandTestCase
         self::assertSame(
             [
                 'An error occurred when trying to set webhook for bot.',
-                $raw,
+                json_encode($raw, JSON_THROW_ON_ERROR),
             ],
             $output->getMessages(),
         );

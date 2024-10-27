@@ -69,7 +69,7 @@ final readonly class SetDescriptionCommand extends BaseCommand implements Comman
                 : 'An error occurred when trying to set description for bot.',
         );
 
-        $output->writeln($response->raw());
+        $output->writeln(json_encode($response->raw(), JSON_THROW_ON_ERROR));
 
         return $response->success() ? ExitCode::Success->value : ExitCode::Failure->value;
     }

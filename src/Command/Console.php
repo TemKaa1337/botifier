@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Temkaa\Botifier\Command;
 
+use Temkaa\Botifier\Command\Handler\HelpCommand;
 use Temkaa\Botifier\Enum\Command\ExitCode;
 use Temkaa\Botifier\Exception\Command\InvalidCommandArgumentException;
 
@@ -33,10 +34,11 @@ final readonly class Console
         $signature = $arguments ? array_shift($arguments) : null;
 
         if ($signature === null) {
-            $output->writeln(
-                'This script can execute a few useful commands!',
-                'Fell free to check the list of allowed commands by using "bin/console help" command!',
-            );
+            foreach ($this->commands as $command) {
+                if ($command instanceof HelpCommand) {
+                    return $command->execute($input, $output);
+                }
+            }
 
             return ExitCode::Success->value;
         }

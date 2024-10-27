@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Temkaa\Botifier\Provider\Webhook;
 
 use JsonException;
+use Temkaa\Botifier\Model\Response\Message;
 use Temkaa\Botifier\Model\Response\ResultInterface;
 use Temkaa\Botifier\Serializer\Action\MessageSerializer;
 
@@ -21,7 +22,7 @@ final readonly class MessageProvider
     /**
      * @throws JsonException
      */
-    public function provide(): ResultInterface
+    public function provide(): Message
     {
         $message = file_get_contents('php://input');
 

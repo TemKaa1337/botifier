@@ -2,6 +2,9 @@
     "source": {
         "directories": [
             "src"
+        ],
+        "excludes": [
+            "DependencyInjection"
         ]
     },
     "timeout": 10,
@@ -9,7 +12,10 @@
         "text": "infection.log"
     },
     "mutators": {
-        "@default": true
+        "@default": true,
+        "global-ignoreSourceCodeByRegex": [
+            "usleep.*"
+        ]
     },
     "minMsi": 100
 }

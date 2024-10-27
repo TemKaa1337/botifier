@@ -17,6 +17,7 @@ use Temkaa\Botifier\Service\TelegramClientInterface;
 
 // TODO: somehow move same methods somewhere?
 // TODO: rename unset everywhere to delete
+
 /**
  * @internal
  */
@@ -70,7 +71,7 @@ final readonly class UnsetDescriptionCommand extends BaseCommand implements Comm
                 : 'An error occurred when trying to delete description from bot.',
         );
 
-        $output->writeln($response->raw());
+        $output->writeln(json_encode($response->raw(), JSON_THROW_ON_ERROR));
 
         return $response->success() ? ExitCode::Success->value : ExitCode::Failure->value;
     }

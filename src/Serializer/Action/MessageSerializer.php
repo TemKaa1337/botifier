@@ -4,31 +4,23 @@ declare(strict_types=1);
 
 namespace Temkaa\Botifier\Serializer\Action;
 
-use JsonException;
-use Temkaa\Botifier\Enum\ApiMethod;
 use Temkaa\Botifier\Factory\MessageFactory;
-use Temkaa\Botifier\Model\Response\ResultInterface;
+use Temkaa\Botifier\Model\Response\Message;
 
-/**
- * @internal
- */
-final readonly class MessageSerializer implements SerializerInterface
+final readonly class MessageSerializer
 {
     public function __construct(
         private MessageFactory $messageFactory,
     ) {
     }
 
-    /**
-     * @throws JsonException
-     */
-    public function deserialize(array $message): ResultInterface
+    public function deserialize(array $message): array|Message
     {
-        return $this->messageFactory->create($message);
-    }
-
-    public function supports(ApiMethod $action): bool
-    {
-        return $action === ApiMethod::GetUpdates;
+        return array_is_list($message)
+            ? array_map(
+                fn (array $nestedMessage): Message => $this->messageFactory->create($nestedMessage),
+                $message,
+            )
+            : $this->messageFactory->create($message);
     }
 }

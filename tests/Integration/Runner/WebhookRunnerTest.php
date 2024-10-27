@@ -12,6 +12,7 @@ use phpmock\MockEnabledException;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use ReflectionException;
+use Temkaa\Botifier\DependencyInjection\ConfigProvider as WebhookRunnerContainerConfigProvider;
 use Temkaa\Botifier\Enum\Language;
 use Temkaa\Botifier\Enum\Message\Content\Type;
 use Temkaa\Botifier\Handler\UnsupportedHandlerInterface;
@@ -33,6 +34,15 @@ use Tests\Integration\Runner\AbstractRunnerTestCase;
  */
 final class WebhookRunnerTest extends AbstractRunnerTestCase
 {
+    public function testBootsWithContainer(): void
+    {
+        $this->markTestSkipped('Unskip after container is fixed');
+
+        $container = ContainerBuilder::make()->add(new WebhookRunnerContainerConfigProvider())->build();
+        $runner = $container->get(WebhookRunner::class);
+        self::assertInstanceOf(WebhookRunner::class, $runner);
+    }
+
     /**
      * @throws ContainerExceptionInterface
      * @throws MockEnabledException

@@ -11,7 +11,7 @@ use Temkaa\Botifier\Enum\Command\Argument;
 use Temkaa\Botifier\Enum\Command\ExitCode;
 use Temkaa\Botifier\Enum\Language;
 use Temkaa\Botifier\Exception\Command\InvalidCommandArgumentException;
-use Temkaa\Botifier\Model\Response\Response;
+use Temkaa\Botifier\Model\Response\GeneralResponse;
 use Tests\Helper\Service\Command\Output;
 use Tests\Helper\Service\TelegramClient;
 
@@ -26,18 +26,15 @@ final class SetDescriptionCommandTest extends AbstractCommandTestCase
      */
     public function testExecute(): void
     {
-        $raw = json_encode(
-            [
-                'ok'          => true,
-                'result'      => true,
-                'description' => 'description set',
-            ],
-            JSON_THROW_ON_ERROR,
-        );
+        $raw = [
+            'ok'          => true,
+            'result'      => true,
+            'description' => 'description set',
+        ];
 
         $this->client->setResponses(
             [
-                new Response(
+                new GeneralResponse(
                     success: true,
                     description: 'description set',
                     errorCode: null,
@@ -64,7 +61,7 @@ final class SetDescriptionCommandTest extends AbstractCommandTestCase
         self::assertSame(
             [
                 'Successfully set description for bot.',
-                $raw,
+                json_encode($raw, JSON_THROW_ON_ERROR),
             ],
             $output->getMessages(),
         );
@@ -98,18 +95,15 @@ final class SetDescriptionCommandTest extends AbstractCommandTestCase
      */
     public function testExecuteWithNonExistingLanguage(): void
     {
-        $raw = json_encode(
-            [
-                'ok'          => true,
-                'result'      => true,
-                'description' => 'description set',
-            ],
-            JSON_THROW_ON_ERROR,
-        );
+        $raw = [
+            'ok'          => true,
+            'result'      => true,
+            'description' => 'description set',
+        ];
 
         $this->client->setResponses(
             [
-                new Response(
+                new GeneralResponse(
                     success: true,
                     description: 'description set',
                     errorCode: null,
@@ -149,18 +143,15 @@ final class SetDescriptionCommandTest extends AbstractCommandTestCase
      */
     public function testExecuteWithUnsuccessfulResponse(): void
     {
-        $raw = json_encode(
-            [
-                'ok'          => false,
-                'error_code'  => 400,
-                'description' => 'description not set',
-            ],
-            JSON_THROW_ON_ERROR,
-        );
+        $raw = [
+            'ok'          => false,
+            'error_code'  => 400,
+            'description' => 'description not set',
+        ];
 
         $this->client->setResponses(
             [
-                new Response(
+                new GeneralResponse(
                     success: false,
                     description: 'description not set',
                     errorCode: 400,
@@ -187,7 +178,7 @@ final class SetDescriptionCommandTest extends AbstractCommandTestCase
         self::assertSame(
             [
                 'An error occurred when trying to set description for bot.',
-                $raw,
+                json_encode($raw, JSON_THROW_ON_ERROR),
             ],
             $output->getMessages(),
         );

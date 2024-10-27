@@ -7,6 +7,7 @@ namespace Temkaa\Botifier\DependencyInjection\Command;
 use Temkaa\Botifier\Command\CommandInterface;
 use Temkaa\Botifier\Command\Console;
 use Temkaa\Botifier\Command\Handler\HelpCommand;
+use Temkaa\Botifier\Factory\Message\Content\UnknownContentFactory;
 use Temkaa\Botifier\Factory\Message\ContentFactory;
 use Temkaa\Botifier\Factory\Message\ContentFactoryInterface;
 use Temkaa\Botifier\Model\Bot;
@@ -28,6 +29,7 @@ final readonly class ConfigProvider implements ProviderInterface
         return ConfigBuilder::make()
             ->include(__DIR__.'/../../Command/')
             ->include(__DIR__.'/../../Service/')
+            ->include(__DIR__.'/../../Factory/')
             ->include(__DIR__.'/../../../vendor/guzzlehttp/guzzle/src/Client.php')
             ->include(__DIR__.'/../../../vendor/guzzlehttp/psr7/src/HttpFactory.php')
             ->include(__DIR__.'/../../Serializer/')
@@ -56,7 +58,13 @@ final readonly class ConfigProvider implements ProviderInterface
             )
             ->bindClass(
                 ClassBuilder::make(ContentFactory::class)
-                    ->bindVariable('factories', new InstanceOfIterator(ContentFactoryInterface::class))
+                    ->bindVariable(
+                        'factories',
+                        new InstanceOfIterator(
+                            ContentFactoryInterface::class,
+                            exclude: [UnknownContentFactory::class]
+                        ),
+                    )
                     ->build(),
             )
             ->bindClass(

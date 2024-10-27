@@ -34,12 +34,7 @@ final readonly class WebhookRunner extends AbstractRunner implements RunnerInter
         /** @var Message $message */
         $message = $this->messageProvider->provide();
 
-        if ($handler = $this->getHandler($message)) {
-            $handler->handle($message);
-
-            return;
-        }
-
-        $this->unsupportedHandler->handle($message);
+        $handler = $this->getHandler($message) ?? $this->unsupportedHandler;
+        $handler->handle($message);
     }
 }

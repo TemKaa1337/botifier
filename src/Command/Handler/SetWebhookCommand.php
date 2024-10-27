@@ -59,7 +59,7 @@ final readonly class SetWebhookCommand extends BaseCommand implements CommandInt
                 : 'An error occurred when trying to set webhook for bot.',
         );
 
-        $output->writeln($response->raw());
+        $output->writeln(json_encode($response->raw(), JSON_THROW_ON_ERROR));
 
         return $response->success() ? ExitCode::Success->value : ExitCode::Failure->value;
     }

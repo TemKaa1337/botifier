@@ -26,8 +26,6 @@ final readonly class Output implements OutputInterface
 
     public function writeln(string ...$messages): void
     {
-        foreach ($messages as $message) {
-            fwrite($this->output, $message.PHP_EOL);
-        }
+        $this->write(...array_map(static fn (string $message): string => $message.PHP_EOL, $messages));
     }
 }

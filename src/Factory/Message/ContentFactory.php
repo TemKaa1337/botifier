@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace Temkaa\Botifier\Factory\Message;
 
-use JsonException;
-use Temkaa\Botifier\Exception\NotFoundException;
+use Temkaa\Botifier\Factory\Message\Content\UnknownContentFactory;
 use Temkaa\Botifier\Model\Response\Message\ContentInterface;
 
 /**
@@ -17,13 +16,11 @@ final readonly class ContentFactory
      * @param list<ContentFactoryInterface> $factories
      */
     public function __construct(
+        private UnknownContentFactory $defaultFactory,
         private array $factories,
     ) {
     }
 
-    /**
-     * @throws JsonException
-     */
     public function create(array $message): ContentInterface
     {
         foreach ($this->factories as $factory) {
@@ -32,11 +29,6 @@ final readonly class ContentFactory
             }
         }
 
-        throw new NotFoundException(
-            sprintf(
-                'Could not find content factory for message "%s".',
-                json_encode($message, JSON_THROW_ON_ERROR),
-            ),
-        );
+        return $this->defaultFactory->create($message);
     }
 }

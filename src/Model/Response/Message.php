@@ -12,7 +12,7 @@ use Temkaa\Botifier\Model\Response\Message\User;
 /**
  * @api
  */
-final readonly class Message implements ResultInterface
+final readonly class Message
 {
     /**
      * @SuppressWarnings(PHPMD.ExcessiveParameterList)

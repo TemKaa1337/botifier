@@ -11,8 +11,7 @@ use Temkaa\Botifier\Command\Input;
 use Temkaa\Botifier\Enum\Command\Argument;
 use Temkaa\Botifier\Enum\Command\ExitCode;
 use Temkaa\Botifier\Exception\Command\InvalidCommandArgumentException;
-use Temkaa\Botifier\Model\Response\Response;
-use Temkaa\Botifier\Model\Response\Webhook;
+use Temkaa\Botifier\Model\Response\GetWebhookInfoResponse;
 use Tests\Helper\Service\Command\Output;
 use Tests\Helper\Service\TelegramClient;
 
@@ -27,38 +26,34 @@ final class WebhookInfoCommandTest extends AbstractCommandTestCase
     public function testExecute(): void
     {
         $now = (new DateTimeImmutable())->setTime(hour: 0, minute: 0, microsecond: 0);
-        $raw = json_encode(
-            [
-                'ok'     => true,
-                'result' => [
-                    'url'                    => 'someurl.com',
-                    'has_custom_certificate' => true,
-                    'pending_update_count'   => 0,
-                    'ip_address'             => '192.168.200.6',
-                    'last_error_date'        => $now->getTimestamp(),
-                    'last_error_message'     => 'last_error_message',
-                    'max_connections'        => 20,
-                    'allowed_updates'        => [],
-                ],
+        $raw = [
+            'ok'     => true,
+            'result' => [
+                'url'                    => 'someurl.com',
+                'has_custom_certificate' => true,
+                'pending_update_count'   => 0,
+                'ip_address'             => '192.168.200.6',
+                'last_error_date'        => $now->getTimestamp(),
+                'last_error_message'     => 'last_error_message',
+                'max_connections'        => 20,
+                'allowed_updates'        => [],
             ],
-            JSON_THROW_ON_ERROR,
-        );
+        ];
+
         $this->client->setResponses(
             [
-                new Response(
+                new GetWebhookInfoResponse(
                     success: true,
                     description: null,
                     errorCode: null,
-                    result: new Webhook(
-                        url: 'someurl.com',
-                        hasCustomCertificate: true,
-                        pendingUpdatesCount: 0,
-                        ip: '192.168.200.6',
-                        lastErrorDateTime: $now,
-                        lastErrorMessage: 'last_error_message',
-                        maxConnections: 20,
-                        allowedUpdates: [],
-                    ),
+                    url: 'someurl.com',
+                    hasCustomCertificate: true,
+                    pendingUpdatesCount: 0,
+                    ip: '192.168.200.6',
+                    lastErrorDateTime: $now,
+                    lastErrorMessage: 'last_error_message',
+                    maxConnections: 20,
+                    allowedUpdates: [],
                     raw: $raw,
                 ),
             ],
@@ -79,7 +74,7 @@ final class WebhookInfoCommandTest extends AbstractCommandTestCase
         self::assertSame(
             [
                 'Successfully retrieved webhook info.',
-                $raw,
+                json_encode($raw, JSON_THROW_ON_ERROR),
             ],
             $output->getMessages(),
         );
@@ -115,33 +110,29 @@ final class WebhookInfoCommandTest extends AbstractCommandTestCase
     public function testExecuteWithNotSetWebhook(): void
     {
         $now = (new DateTimeImmutable())->setTime(hour: 0, minute: 0, microsecond: 0);
-        $raw = json_encode(
-            [
-                'ok'     => true,
-                'result' => [
-                    'url'                    => 'someurl.com',
-                    'has_custom_certificate' => true,
-                    'pending_update_count'   => 0,
-                ],
+        $raw = [
+            'ok'     => true,
+            'result' => [
+                'url'                    => 'someurl.com',
+                'has_custom_certificate' => true,
+                'pending_update_count'   => 0,
             ],
-            JSON_THROW_ON_ERROR,
-        );
+        ];
+
         $this->client->setResponses(
             [
-                new Response(
+                new GetWebhookInfoResponse(
                     success: true,
                     description: null,
                     errorCode: null,
-                    result: new Webhook(
-                        url: 'someurl.com',
-                        hasCustomCertificate: true,
-                        pendingUpdatesCount: 0,
-                        ip: null,
-                        lastErrorDateTime: null,
-                        lastErrorMessage: null,
-                        maxConnections: null,
-                        allowedUpdates: null,
-                    ),
+                    url: 'someurl.com',
+                    hasCustomCertificate: true,
+                    pendingUpdatesCount: 0,
+                    ip: null,
+                    lastErrorDateTime: null,
+                    lastErrorMessage: null,
+                    maxConnections: null,
+                    allowedUpdates: null,
                     raw: $raw,
                 ),
             ],
@@ -162,7 +153,7 @@ final class WebhookInfoCommandTest extends AbstractCommandTestCase
         self::assertSame(
             [
                 'Successfully retrieved webhook info.',
-                $raw,
+                json_encode($raw, JSON_THROW_ON_ERROR),
             ],
             $output->getMessages(),
         );
@@ -173,22 +164,26 @@ final class WebhookInfoCommandTest extends AbstractCommandTestCase
      */
     public function testExecuteWithUnsuccessfulResponse(): void
     {
-        $raw = json_encode(
-            [
-                'ok'          => false,
-                'error_code'  => 400,
-                'description' => 'cannot retrieve webhook info',
-            ],
-            JSON_THROW_ON_ERROR,
-        );
+        $raw = [
+            'ok'          => false,
+            'error_code'  => 400,
+            'description' => 'cannot retrieve webhook info',
+        ];
 
         $this->client->setResponses(
             [
-                new Response(
+                new GetWebhookInfoResponse(
                     success: false,
                     description: 'cannot retrieve webhook info',
                     errorCode: 400,
-                    result: null,
+                    url: null,
+                    hasCustomCertificate: null,
+                    pendingUpdatesCount: null,
+                    ip: null,
+                    lastErrorDateTime: null,
+                    lastErrorMessage: null,
+                    maxConnections: null,
+                    allowedUpdates: null,
                     raw: $raw,
                 ),
             ],
@@ -209,7 +204,7 @@ final class WebhookInfoCommandTest extends AbstractCommandTestCase
         self::assertSame(
             [
                 'An error occurred when trying retrieve bot webhook info.',
-                $raw,
+                json_encode($raw, JSON_THROW_ON_ERROR),
             ],
             $output->getMessages(),
         );

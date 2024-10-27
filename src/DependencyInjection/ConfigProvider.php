@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Temkaa\Botifier\DependencyInjection;
 
+use Temkaa\Botifier\Factory\Message\Content\UnknownContentFactory;
 use Temkaa\Botifier\Factory\Message\ContentFactory;
 use Temkaa\Botifier\Factory\Message\ContentFactoryInterface;
 use Temkaa\Botifier\Handler\HandlerInterface;
@@ -31,7 +32,6 @@ final readonly class ConfigProvider implements ProviderInterface
     {
         return ConfigBuilder::make()
             ->include(__DIR__.'/../')
-            ->include(__DIR__.'/../')
             ->exclude(__DIR__.'/../Command/')
             ->exclude(__DIR__.'/Command')
             ->exclude(__DIR__.'/../Enum/')
@@ -52,7 +52,13 @@ final readonly class ConfigProvider implements ProviderInterface
             )
             ->bindClass(
                 ClassBuilder::make(ContentFactory::class)
-                    ->bindVariable('factories', new InstanceOfIterator(ContentFactoryInterface::class))
+                    ->bindVariable(
+                        'factories',
+                        new InstanceOfIterator(
+                            ContentFactoryInterface::class,
+                            exclude: [UnknownContentFactory::class]
+                        ),
+                    )
                     ->build(),
             )
             ->bindClass(

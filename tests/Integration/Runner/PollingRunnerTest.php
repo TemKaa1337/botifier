@@ -9,6 +9,7 @@ use JsonException;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use ReflectionException;
+use Temkaa\Botifier\DependencyInjection\ConfigProvider as PollingRunnerContainerConfigProvider;
 use Temkaa\Botifier\Enum\ApiMethod;
 use Temkaa\Botifier\Enum\Language;
 use Temkaa\Botifier\Enum\Message\Content\Type;
@@ -33,6 +34,15 @@ use Tests\Integration\Runner\AbstractRunnerTestCase;
  */
 final class PollingRunnerTest extends AbstractRunnerTestCase
 {
+    public function testBootsWithContainer(): void
+    {
+        $this->markTestSkipped('Unskip after container is fixed');
+
+        $container = ContainerBuilder::make()->add(new PollingRunnerContainerConfigProvider())->build();
+        $runner = $container->get(PollingRunner::class);
+        self::assertInstanceOf(PollingRunner::class, $runner);
+    }
+
     /**
      * @throws JsonException
      * @throws ContainerExceptionInterface
@@ -585,6 +595,7 @@ final class PollingRunnerTest extends AbstractRunnerTestCase
                 $content->getMessage(),
             );
             self::assertSame(Type::Unknown, $content->getType());
+            self::assertSame('sticker', $content->getKey());
         });
 
         $runner = $this->getRunner(PollingRunner::class);

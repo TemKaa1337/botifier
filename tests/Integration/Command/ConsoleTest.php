@@ -6,7 +6,12 @@ namespace Command;
 
 use PHPUnit\Framework\TestCase;
 use Temkaa\Botifier\Command\Console;
+use Temkaa\Botifier\Command\Handler\HelpCommand;
+use Temkaa\Botifier\Command\Handler\SetDescriptionCommand;
+use Temkaa\Botifier\DependencyInjection\Command\ConfigProvider;
 use Temkaa\Botifier\Enum\Command\ExitCode;
+use Temkaa\Container\Builder\ContainerBuilder;
+use Tests\Helper\Service\TelegramClient;
 use Tests\Helper\StreamInterceptor;
 
 final class ConsoleTest extends TestCase
@@ -18,6 +23,36 @@ final class ConsoleTest extends TestCase
         /** @psalm-suppress UnusedFunctionCall */
         stream_filter_register(StreamInterceptor::getFilterName(), StreamInterceptor::class);
         stream_filter_append(STDOUT, StreamInterceptor::getFilterName());
+    }
+
+    public function testCommandContainerBoots(): void
+    {
+        $container = ContainerBuilder::make()->add(new ConfigProvider())->build();
+        self::assertNotNull($container);
+    }
+
+    public function testExecuteTestCommand(): void
+    {
+        $setSubscriptionCommand = new SetDescriptionCommand(new TelegramClient());
+        $console = new Console([new HelpCommand([$setSubscriptionCommand]), $setSubscriptionCommand]);
+        $exitCode = $console->execute(['bin/botifier help']);
+
+        self::assertSame(ExitCode::Success->value, $exitCode);
+        self::assertSame(
+            implode(
+                PHP_EOL,
+                [
+                    'description:set',
+                    '  Description: This command allows you to set a description for your bot.',
+                    '  Arguments:',
+                    '    --token (required):        A token for your bot.',
+                    '    --description (required):  A specified description for your bot.',
+                    '    --language (required):     A specified language for provided description.',
+                    '',
+                ],
+            ),
+            StreamInterceptor::getBuffer(),
+        );
     }
 
     public function testExecuteWithNonExistingCommand(): void
@@ -41,7 +76,8 @@ final class ConsoleTest extends TestCase
 
     public function testExecuteWithoutArguments(): void
     {
-        $console = new Console([]);
+        $setSubscriptionCommand = new SetDescriptionCommand(new TelegramClient());
+        $console = new Console([new HelpCommand([$setSubscriptionCommand]), $setSubscriptionCommand]);
         $exitCode = $console->execute(['bin/botifier']);
 
         self::assertSame(ExitCode::Success->value, $exitCode);
@@ -49,8 +85,12 @@ final class ConsoleTest extends TestCase
             implode(
                 PHP_EOL,
                 [
-                    'This script can execute a few useful commands!',
-                    'Fell free to check the list of allowed commands by using "bin/console help" command!',
+                    'description:set',
+                    '  Description: This command allows you to set a description for your bot.',
+                    '  Arguments:',
+                    '    --token (required):        A token for your bot.',
+                    '    --description (required):  A specified description for your bot.',
+                    '    --language (required):     A specified language for provided description.',
                     '',
                 ],
             ),
