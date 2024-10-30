@@ -5,6 +5,12 @@
 	<br>
 </h1>
 
+Currently, there are no any docs or examples provided, here is minimal description which is enough to try it:
+Usage:
+```php
+
+
+```
 ##### TODOS:
 - add non autowirable signatures to classes
 - add validator package?

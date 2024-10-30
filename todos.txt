@@ -1,9 +1,14 @@
-1. base implementation
-1.1 add tests
-2. remove phpbench? or determine what do we want to benchmark (also remove from config, gitattributes etc)
-3. add docs
-4. add examples
-5. update readme
-6. add sensitive parameter on token
-7. add cli command to set/unset webhook
-8. add everywhere where possible logger interface
+1. test base functionality in real world with test project
+2. if 1 item does not work, fix it
+3. fix in container if env variable is missing from attribute but property has default value, then do not fail
+4. add reply option to bot
+5. add keyboards to bot
+6. uncomment tag publishing (set up branch protection and etc)
+7. update changelog
+8. start fixing todos in code/github issues
+9. add docs
+10. add examples
+11. set readme
+12. fix infection errors
+13. fix psalm errors
+14. fix coverage numbers to 100%
