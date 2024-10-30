@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Temkaa\Botifier\DependencyInjection;
 
+use ReflectionClass;
 use Temkaa\Botifier\Factory\Message\Content\UnknownContentFactory;
 use Temkaa\Botifier\Factory\Message\ContentFactory;
 use Temkaa\Botifier\Factory\Message\ContentFactoryInterface;
@@ -19,6 +20,7 @@ use Temkaa\Container\Builder\Config\ClassBuilder;
 use Temkaa\Container\Builder\ConfigBuilder;
 use Temkaa\Container\Model\Config;
 use Temkaa\Container\Provider\Config\ProviderInterface;
+use Temkaa\Signal\SignalManager;
 use Temkaa\Signal\SignalSubscriberInterface;
 
 /**
@@ -39,7 +41,7 @@ final readonly class ConfigProvider implements ProviderInterface
             ->exclude(__DIR__.'/../Model/Request')
             ->exclude(__DIR__.'/../Model/Response')
             ->exclude(__DIR__.'/../Model/File.php')
-            ->include(__DIR__.'/../../vendor/temkaa/signal/src/SignalManager.php')
+            ->include((new ReflectionClass(SignalManager::class))->getFileName())
             ->bindClass(
                 ClassBuilder::make(Bot::class)
                     ->bindVariable('token', 'env(BOT_TOKEN)')

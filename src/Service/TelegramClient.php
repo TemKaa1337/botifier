@@ -19,7 +19,7 @@ use Temkaa\Botifier\Serializer\SerializerInterface;
  */
 final readonly class TelegramClient implements TelegramClientInterface
 {
-    private const string BASE_URL = 'https://api.telegram.org/bot';
+    private const string BASE_URL = 'https://api.telegram.org';
 
     public function __construct(
         private ClientInterface $httpClient,

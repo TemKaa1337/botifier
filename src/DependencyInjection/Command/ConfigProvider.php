@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Temkaa\Botifier\DependencyInjection\Command;
 
+use GuzzleHttp\Client;
+use GuzzleHttp\Psr7\HttpFactory;
+use ReflectionClass;
 use Temkaa\Botifier\Command\CommandInterface;
 use Temkaa\Botifier\Command\Console;
 use Temkaa\Botifier\Command\Handler\HelpCommand;
@@ -30,8 +33,8 @@ final readonly class ConfigProvider implements ProviderInterface
             ->include(__DIR__.'/../../Command/')
             ->include(__DIR__.'/../../Service/')
             ->include(__DIR__.'/../../Factory/')
-            ->include(__DIR__.'/../../../vendor/guzzlehttp/guzzle/src/Client.php')
-            ->include(__DIR__.'/../../../vendor/guzzlehttp/psr7/src/HttpFactory.php')
+            ->include((new ReflectionClass(Client::class))->getFileName())
+            ->include((new ReflectionClass(HttpFactory::class))->getFileName())
             ->include(__DIR__.'/../../Serializer/')
             ->exclude(__DIR__.'/../../Command/Input.php')
             ->exclude(__DIR__.'/../../Command/Output.php')
