@@ -1,6 +1,6 @@
-1. test base functionality in real world with test project
-2. if 1 item does not work, fix it
-3. fix in container if env variable is missing from attribute but property has default value, then do not fail
+1. fix in container if env variable is missing from attribute but property has default value, then do not fail
+2. test base functionality in real world with test project (webhook info, webhook set/unset, description etc - all the commands)
+3. if 2 item does not work, fix it
 4. add reply option to bot
 5. add keyboards to bot
 6. uncomment tag publishing (set up branch protection and etc) (set minimal readme)

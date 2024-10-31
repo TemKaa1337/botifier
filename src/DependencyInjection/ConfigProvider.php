@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Temkaa\Botifier\DependencyInjection;
 
+use GuzzleHttp\Client;
+use GuzzleHttp\Psr7\HttpFactory;
 use ReflectionClass;
 use Temkaa\Botifier\Factory\Message\Content\UnknownContentFactory;
 use Temkaa\Botifier\Factory\Message\ContentFactory;
@@ -38,6 +40,8 @@ final readonly class ConfigProvider implements ProviderInterface
             ->exclude(__DIR__.'/Command')
             ->exclude(__DIR__.'/../Enum/')
             ->exclude(__DIR__.'/../Exception/')
+            ->include((new ReflectionClass(Client::class))->getFileName())
+            ->include((new ReflectionClass(HttpFactory::class))->getFileName())
             ->exclude(__DIR__.'/../Model/Request')
             ->exclude(__DIR__.'/../Model/Response')
             ->exclude(__DIR__.'/../Model/File.php')
