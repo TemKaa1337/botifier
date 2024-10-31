@@ -32,7 +32,7 @@ final readonly class PollingRunner extends AbstractRunner implements RunnerInter
         array $handlers,
         private SignalSubscriberInterface $signalSubscriber,
         private UnsupportedHandlerInterface $unsupportedHandler,
-        private float $pollingInterval = 5,
+        private float $pollingInterval = 3,
     ) {
         parent::__construct($handlers);
     }
