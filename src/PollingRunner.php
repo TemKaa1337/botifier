@@ -18,6 +18,9 @@ use Temkaa\Botifier\Subscriber\SignalSubscriberInterface;
  */
 final readonly class PollingRunner extends AbstractRunner implements RunnerInterface
 {
+    private const int LIMIT = 10;
+    private const int START_OFFSET = 0;
+
     /**
      * @param Bot                         $bot
      * @param TelegramClientInterface     $client
@@ -40,13 +43,16 @@ final readonly class PollingRunner extends AbstractRunner implements RunnerInter
     public function run(): void
     {
         while (!$this->signalSubscriber->terminate()) {
-            $updates = $this->client->send(new GetUpdatesRequest(), $this->bot);
+            $latestOffset ??= self::START_OFFSET;
+            $updates = $this->client->send(new GetUpdatesRequest(self::LIMIT, $latestOffset), $this->bot);
 
             /** @var Message[] $messages */
             $messages = $updates->getResult();
             foreach ($messages as $message) {
                 $handler = $this->getHandler($message) ?? $this->unsupportedHandler;
                 $handler->handle($message);
+
+                $latestOffset = (int) $message->getUpdateId() + 1;
             }
 
             usleep((int) $this->pollingInterval * 1_000_000);

@@ -17,12 +17,8 @@ final readonly class GetUpdatesSerializer implements SerializerInterface
 
     public function deserialize(array $message): ResponseInterface
     {
-        $result = $message['result'] ?? [];
-        $result = match (true) {
-            $result === []    => null,
-            is_array($result) => $this->messageSerializer->deserialize($result),
-            default           => $result,
-        };
+        $result = $message['result'] ?? null;
+        $result = is_array($result) ? $this->messageSerializer->deserialize($result) : $result;
 
         return new GetUpdatesResponse(
             $message['ok'],

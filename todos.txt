@@ -1,14 +1,17 @@
-1. fix in container if env variable is missing from attribute but property has default value, then do not fail
++ 1. fix in container if env variable is missing from attribute but property has default value, then do not fail
 2. test base functionality in real world with test project (webhook info, webhook set/unset, description etc - all the commands)
 3. if 2 item does not work, fix it
-4. add reply option to bot
-5. add keyboards to bot
-6. uncomment tag publishing (set up branch protection and etc) (set minimal readme)
-7. update changelog
-8. start fixing todos in code/github issues
-9. add docs
-10. add examples
-11. set readme
-12. fix infection errors
-13. fix psalm errors
-14. fix coverage numbers to 100%
+4. add option to set `allowed_updates` parameter for getUpdates, as well as limit, offset and timeout
+5. add option to set `allowed_updates` for webhook (if this option event exist)
+
+6. add reply option to bot
+7. add keyboards to bot
+8. uncomment tag publishing (set up branch protection and etc) (set minimal readme)
+9. update changelog
+10. start fixing todos in code/github issues
+11. add docs
+12. add examples
+13. set readme
+14. fix infection errors
+15. fix psalm errors
+16. fix coverage numbers to 100%
