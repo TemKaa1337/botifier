@@ -46,6 +46,10 @@ final readonly class PollingRunner extends AbstractRunner implements RunnerInter
             $latestOffset ??= self::START_OFFSET;
             $updates = $this->client->send(new GetUpdatesRequest(self::LIMIT, $latestOffset), $this->bot);
 
+            if (!$updates->success()) {
+                // TODO: throw exception
+            }
+
             /** @var Message[] $messages */
             $messages = $updates->getResult();
             foreach ($messages as $message) {
