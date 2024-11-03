@@ -30,6 +30,11 @@ final readonly class TelegramClient implements TelegramClientInterface
     }
 
     /**
+     * @template TResponse of ResponseInterface
+     * @param RequestInterface<TResponse> $request
+     *
+     * @return TResponse
+     *
      * @throws ClientExceptionInterface
      * @throws JsonException
      */
@@ -44,7 +49,7 @@ final readonly class TelegramClient implements TelegramClientInterface
         $url = sprintf('%s/bot%s/%s', self::BASE_URL, $bot->getToken(), $request->getApiMethod()->value);
 
         $body = $this->httpStreamFactory->createStream(
-            json_encode($request->getParameters(), JSON_THROW_ON_ERROR)
+            json_encode($request->getParameters(), JSON_THROW_ON_ERROR),
         );
 
         // TODO: handle files here

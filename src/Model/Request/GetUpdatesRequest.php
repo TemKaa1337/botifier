@@ -15,6 +15,12 @@ use Temkaa\Botifier\Model\Response\GetUpdatesResponse;
  */
 final readonly class GetUpdatesRequest implements RequestInterface
 {
+    public function __construct(
+        private int $limit,
+        private int $offset,
+    ) {
+    }
+
     public function getApiMethod(): ApiMethod
     {
         return ApiMethod::GetUpdates;
@@ -27,6 +33,6 @@ final readonly class GetUpdatesRequest implements RequestInterface
 
     public function getParameters(): array
     {
-        return [];
+        return ['limit' => $this->limit, 'offset' => $this->offset];
     }
 }
