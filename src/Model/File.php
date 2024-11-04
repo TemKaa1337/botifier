@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Temkaa\Botifier\Model;
 
-use SplFileInfo;
+use InvalidArgumentException;
 use Temkaa\Botifier\Exception\NotFoundException;
 
 /**
@@ -12,38 +12,48 @@ use Temkaa\Botifier\Exception\NotFoundException;
  */
 final readonly class File
 {
-    public static function fromContent(string $content): self
+    public static function fromContent(string $content, ?string $fileName = null): self
     {
-        return new self(content: $content);
+        return new self(content: $content, fileName: $fileName);
     }
 
-    public static function fromFile(string $path): self
+    public static function fromFile(string $path, ?string $fileName = null): self
     {
         if (!file_exists($path)) {
             throw new NotFoundException(sprintf('Could not find file at path: "%s".', $path));
         }
 
-        return new self(path: $path);
+        return new self(path: $path, fileName: $fileName);
     }
 
-    /** @noinspection PhpMixedReturnTypeCanBeReducedInspection */
+    /**
+     * @noinspection PhpMixedReturnTypeCanBeReducedInspection
+     *
+     * @return string|resource
+     */
     public function getContent(): mixed
     {
-        return $this->path !== null ? fopen($this->path, 'rb') : $this->content;
+        if ($this->content !== null) {
+            return $this->content;
+        }
+
+        $resource = fopen($this->path, 'rb');
+        if ($resource === false) {
+            throw new InvalidArgumentException(sprintf('Could not open file: "%s".', $this->path));
+        }
+
+        return $resource;
     }
 
     public function getFileName(): ?string
     {
-        if ($this->path === null) {
-            return null;
-        }
-
-        return (new SplFileInfo($this->path))->getFilename();
+        return $this->fileName;
     }
 
     private function __construct(
         private ?string $path = null,
         private ?string $content = null,
+        private ?string $fileName = null,
     ) {
     }
 }

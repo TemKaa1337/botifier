@@ -13,6 +13,7 @@ enum ApiMethod: string
     case DeleteWebhook = 'deleteWebhook';
     case GetUpdates = 'getUpdates';
     case GetWebhookInfo = 'getWebhookInfo';
+    case SendDocument = 'sendDocument';
     case SendMessage = 'sendMessage';
     case SetDescription = 'setMyDescription';
     case SetWebhook = 'setWebhook';

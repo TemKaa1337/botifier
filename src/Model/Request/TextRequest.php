@@ -11,6 +11,7 @@ use Temkaa\Botifier\Model\Response\SendMessageResponse;
 
 /**
  * @api
+ *
  * @implements RequestInterface<SendMessageResponse>
  */
 final readonly class TextRequest implements RequestInterface
