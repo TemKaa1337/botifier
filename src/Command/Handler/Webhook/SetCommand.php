@@ -2,26 +2,25 @@
 
 declare(strict_types=1);
 
-namespace Temkaa\Botifier\Command\Handler;
+namespace Temkaa\Botifier\Command\Handler\Webhook;
 
-use Guzzle\Stream\Stream;
 use JsonException;
 use SplFileInfo;
 use Temkaa\Botifier\Command\CommandInterface;
+use Temkaa\Botifier\Command\Handler\BaseCommand;
 use Temkaa\Botifier\Command\InputInterface;
 use Temkaa\Botifier\Command\OutputInterface;
 use Temkaa\Botifier\Enum\Command\Argument;
 use Temkaa\Botifier\Enum\Command\ExitCode;
 use Temkaa\Botifier\Exception\Command\InvalidCommandArgumentException;
-use Temkaa\Botifier\Model\Bot;
 use Temkaa\Botifier\Model\File;
-use Temkaa\Botifier\Model\Request\SetWebhookRequest;
+use Temkaa\Botifier\Model\Request\Webhook\SetRequest;
 use Temkaa\Botifier\Service\TelegramClientInterface;
 
 /**
  * @internal
  */
-final readonly class SetWebhookCommand extends BaseCommand implements CommandInterface
+final readonly class SetCommand extends BaseCommand implements CommandInterface
 {
     private const array ARGUMENTS = [
         Argument::Token->value           => ['optional' => false, 'description' => 'A token for your bot.'],
@@ -49,8 +48,7 @@ final readonly class SetWebhookCommand extends BaseCommand implements CommandInt
         $certificate = $this->getCertificate($input);
 
         $response = $this->client->send(
-            new SetWebhookRequest($input->getArgument(Argument::Url), $certificate),
-            new Bot($input->getArgument(Argument::Token)),
+            new SetRequest($input->getArgument(Argument::Url), $certificate),
         );
 
         $output->writeln(
@@ -101,6 +99,6 @@ final readonly class SetWebhookCommand extends BaseCommand implements CommandInt
             );
         }
 
-        return File::from($file->getRealPath());
+        return File::fromFile($file->getRealPath());
     }
 }

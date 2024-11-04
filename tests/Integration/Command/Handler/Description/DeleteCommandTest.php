@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Tests\Integration\Command\Handler;
+namespace Command\Handler\Description;
 
 use JsonException;
-use Temkaa\Botifier\Command\Handler\UnsetDescriptionCommand;
+use Temkaa\Botifier\Command\Handler\Description\DeleteCommand;
 use Temkaa\Botifier\Command\Input;
 use Temkaa\Botifier\Enum\Command\Argument;
 use Temkaa\Botifier\Enum\Command\ExitCode;
@@ -14,8 +14,9 @@ use Temkaa\Botifier\Exception\Command\InvalidCommandArgumentException;
 use Temkaa\Botifier\Model\Response\GeneralResponse;
 use Tests\Helper\Service\Command\Output;
 use Tests\Helper\Service\TelegramClient;
+use Tests\Integration\Command\Handler\AbstractCommandTestCase;
 
-final class UnsetDescriptionCommandTest extends AbstractCommandTestCase
+final class DeleteCommandTest extends AbstractCommandTestCase
 {
     /** @psalm-suppress PropertyNotSetInConstructor */
     private TelegramClient $client;
@@ -43,7 +44,7 @@ final class UnsetDescriptionCommandTest extends AbstractCommandTestCase
             ],
         );
 
-        $command = new UnsetDescriptionCommand($this->client);
+        $command = new DeleteCommand($this->client);
 
         $input = new Input(
             [
@@ -69,7 +70,7 @@ final class UnsetDescriptionCommandTest extends AbstractCommandTestCase
      */
     public function testExecuteWithInvalidArguments(): void
     {
-        $command = new UnsetDescriptionCommand($this->client);
+        $command = new DeleteCommand($this->client);
 
         $input = new Input(['bin/botifier']);
         $output = new Output();
@@ -92,7 +93,7 @@ final class UnsetDescriptionCommandTest extends AbstractCommandTestCase
      */
     public function testExecuteWithNonExistingLanguage(): void
     {
-        $command = new UnsetDescriptionCommand($this->client);
+        $command = new DeleteCommand($this->client);
 
         $input = new Input(
             [
@@ -136,7 +137,7 @@ final class UnsetDescriptionCommandTest extends AbstractCommandTestCase
             ],
         );
 
-        $command = new UnsetDescriptionCommand($this->client);
+        $command = new DeleteCommand($this->client);
 
         $input = new Input(
             [

@@ -2,27 +2,27 @@
 
 declare(strict_types=1);
 
-namespace Temkaa\Botifier\Model\Request;
+namespace Temkaa\Botifier\Model\Request\Webhook;
 
 use Temkaa\Botifier\Enum\ApiMethod;
 use Temkaa\Botifier\Enum\HttpMethod;
 use Temkaa\Botifier\Model\RequestInterface;
-use Temkaa\Botifier\Model\Response\GeneralResponse;
+use Temkaa\Botifier\Model\Response\GetWebhookInfoResponse;
 
 /**
  * @api
- * @implements RequestInterface<GeneralResponse>
+ * @implements RequestInterface<GetWebhookInfoResponse>
  */
-final readonly class DeleteWebhookRequest implements RequestInterface
+final readonly class GetInfoRequest implements RequestInterface
 {
     public function getApiMethod(): ApiMethod
     {
-        return ApiMethod::DeleteWebhook;
+        return ApiMethod::GetWebhookInfo;
     }
 
     public function getHttpMethod(): HttpMethod
     {
-        return HttpMethod::Post;
+        return HttpMethod::Get;
     }
 
     public function getParameters(): array

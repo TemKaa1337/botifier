@@ -9,12 +9,12 @@ use Temkaa\Botifier\Factory\Message\ContentFactoryInterface;
 use Temkaa\Botifier\Model\Response\Message\Content\UnknownContent;
 use Temkaa\Botifier\Model\Response\Message\ContentInterface;
 
-// TODO: create a better solution for reserved keys
 /**
  * @internal
  */
 final readonly class UnknownContentFactory implements ContentFactoryInterface
 {
+    // TODO: create a better solution for reserved keys
     private const array RESERVED_KEYS = ['message_id', 'from', 'chat', 'date', 'text'];
 
     public function create(array $message): ContentInterface

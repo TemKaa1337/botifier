@@ -49,7 +49,7 @@ final readonly class MessageFactory
             $isEdit,
             $isReply,
             $isReply ? $this->create($messageContent['reply_to_message']) : null,
-            json_encode($message, JSON_THROW_ON_ERROR)
+            json_encode($message, JSON_THROW_ON_ERROR),
         );
     }
 }

@@ -24,7 +24,7 @@ final readonly class GeneralSerializer implements SerializerInterface
             $message['description'] ?? null,
             $message['error_code'] ?? null,
             $message['result'] ?? null,
-            raw: $message
+            raw: $message,
         );
     }
 

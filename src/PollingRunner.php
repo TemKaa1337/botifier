@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace Temkaa\Botifier;
 
-// TODO: add builder?
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
+use Temkaa\Botifier\Exception\FailedTelegramRequestException;
 use Temkaa\Botifier\Handler\HandlerInterface;
 use Temkaa\Botifier\Handler\UnsupportedHandlerInterface;
-use Temkaa\Botifier\Model\Bot;
 use Temkaa\Botifier\Model\Request\GetUpdatesRequest;
 use Temkaa\Botifier\Model\Response\Message;
 use Temkaa\Botifier\Service\TelegramClientInterface;
@@ -22,19 +23,19 @@ final readonly class PollingRunner extends AbstractRunner implements RunnerInter
     private const int START_OFFSET = 0;
 
     /**
-     * @param Bot                         $bot
      * @param TelegramClientInterface     $client
      * @param HandlerInterface[]          $handlers
-     * @param float                       $pollingInterval
      * @param SignalSubscriberInterface   $signalSubscriber
      * @param UnsupportedHandlerInterface $unsupportedHandler
+     * @param LoggerInterface             $logger
+     * @param float                       $pollingInterval
      */
     public function __construct(
-        private Bot $bot,
         private TelegramClientInterface $client,
         array $handlers,
         private SignalSubscriberInterface $signalSubscriber,
         private UnsupportedHandlerInterface $unsupportedHandler,
+        private LoggerInterface $logger = new NullLogger(),
         private float $pollingInterval = 3,
     ) {
         parent::__construct($handlers);
@@ -44,14 +45,15 @@ final readonly class PollingRunner extends AbstractRunner implements RunnerInter
     {
         while (!$this->signalSubscriber->terminate()) {
             $latestOffset ??= self::START_OFFSET;
-            $updates = $this->client->send(new GetUpdatesRequest(self::LIMIT, $latestOffset), $this->bot);
+            $response = $this->client->send(new GetUpdatesRequest(self::LIMIT, $latestOffset));
 
-            if (!$updates->success()) {
-                // TODO: throw exception
+            if (!$response->success()) {
+                // TODO: add some king of exit handler for user
+                throw new FailedTelegramRequestException('Got unsuccessful telegram response.', $response);
             }
 
             /** @var Message[] $messages */
-            $messages = $updates->getResult();
+            $messages = $response->getResult();
             foreach ($messages as $message) {
                 $handler = $this->getHandler($message) ?? $this->unsupportedHandler;
                 $handler->handle($message);
@@ -61,6 +63,7 @@ final readonly class PollingRunner extends AbstractRunner implements RunnerInter
 
             usleep((int) $this->pollingInterval * 1_000_000);
         }
-        // TODO: add log here
+
+        $this->logger->info('Exiting from PollingRunner.');
     }
 }

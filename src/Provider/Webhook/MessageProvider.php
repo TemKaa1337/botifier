@@ -6,7 +6,6 @@ namespace Temkaa\Botifier\Provider\Webhook;
 
 use JsonException;
 use Temkaa\Botifier\Model\Response\Message;
-use Temkaa\Botifier\Model\Response\ResultInterface;
 use Temkaa\Botifier\Serializer\Action\MessageSerializer;
 
 /**

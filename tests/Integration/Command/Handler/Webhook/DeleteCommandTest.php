@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Tests\Integration\Command\Handler;
+namespace Command\Handler\Webhook;
 
 use JsonException;
-use Temkaa\Botifier\Command\Handler\UnsetWebhookCommand;
+use Temkaa\Botifier\Command\Handler\Webhook\DeleteCommand;
 use Temkaa\Botifier\Command\Input;
 use Temkaa\Botifier\Enum\Command\Argument;
 use Temkaa\Botifier\Enum\Command\ExitCode;
@@ -13,8 +13,9 @@ use Temkaa\Botifier\Exception\Command\InvalidCommandArgumentException;
 use Temkaa\Botifier\Model\Response\GeneralResponse;
 use Tests\Helper\Service\Command\Output;
 use Tests\Helper\Service\TelegramClient;
+use Tests\Integration\Command\Handler\AbstractCommandTestCase;
 
-final class UnsetWebhookCommandTest extends AbstractCommandTestCase
+final class DeleteCommandTest extends AbstractCommandTestCase
 {
     /** @psalm-suppress PropertyNotSetInConstructor */
     private TelegramClient $client;
@@ -42,7 +43,7 @@ final class UnsetWebhookCommandTest extends AbstractCommandTestCase
             ],
         );
 
-        $command = new UnsetWebhookCommand($this->client);
+        $command = new DeleteCommand($this->client);
 
         $input = new Input(
             [
@@ -68,7 +69,7 @@ final class UnsetWebhookCommandTest extends AbstractCommandTestCase
      */
     public function testExecuteWithInvalidArguments(): void
     {
-        $command = new UnsetWebhookCommand($this->client);
+        $command = new DeleteCommand($this->client);
 
         $input = new Input(['bin/botifier']);
         $output = new Output();
@@ -109,7 +110,7 @@ final class UnsetWebhookCommandTest extends AbstractCommandTestCase
             ],
         );
 
-        $command = new UnsetWebhookCommand($this->client);
+        $command = new DeleteCommand($this->client);
 
         $input = new Input(
             [

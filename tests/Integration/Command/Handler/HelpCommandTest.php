@@ -6,11 +6,9 @@ namespace Command\Handler;
 
 use PHPUnit\Framework\TestCase;
 use Temkaa\Botifier\Command\Handler\HelpCommand;
-use Temkaa\Botifier\Command\Handler\SetDescriptionCommand;
-use Temkaa\Botifier\Command\Handler\SetWebhookCommand;
-use Temkaa\Botifier\Command\Handler\UnsetDescriptionCommand;
-use Temkaa\Botifier\Command\Handler\UnsetWebhookCommand;
-use Temkaa\Botifier\Command\Handler\WebhookInfoCommand;
+use Temkaa\Botifier\Command\Handler\Webhook\DeleteCommand;
+use Temkaa\Botifier\Command\Handler\Webhook\InfoCommand;
+use Temkaa\Botifier\Command\Handler\Webhook\SetCommand;
 use Temkaa\Botifier\Command\Input;
 use Temkaa\Botifier\Enum\Command\ExitCode;
 use Tests\Helper\Service\Command\Output;
@@ -22,11 +20,11 @@ final class HelpCommandTest extends TestCase
     {
         $client = new TelegramClient();
         $command = new HelpCommand([
-            new SetDescriptionCommand($client),
-            new SetWebhookCommand($client),
-            new UnsetDescriptionCommand($client),
-            new UnsetWebhookCommand($client),
-            new WebhookInfoCommand($client),
+            new \Temkaa\Botifier\Command\Handler\Description\SetCommand($client),
+            new SetCommand($client),
+            new \Temkaa\Botifier\Command\Handler\Description\DeleteCommand($client),
+            new DeleteCommand($client),
+            new InfoCommand($client),
         ]);
 
         $input = new Input(['bin/botifier', 'help']);
@@ -48,12 +46,12 @@ final class HelpCommandTest extends TestCase
                 '    --token (required):             A token for your bot.',
                 '    --url (required):               A webhook url.',
                 '    --certificate_path (optional):  A path to certificate if you want to use self-signed certificate.',
-                'description:unset',
+                'description:delete',
                 '  Description: This command allows you to delete a description from your bot.',
                 '  Arguments:',
                 '    --token (required):     A token for your bot.',
                 '    --language (optional):  A language for which you want to delete description.',
-                'webhook:unset',
+                'webhook:delete',
                 '  Description: This command allows you to delete webhook from your bot.',
                 '  Arguments:',
                 '    --token (required):  A token for your bot.',
@@ -64,9 +62,9 @@ final class HelpCommandTest extends TestCase
             ],
             array_merge(
                 ...array_map(
-                    static fn (string $message): array => explode(PHP_EOL, $message),
-                    $output->getMessages(),
-                ),
+                static fn (string $message): array => explode(PHP_EOL, $message),
+                $output->getMessages(),
+            ),
             ),
         );
     }

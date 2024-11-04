@@ -34,7 +34,7 @@ final readonly class GetWebhookInfoSerializer implements SerializerInterface
             $result['last_error_message'] ?? null,
             $result['max_connections'] ?? null,
             $result['allowed_updates'] ?? null,
-            raw: $message
+            raw: $message,
         );
     }
 

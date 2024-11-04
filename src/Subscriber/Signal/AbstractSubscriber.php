@@ -33,7 +33,7 @@ abstract class AbstractSubscriber implements SubscriberInterface
 
         $this->logger->warning(
             sprintf(
-                'Received signal with "%s" signature.',
+                'Received "%s" signal.',
                 self::SIGNAL_SIGNATURE_MAP[$subscribedSignal] ?? $subscribedSignal,
             ),
         );

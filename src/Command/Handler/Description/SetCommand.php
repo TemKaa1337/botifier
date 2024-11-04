@@ -2,36 +2,34 @@
 
 declare(strict_types=1);
 
-namespace Temkaa\Botifier\Command\Handler;
+namespace Temkaa\Botifier\Command\Handler\Description;
 
 use JsonException;
 use Temkaa\Botifier\Command\CommandInterface;
+use Temkaa\Botifier\Command\Handler\BaseCommand;
 use Temkaa\Botifier\Command\InputInterface;
 use Temkaa\Botifier\Command\OutputInterface;
 use Temkaa\Botifier\Enum\Command\Argument;
 use Temkaa\Botifier\Enum\Command\ExitCode;
 use Temkaa\Botifier\Enum\Language;
-use Temkaa\Botifier\Model\Bot;
-use Temkaa\Botifier\Model\Request\DeleteDescriptionRequest;
+use Temkaa\Botifier\Model\Request\Description\SetRequest;
 use Temkaa\Botifier\Service\TelegramClientInterface;
-
-// TODO: somehow move same methods somewhere?
-// TODO: rename unset everywhere to delete
 
 /**
  * @internal
  */
-final readonly class UnsetDescriptionCommand extends BaseCommand implements CommandInterface
+final readonly class SetCommand extends BaseCommand implements CommandInterface
 {
     private const array ARGUMENTS = [
-        Argument::Token->value    => ['optional' => false, 'description' => 'A token for your bot.'],
-        Argument::Language->value => [
-            'optional'    => true,
-            'description' => 'A language for which you want to delete description.',
+        Argument::Token->value       => ['optional' => false, 'description' => 'A token for your bot.'],
+        Argument::Description->value => ['optional' => false, 'description' => 'A specified description for your bot.'],
+        Argument::Language->value    => [
+            'optional'    => false,
+            'description' => 'A specified language for provided description.',
         ],
     ];
-    private const string DESCRIPTION = 'This command allows you to delete a description from your bot.';
-    private const string SIGNATURE = 'description:unset';
+    private const string DESCRIPTION = 'This command allows you to set a description for your bot.';
+    private const string SIGNATURE = 'description:set';
 
     public function __construct(
         private TelegramClientInterface $client,
@@ -45,10 +43,7 @@ final readonly class UnsetDescriptionCommand extends BaseCommand implements Comm
     {
         $this->validateArguments($input, self::ARGUMENTS, self::SIGNATURE);
 
-        if (
-            $input->hasArgument(Argument::Language)
-            && !$language = Language::tryFrom($input->getArgument(Argument::Language))
-        ) {
+        if (!$language = Language::tryFrom($input->getArgument(Argument::Language))) {
             $output->writeln(
                 sprintf(
                     'Could not convert language "%s" to enum "%s".',
@@ -61,14 +56,16 @@ final readonly class UnsetDescriptionCommand extends BaseCommand implements Comm
         }
 
         $response = $this->client->send(
-            new DeleteDescriptionRequest($language ?? null),
-            new Bot($input->getArgument(Argument::Token)),
+            new SetRequest(
+                $input->getArgument(Argument::Description),
+                $language,
+            ),
         );
 
         $output->writeln(
             $response->success()
-                ? 'Successfully deleted description for bot.'
-                : 'An error occurred when trying to delete description from bot.',
+                ? 'Successfully set description for bot.'
+                : 'An error occurred when trying to set description for bot.',
         );
 
         $output->writeln(json_encode($response->raw(), JSON_THROW_ON_ERROR));

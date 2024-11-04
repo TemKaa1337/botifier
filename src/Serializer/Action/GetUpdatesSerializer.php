@@ -25,7 +25,7 @@ final readonly class GetUpdatesSerializer implements SerializerInterface
             $message['description'] ?? null,
             $message['error_code'] ?? null,
             $result,
-            raw: $message
+            raw: $message,
         );
     }
 

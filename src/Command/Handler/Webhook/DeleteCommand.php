@@ -2,29 +2,28 @@
 
 declare(strict_types=1);
 
-namespace Temkaa\Botifier\Command\Handler;
+namespace Temkaa\Botifier\Command\Handler\Webhook;
 
 use JsonException;
 use Temkaa\Botifier\Command\CommandInterface;
+use Temkaa\Botifier\Command\Handler\BaseCommand;
 use Temkaa\Botifier\Command\InputInterface;
 use Temkaa\Botifier\Command\OutputInterface;
 use Temkaa\Botifier\Enum\Command\Argument;
 use Temkaa\Botifier\Enum\Command\ExitCode;
-use Temkaa\Botifier\Model\Bot;
-use Temkaa\Botifier\Model\Request\DeleteWebhookRequest;
+use Temkaa\Botifier\Model\Request\Webhook\DeleteRequest;
 use Temkaa\Botifier\Service\TelegramClientInterface;
 
 /**
  * @internal
  */
-final readonly class UnsetWebhookCommand extends BaseCommand implements CommandInterface
+final readonly class DeleteCommand extends BaseCommand implements CommandInterface
 {
-    // TODO: move argument names to enum
     private const array ARGUMENTS = [
         Argument::Token->value => ['optional' => false, 'description' => 'A token for your bot.'],
     ];
     private const string DESCRIPTION = 'This command allows you to delete webhook from your bot.';
-    private const string SIGNATURE = 'webhook:unset';
+    private const string SIGNATURE = 'webhook:delete';
 
     public function __construct(
         private TelegramClientInterface $client,
@@ -39,8 +38,7 @@ final readonly class UnsetWebhookCommand extends BaseCommand implements CommandI
         $this->validateArguments($input, self::ARGUMENTS, self::SIGNATURE);
 
         $response = $this->client->send(
-            new DeleteWebhookRequest(),
-            new Bot($input->getArgument(Argument::Token)),
+            new DeleteRequest(),
         );
 
         $output->writeln(

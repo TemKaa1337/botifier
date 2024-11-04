@@ -14,12 +14,12 @@ final readonly class Command implements ContentInterface
 {
     public function __construct(
         private string $signature,
-        private string $parameters,
+        private ?string $parameters,
         private Type $type,
     ) {
     }
 
-    public function getParameters(): string
+    public function getParameters(): ?string
     {
         return $this->parameters;
     }

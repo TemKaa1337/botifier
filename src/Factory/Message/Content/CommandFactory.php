@@ -17,7 +17,13 @@ final readonly class CommandFactory implements ContentFactoryInterface
     public function create(array $message): ContentInterface
     {
         $text = $message['text'];
-        [$signature, $parameters] = explode(' ', $text, limit: 2);
+
+        if (str_contains($text, ' ')) {
+            [$signature, $parameters] = explode(' ', $text, limit: 2);
+        } else {
+            $signature = $text;
+            $parameters = null;
+        }
 
         return new Command(ltrim($signature, '/'), $parameters, Type::Command);
     }

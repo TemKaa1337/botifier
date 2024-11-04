@@ -6,8 +6,9 @@ namespace Command;
 
 use PHPUnit\Framework\TestCase;
 use Temkaa\Botifier\Command\Console;
+use Temkaa\Botifier\Command\Handler\Description\SetCommand;
 use Temkaa\Botifier\Command\Handler\HelpCommand;
-use Temkaa\Botifier\Command\Handler\SetDescriptionCommand;
+use Temkaa\Botifier\Command\Input;
 use Temkaa\Botifier\DependencyInjection\Command\ConfigProvider;
 use Temkaa\Botifier\Enum\Command\ExitCode;
 use Temkaa\Container\Builder\ContainerBuilder;
@@ -33,9 +34,9 @@ final class ConsoleTest extends TestCase
 
     public function testExecuteTestCommand(): void
     {
-        $setSubscriptionCommand = new SetDescriptionCommand(new TelegramClient());
+        $setSubscriptionCommand = new SetCommand(new TelegramClient());
         $console = new Console([new HelpCommand([$setSubscriptionCommand]), $setSubscriptionCommand]);
-        $exitCode = $console->execute(['bin/botifier help']);
+        $exitCode = $console->execute('help', new Input(['help']));
 
         self::assertSame(ExitCode::Success->value, $exitCode);
         self::assertSame(
@@ -58,7 +59,7 @@ final class ConsoleTest extends TestCase
     public function testExecuteWithNonExistingCommand(): void
     {
         $console = new Console([]);
-        $exitCode = $console->execute(['bin/botifier', 'non_existing_command']);
+        $exitCode = $console->execute('non_existing_command', new Input(['non_existing_command']));
 
         self::assertSame(ExitCode::Failure->value, $exitCode);
         self::assertSame(
@@ -76,9 +77,9 @@ final class ConsoleTest extends TestCase
 
     public function testExecuteWithoutArguments(): void
     {
-        $setSubscriptionCommand = new SetDescriptionCommand(new TelegramClient());
+        $setSubscriptionCommand = new SetCommand(new TelegramClient());
         $console = new Console([new HelpCommand([$setSubscriptionCommand]), $setSubscriptionCommand]);
-        $exitCode = $console->execute(['bin/botifier']);
+        $exitCode = $console->execute(null, new Input([]));
 
         self::assertSame(ExitCode::Success->value, $exitCode);
         self::assertSame(

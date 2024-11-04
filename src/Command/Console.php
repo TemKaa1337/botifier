@@ -21,17 +21,9 @@ final readonly class Console
     ) {
     }
 
-    /**
-     * @param string[] $arguments
-     */
-    public function execute(array $arguments): int
+    public function execute(?string $signature, Input $input): int
     {
-        array_shift($arguments);
-
-        // TODO: add colors
-        $input = new Input($arguments);
         $output = new Output(STDOUT);
-        $signature = $arguments ? array_shift($arguments) : null;
 
         if ($signature === null) {
             foreach ($this->commands as $command) {

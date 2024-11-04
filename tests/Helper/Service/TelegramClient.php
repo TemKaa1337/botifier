@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Helper\Service;
 
-use Temkaa\Botifier\Model\Bot;
+use LogicException;
 use Temkaa\Botifier\Model\RequestInterface;
+use Temkaa\Botifier\Model\Response\Message;
 use Temkaa\Botifier\Model\ResponseInterface;
 use Temkaa\Botifier\Service\TelegramClientInterface;
 
@@ -16,6 +17,11 @@ final class TelegramClient implements TelegramClientInterface
      */
     private array $responses = [];
 
+    public function reply(RequestInterface $request, Message $replyTo): ResponseInterface
+    {
+        throw new LogicException('Not implemented.');
+    }
+
     public function reset(): void
     {
         $this->responses = [];
@@ -24,7 +30,7 @@ final class TelegramClient implements TelegramClientInterface
     /**
      * @SuppressWarnings(PHPMD.UnusedParameter)
      */
-    public function send(RequestInterface $request, Bot $bot): ResponseInterface
+    public function send(RequestInterface $request): ResponseInterface
     {
         return array_shift($this->responses);
     }

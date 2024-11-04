@@ -6,7 +6,6 @@ namespace Tests\Helper\DependencyInjection;
 
 use Temkaa\Botifier\DependencyInjection\ConfigProvider as BaseConfigProvider;
 use Temkaa\Botifier\Handler\HandlerInterface;
-use Temkaa\Botifier\Model\Bot;
 use Temkaa\Botifier\PollingRunner;
 use Temkaa\Botifier\Service\TelegramClientInterface;
 use Temkaa\Botifier\Subscriber\SignalSubscriberInterface;
@@ -33,7 +32,7 @@ final readonly class ConfigProvider implements ProviderInterface
             ->bindInterface(TelegramClientInterface::class, TelegramClient::class)
             ->bindInterface(SignalSubscriberInterface::class, SignalSubscriber::class)
             ->bindClass(
-                ClassBuilder::make(Bot::class)
+                ClassBuilder::make(TelegramClient::class)
                     ->bindVariable('token', 'test_token')
                     ->build(),
             )

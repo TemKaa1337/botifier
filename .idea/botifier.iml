@@ -88,6 +88,8 @@
       <excludeFolder url="file://$MODULE_DIR$/vendor/temkaa/signal" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/php-mock/php-mock" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/dg/bypass-finals" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/php-http/discovery" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/php-http/multipart-stream-builder" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

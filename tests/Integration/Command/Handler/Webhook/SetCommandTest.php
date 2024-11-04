@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Tests\Integration\Command\Handler;
+namespace Command\Handler\Webhook;
 
 use JsonException;
 use PHPUnit\Framework\Attributes\DataProvider;
 use SplFileInfo;
-use Temkaa\Botifier\Command\Handler\SetWebhookCommand;
+use Temkaa\Botifier\Command\Handler\Webhook\SetCommand;
 use Temkaa\Botifier\Command\Input;
 use Temkaa\Botifier\Enum\Command\Argument;
 use Temkaa\Botifier\Enum\Command\ExitCode;
@@ -15,9 +15,10 @@ use Temkaa\Botifier\Exception\Command\InvalidCommandArgumentException;
 use Temkaa\Botifier\Model\Response\GeneralResponse;
 use Tests\Helper\Service\Command\Output;
 use Tests\Helper\Service\TelegramClient;
+use Tests\Integration\Command\Handler\AbstractCommandTestCase;
 
 // TODO: test with real certificate path
-final class SetWebhookCommandTest extends AbstractCommandTestCase
+final class SetCommandTest extends AbstractCommandTestCase
 {
     /** @psalm-suppress PropertyNotSetInConstructor */
     private TelegramClient $client;
@@ -34,7 +35,7 @@ final class SetWebhookCommandTest extends AbstractCommandTestCase
             'Could not read certificate from file "non_existing_path".',
         ];
 
-        $path = (new SplFileInfo(__DIR__.'/../../../Fixture/File/text_file.txt'))->getRealPath();
+        $path = (new SplFileInfo(__DIR__.'/../../../../Fixture/File/text_file.txt'))->getRealPath();
         yield [
             [
                 'bin/botifier',
@@ -69,9 +70,9 @@ final class SetWebhookCommandTest extends AbstractCommandTestCase
             ],
         );
 
-        $command = new SetWebhookCommand($this->client);
+        $command = new SetCommand($this->client);
 
-        $certificateFile = new SplFileInfo(__DIR__.'/../../../Fixture/File/certificate.pub');
+        $certificateFile = new SplFileInfo(__DIR__.'/../../../../Fixture/File/certificate.pub');
 
         $input = new Input(
             [
@@ -99,7 +100,7 @@ final class SetWebhookCommandTest extends AbstractCommandTestCase
      */
     public function testExecuteWithInvalidArguments(): void
     {
-        $command = new SetWebhookCommand($this->client);
+        $command = new SetCommand($this->client);
 
         $input = new Input(['bin/botifier']);
         $output = new Output();
@@ -123,7 +124,7 @@ final class SetWebhookCommandTest extends AbstractCommandTestCase
     #[DataProvider('getDataForExecuteWithInvalidCertificatePathTest')]
     public function testExecuteWithInvalidCertificatePath(array $arguments, string $exceptionMessage): void
     {
-        $command = new SetWebhookCommand($this->client);
+        $command = new SetCommand($this->client);
 
         $input = new Input($arguments);
         $output = new Output();
@@ -157,7 +158,7 @@ final class SetWebhookCommandTest extends AbstractCommandTestCase
             ],
         );
 
-        $command = new SetWebhookCommand($this->client);
+        $command = new SetCommand($this->client);
 
         $input = new Input(
             [

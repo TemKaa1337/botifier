@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Tests\Integration\Command\Handler;
+namespace Command\Handler\Description;
 
 use JsonException;
-use Temkaa\Botifier\Command\Handler\SetDescriptionCommand;
+use Temkaa\Botifier\Command\Handler\Description\SetCommand;
 use Temkaa\Botifier\Command\Input;
 use Temkaa\Botifier\Enum\Command\Argument;
 use Temkaa\Botifier\Enum\Command\ExitCode;
@@ -14,9 +14,10 @@ use Temkaa\Botifier\Exception\Command\InvalidCommandArgumentException;
 use Temkaa\Botifier\Model\Response\GeneralResponse;
 use Tests\Helper\Service\Command\Output;
 use Tests\Helper\Service\TelegramClient;
+use Tests\Integration\Command\Handler\AbstractCommandTestCase;
 
 // TODO: rename integration or move some tests to unit folder?
-final class SetDescriptionCommandTest extends AbstractCommandTestCase
+final class SetCommandTest extends AbstractCommandTestCase
 {
     /** @psalm-suppress PropertyNotSetInConstructor */
     private TelegramClient $client;
@@ -44,7 +45,7 @@ final class SetDescriptionCommandTest extends AbstractCommandTestCase
             ],
         );
 
-        $command = new SetDescriptionCommand($this->client);
+        $command = new SetCommand($this->client);
 
         $input = new Input(
             [
@@ -72,7 +73,7 @@ final class SetDescriptionCommandTest extends AbstractCommandTestCase
      */
     public function testExecuteWithInvalidArguments(): void
     {
-        $command = new SetDescriptionCommand($this->client);
+        $command = new SetCommand($this->client);
 
         $input = new Input(['bin/botifier']);
         $output = new Output();
@@ -113,7 +114,7 @@ final class SetDescriptionCommandTest extends AbstractCommandTestCase
             ],
         );
 
-        $command = new SetDescriptionCommand($this->client);
+        $command = new SetCommand($this->client);
 
         $input = new Input(
             [
@@ -161,7 +162,7 @@ final class SetDescriptionCommandTest extends AbstractCommandTestCase
             ],
         );
 
-        $command = new SetDescriptionCommand($this->client);
+        $command = new SetCommand($this->client);
 
         $input = new Input(
             [

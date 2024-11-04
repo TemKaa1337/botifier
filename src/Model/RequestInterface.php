@@ -9,6 +9,7 @@ use Temkaa\Botifier\Enum\HttpMethod;
 
 /**
  * @api
+ *
  * @template TResponse of ResponseInterface
  */
 interface RequestInterface
@@ -17,6 +18,9 @@ interface RequestInterface
 
     public function getHttpMethod(): HttpMethod;
 
+    /**
+     * @return array<string, mixed>
+     */
     public function getParameters(): array;
 }
 

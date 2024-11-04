@@ -2,34 +2,33 @@
 
 declare(strict_types=1);
 
-namespace Temkaa\Botifier\Command\Handler;
+namespace Temkaa\Botifier\Command\Handler\Description;
 
 use JsonException;
 use Temkaa\Botifier\Command\CommandInterface;
+use Temkaa\Botifier\Command\Handler\BaseCommand;
 use Temkaa\Botifier\Command\InputInterface;
 use Temkaa\Botifier\Command\OutputInterface;
 use Temkaa\Botifier\Enum\Command\Argument;
 use Temkaa\Botifier\Enum\Command\ExitCode;
 use Temkaa\Botifier\Enum\Language;
-use Temkaa\Botifier\Model\Bot;
-use Temkaa\Botifier\Model\Request\SetDescriptionRequest;
+use Temkaa\Botifier\Model\Request\Description\DeleteRequest;
 use Temkaa\Botifier\Service\TelegramClientInterface;
 
 /**
  * @internal
  */
-final readonly class SetDescriptionCommand extends BaseCommand implements CommandInterface
+final readonly class DeleteCommand extends BaseCommand implements CommandInterface
 {
     private const array ARGUMENTS = [
-        Argument::Token->value       => ['optional' => false, 'description' => 'A token for your bot.'],
-        Argument::Description->value => ['optional' => false, 'description' => 'A specified description for your bot.'],
-        Argument::Language->value    => [
-            'optional'    => false,
-            'description' => 'A specified language for provided description.',
+        Argument::Token->value    => ['optional' => false, 'description' => 'A token for your bot.'],
+        Argument::Language->value => [
+            'optional'    => true,
+            'description' => 'A language for which you want to delete description.',
         ],
     ];
-    private const string DESCRIPTION = 'This command allows you to set a description for your bot.';
-    private const string SIGNATURE = 'description:set';
+    private const string DESCRIPTION = 'This command allows you to delete a description from your bot.';
+    private const string SIGNATURE = 'description:delete';
 
     public function __construct(
         private TelegramClientInterface $client,
@@ -43,7 +42,10 @@ final readonly class SetDescriptionCommand extends BaseCommand implements Comman
     {
         $this->validateArguments($input, self::ARGUMENTS, self::SIGNATURE);
 
-        if (!$language = Language::tryFrom($input->getArgument(Argument::Language))) {
+        if (
+            $input->hasArgument(Argument::Language)
+            && !$language = Language::tryFrom($input->getArgument(Argument::Language))
+        ) {
             $output->writeln(
                 sprintf(
                     'Could not convert language "%s" to enum "%s".',
@@ -56,17 +58,13 @@ final readonly class SetDescriptionCommand extends BaseCommand implements Comman
         }
 
         $response = $this->client->send(
-            new SetDescriptionRequest(
-                $input->getArgument(Argument::Description),
-                $language,
-            ),
-            new Bot($input->getArgument(Argument::Token)),
+            new DeleteRequest($language ?? null),
         );
 
         $output->writeln(
             $response->success()
-                ? 'Successfully set description for bot.'
-                : 'An error occurred when trying to set description for bot.',
+                ? 'Successfully deleted description for bot.'
+                : 'An error occurred when trying to delete description from bot.',
         );
 
         $output->writeln(json_encode($response->raw(), JSON_THROW_ON_ERROR));

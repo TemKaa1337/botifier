@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Tests\Integration\Command\Handler;
+namespace Command\Handler\Webhook;
 
 use DateTimeImmutable;
 use JsonException;
-use Temkaa\Botifier\Command\Handler\WebhookInfoCommand;
+use Temkaa\Botifier\Command\Handler\Webhook\InfoCommand;
 use Temkaa\Botifier\Command\Input;
 use Temkaa\Botifier\Enum\Command\Argument;
 use Temkaa\Botifier\Enum\Command\ExitCode;
@@ -14,8 +14,9 @@ use Temkaa\Botifier\Exception\Command\InvalidCommandArgumentException;
 use Temkaa\Botifier\Model\Response\GetWebhookInfoResponse;
 use Tests\Helper\Service\Command\Output;
 use Tests\Helper\Service\TelegramClient;
+use Tests\Integration\Command\Handler\AbstractCommandTestCase;
 
-final class WebhookInfoCommandTest extends AbstractCommandTestCase
+final class InfoCommandTest extends AbstractCommandTestCase
 {
     /** @psalm-suppress PropertyNotSetInConstructor */
     private TelegramClient $client;
@@ -59,7 +60,7 @@ final class WebhookInfoCommandTest extends AbstractCommandTestCase
             ],
         );
 
-        $command = new WebhookInfoCommand($this->client);
+        $command = new InfoCommand($this->client);
 
         $input = new Input(
             [
@@ -85,7 +86,7 @@ final class WebhookInfoCommandTest extends AbstractCommandTestCase
      */
     public function testExecuteWithInvalidArguments(): void
     {
-        $command = new WebhookInfoCommand($this->client);
+        $command = new InfoCommand($this->client);
 
         $input = new Input(['bin/botifier']);
         $output = new Output();
@@ -138,7 +139,7 @@ final class WebhookInfoCommandTest extends AbstractCommandTestCase
             ],
         );
 
-        $command = new WebhookInfoCommand($this->client);
+        $command = new InfoCommand($this->client);
 
         $input = new Input(
             [
@@ -189,7 +190,7 @@ final class WebhookInfoCommandTest extends AbstractCommandTestCase
             ],
         );
 
-        $command = new WebhookInfoCommand($this->client);
+        $command = new InfoCommand($this->client);
 
         $input = new Input(
             [

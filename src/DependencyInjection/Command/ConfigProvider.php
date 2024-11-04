@@ -13,9 +13,9 @@ use Temkaa\Botifier\Command\Handler\HelpCommand;
 use Temkaa\Botifier\Factory\Message\Content\UnknownContentFactory;
 use Temkaa\Botifier\Factory\Message\ContentFactory;
 use Temkaa\Botifier\Factory\Message\ContentFactoryInterface;
-use Temkaa\Botifier\Model\Bot;
 use Temkaa\Botifier\Serializer\Action\SerializerInterface;
 use Temkaa\Botifier\Serializer\Serializer;
+use Temkaa\Botifier\Service\TelegramClient;
 use Temkaa\Container\Attribute\Bind\InstanceOfIterator;
 use Temkaa\Container\Builder\Config\ClassBuilder;
 use Temkaa\Container\Builder\ConfigBuilder;
@@ -39,7 +39,7 @@ final readonly class ConfigProvider implements ProviderInterface
             ->exclude(__DIR__.'/../../Command/Input.php')
             ->exclude(__DIR__.'/../../Command/Output.php')
             ->bindClass(
-                ClassBuilder::make(Bot::class)
+                ClassBuilder::make(TelegramClient::class)
                     ->bindVariable('token', 'env(BOT_TOKEN)')
                     ->build(),
             )
@@ -65,7 +65,7 @@ final readonly class ConfigProvider implements ProviderInterface
                         'factories',
                         new InstanceOfIterator(
                             ContentFactoryInterface::class,
-                            exclude: [UnknownContentFactory::class]
+                            exclude: [UnknownContentFactory::class],
                         ),
                     )
                     ->build(),

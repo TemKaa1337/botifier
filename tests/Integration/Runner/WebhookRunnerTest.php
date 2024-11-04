@@ -36,8 +36,6 @@ final class WebhookRunnerTest extends AbstractRunnerTestCase
 {
     public function testBootsWithContainer(): void
     {
-        $this->markTestSkipped('Unskip after container is fixed');
-
         $container = ContainerBuilder::make()->add(new WebhookRunnerContainerConfigProvider())->build();
         $runner = $container->get(WebhookRunner::class);
         self::assertInstanceOf(WebhookRunner::class, $runner);

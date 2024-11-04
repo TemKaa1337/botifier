@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Temkaa\Botifier\Model\Request;
+namespace Temkaa\Botifier\Model\Request\Webhook;
 
 use Temkaa\Botifier\Enum\ApiMethod;
 use Temkaa\Botifier\Enum\HttpMethod;
-use Temkaa\Botifier\Enum\Language;
+use Temkaa\Botifier\Model\File;
 use Temkaa\Botifier\Model\RequestInterface;
 use Temkaa\Botifier\Model\Response\GeneralResponse;
 
@@ -14,17 +14,17 @@ use Temkaa\Botifier\Model\Response\GeneralResponse;
  * @api
  * @implements RequestInterface<GeneralResponse>
  */
-final readonly class SetDescriptionRequest implements RequestInterface
+final readonly class SetRequest implements RequestInterface
 {
     public function __construct(
-        private string $description,
-        private Language $language,
+        private string $url,
+        private ?File $certificate = null,
     ) {
     }
 
     public function getApiMethod(): ApiMethod
     {
-        return ApiMethod::SetDescription;
+        return ApiMethod::SetWebhook;
     }
 
     public function getHttpMethod(): HttpMethod
@@ -34,6 +34,11 @@ final readonly class SetDescriptionRequest implements RequestInterface
 
     public function getParameters(): array
     {
-        return ['description' => $this->description, 'language_code' => $this->language->value];
+        $data = ['url' => $this->url];
+        if ($this->certificate) {
+            $data['certificate'] = $this->certificate;
+        }
+
+        return $data;
     }
 }

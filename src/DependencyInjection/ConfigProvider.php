@@ -11,10 +11,10 @@ use Temkaa\Botifier\Factory\Message\Content\UnknownContentFactory;
 use Temkaa\Botifier\Factory\Message\ContentFactory;
 use Temkaa\Botifier\Factory\Message\ContentFactoryInterface;
 use Temkaa\Botifier\Handler\HandlerInterface;
-use Temkaa\Botifier\Model\Bot;
 use Temkaa\Botifier\PollingRunner;
 use Temkaa\Botifier\Serializer\Action\SerializerInterface;
 use Temkaa\Botifier\Serializer\Serializer;
+use Temkaa\Botifier\Service\TelegramClient;
 use Temkaa\Botifier\Subscriber\SignalSubscriber;
 use Temkaa\Botifier\WebhookRunner;
 use Temkaa\Container\Attribute\Bind\InstanceOfIterator;
@@ -40,14 +40,12 @@ final readonly class ConfigProvider implements ProviderInterface
             ->exclude(__DIR__.'/Command')
             ->exclude(__DIR__.'/../Enum/')
             ->exclude(__DIR__.'/../Exception/')
+            ->exclude(__DIR__.'/../Model/')
             ->include((new ReflectionClass(Client::class))->getFileName())
             ->include((new ReflectionClass(HttpFactory::class))->getFileName())
-            ->exclude(__DIR__.'/../Model/Request')
-            ->exclude(__DIR__.'/../Model/Response')
-            ->exclude(__DIR__.'/../Model/File.php')
             ->include((new ReflectionClass(SignalManager::class))->getFileName())
             ->bindClass(
-                ClassBuilder::make(Bot::class)
+                ClassBuilder::make(TelegramClient::class)
                     ->bindVariable('token', 'env(BOT_TOKEN)')
                     ->build(),
             )
@@ -62,7 +60,7 @@ final readonly class ConfigProvider implements ProviderInterface
                         'factories',
                         new InstanceOfIterator(
                             ContentFactoryInterface::class,
-                            exclude: [UnknownContentFactory::class]
+                            exclude: [UnknownContentFactory::class],
                         ),
                     )
                     ->build(),

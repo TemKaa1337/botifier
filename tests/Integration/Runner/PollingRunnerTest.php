@@ -36,8 +36,6 @@ final class PollingRunnerTest extends AbstractRunnerTestCase
 {
     public function testBootsWithContainer(): void
     {
-        $this->markTestSkipped('Unskip after container is fixed');
-
         $container = ContainerBuilder::make()->add(new PollingRunnerContainerConfigProvider())->build();
         $runner = $container->get(PollingRunner::class);
         self::assertInstanceOf(PollingRunner::class, $runner);
@@ -147,7 +145,7 @@ final class PollingRunnerTest extends AbstractRunnerTestCase
         $logger = $this->container->get(Logger::class);
 
         self::assertEqualsCanonicalizing(
-            ['warning' => ['This message type is unsupported']],
+            ['warning' => ['This message type is unsupported'], 'info' => ['Exiting from PollingRunner.']],
             $logger->getMessages(),
         );
     }
@@ -199,6 +197,7 @@ final class PollingRunnerTest extends AbstractRunnerTestCase
                         json_encode($message['result'][0], JSON_THROW_ON_ERROR),
                     ),
                 ],
+                'info' => ['Exiting from PollingRunner.']
             ],
             $logger->getMessages(),
         );
