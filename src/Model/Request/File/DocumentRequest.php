@@ -8,21 +8,22 @@ use Temkaa\Botifier\Enum\ApiMethod;
 use Temkaa\Botifier\Enum\HttpMethod;
 use Temkaa\Botifier\Model\File;
 use Temkaa\Botifier\Model\RequestInterface;
-use Temkaa\Botifier\Model\Response\SendMessageResponse;
+use Temkaa\Botifier\Model\Response\SendDocumentResponse;
 
 /**
  * @api
  *
- * @implements RequestInterface<SendMessageResponse>
+ * @implements RequestInterface<SendDocumentResponse>
  */
 final readonly class DocumentRequest implements RequestInterface
 {
+    // TODO: add tests on all of those
     public static function fromFile(int $chatId, File $file, ?string $text = null): self
     {
         return new self($chatId, $file, $text);
     }
 
-    public static function fromFileId(int $chatId, int $fileId, ?string $text = null): self
+    public static function fromFileId(int $chatId, string $fileId, ?string $text = null): self
     {
         return new self($chatId, $fileId, $text);
     }
@@ -54,7 +55,7 @@ final readonly class DocumentRequest implements RequestInterface
 
     private function __construct(
         private int $chatId,
-        private File|int|string $file,
+        private File|string $file,
         private ?string $text = null,
     ) {
     }

@@ -6,6 +6,7 @@ namespace Temkaa\Botifier\Model\Request;
 
 use Temkaa\Botifier\Enum\ApiMethod;
 use Temkaa\Botifier\Enum\HttpMethod;
+use Temkaa\Botifier\Enum\UpdateType;
 use Temkaa\Botifier\Model\RequestInterface;
 use Temkaa\Botifier\Model\Response\GetUpdatesResponse;
 
@@ -15,9 +16,15 @@ use Temkaa\Botifier\Model\Response\GetUpdatesResponse;
  */
 final readonly class GetUpdatesRequest implements RequestInterface
 {
+    /**
+     * @param int          $limit
+     * @param int          $offset
+     * @param UpdateType[] $updateTypes
+     */
     public function __construct(
         private int $limit,
         private int $offset,
+        private array $updateTypes = [],
     ) {
     }
 
@@ -33,6 +40,15 @@ final readonly class GetUpdatesRequest implements RequestInterface
 
     public function getParameters(): array
     {
-        return ['limit' => $this->limit, 'offset' => $this->offset];
+        // TODO: add test on allowed_updates from polling runner
+        // TODO: add test on allowed_updates when setting webhook
+        return [
+            'limit'           => $this->limit,
+            'offset'          => $this->offset,
+            'allowed_updates' => array_map(
+                static fn (UpdateType $updateType): string => $updateType->value,
+                $this->updateTypes,
+            ),
+        ];
     }
 }

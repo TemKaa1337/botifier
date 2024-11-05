@@ -12,6 +12,7 @@ use Temkaa\Botifier\Command\InputInterface;
 use Temkaa\Botifier\Command\OutputInterface;
 use Temkaa\Botifier\Enum\Command\Argument;
 use Temkaa\Botifier\Enum\Command\ExitCode;
+use Temkaa\Botifier\Enum\UpdateType;
 use Temkaa\Botifier\Exception\Command\InvalidCommandArgumentException;
 use Temkaa\Botifier\Model\File;
 use Temkaa\Botifier\Model\Request\Webhook\SetRequest;
@@ -29,6 +30,10 @@ final readonly class SetCommand extends BaseCommand implements CommandInterface
             'optional'    => true,
             'description' => 'A path to certificate if you want to use self-signed certificate.',
         ],
+        Argument::AllowedUpdates->value  => [
+            'optional'    => true,
+            'description' => 'A list of allowed updates. An array of "'.UpdateType::class.'" enum.',
+        ],
     ];
     private const string DESCRIPTION = 'This command allows you to set a webhook for your bot.';
     private const string SIGNATURE = 'webhook:set';
@@ -45,10 +50,33 @@ final readonly class SetCommand extends BaseCommand implements CommandInterface
     {
         $this->validateArguments($input, self::ARGUMENTS, self::SIGNATURE);
 
+        $allowedTypes = $input->hasArgument(Argument::AllowedUpdates)
+            ? json_decode($input->getArgument(Argument::AllowedUpdates), true)
+            : [];
+
+        $updateTypes = [];
+        foreach ($allowedTypes as $type) {
+            if (!$allowedType = UpdateType::tryFrom($type)) {
+                throw new InvalidCommandArgumentException(
+                    sprintf(
+                        'Argument "%s" should be of type "%s[]"',
+                        Argument::AllowedUpdates->value,
+                        UpdateType::class,
+                    ),
+                );
+            }
+
+            $updateTypes[] = $allowedType;
+        }
+
         $certificate = $this->getCertificate($input);
 
         $response = $this->client->send(
-            new SetRequest($input->getArgument(Argument::Url), $certificate),
+            new SetRequest(
+                $input->getArgument(Argument::Url),
+                $certificate,
+                $updateTypes,
+            ),
         );
 
         $output->writeln(

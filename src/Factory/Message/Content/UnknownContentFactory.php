@@ -14,8 +14,7 @@ use Temkaa\Botifier\Model\Response\Message\ContentInterface;
  */
 final readonly class UnknownContentFactory implements ContentFactoryInterface
 {
-    // TODO: create a better solution for reserved keys
-    private const array RESERVED_KEYS = ['message_id', 'from', 'chat', 'date', 'text'];
+    private const array RESERVED_KEYS = ['message_id', 'from', 'chat', 'date'];
 
     public function create(array $message): ContentInterface
     {

@@ -49,6 +49,7 @@ final readonly class PollingRunner extends AbstractRunner implements RunnerInter
 
             if (!$response->success()) {
                 // TODO: add some king of exit handler for user
+                // TODO: add just a test now
                 throw new FailedTelegramRequestException('Got unsuccessful telegram response.', $response);
             }
 

@@ -65,7 +65,6 @@ final readonly class TelegramClient implements TelegramClientInterface
             }
         }
 
-        // TODO: add test on files
         if ($files) {
             $multipartStreamBuilder = new MultipartStreamBuilder($this->httpStreamFactory);
 

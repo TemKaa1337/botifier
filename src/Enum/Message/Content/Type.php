@@ -10,6 +10,7 @@ namespace Temkaa\Botifier\Enum\Message\Content;
 enum Type
 {
     case Command;
+    case Document;
     case Text;
     case Unknown;
 }

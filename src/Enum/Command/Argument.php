@@ -9,6 +9,7 @@ namespace Temkaa\Botifier\Enum\Command;
  */
 enum Argument: string
 {
+    case AllowedUpdates = '--allowed_updates';
     case CertificatePath = '--certificate_path';
     case Description = '--description';
     case Language = '--language';

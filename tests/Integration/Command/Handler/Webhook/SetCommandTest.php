@@ -17,7 +17,6 @@ use Tests\Helper\Service\Command\Output;
 use Tests\Helper\Service\TelegramClient;
 use Tests\Integration\Command\Handler\AbstractCommandTestCase;
 
-// TODO: test with real certificate path
 final class SetCommandTest extends AbstractCommandTestCase
 {
     /** @psalm-suppress PropertyNotSetInConstructor */

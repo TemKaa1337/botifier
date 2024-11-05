@@ -1,0 +1,46 @@
+{
+    "ok": true,
+    "result": [
+        {
+            "update_id": 473995214,
+            "message": {
+                "message_id": 103,
+                "from": {
+                    "id": 772517840,
+                    "is_bot": false,
+                    "first_name": "Artem",
+                    "username": "temkaawow",
+                    "language_code": "ru"
+                },
+                "chat": {
+                    "id": 772517840,
+                    "first_name": "Artem",
+                    "username": "temkaawow",
+                    "type": "private"
+                },
+                "date": 1730733210,
+                "document": {
+                    "file_name": "Task_7_log_content.png",
+                    "mime_type": "image/png",
+                    "thumbnail": {
+                        "file_id": "AAMCAgADGQEAA2dnKOSab5974bqPJi0YquVtw6oJyAAC2VkAAkygSEm1H21l74gNtgEAB20AAzYE",
+                        "file_unique_id": "AQAD2VkAAkygSEly",
+                        "file_size": 7062,
+                        "width": 320,
+                        "height": 78
+                    },
+                    "thumb": {
+                        "file_id": "AAMCAgADGQEAA2dnKOSab5974bqPJi0YquVtw6oJyAAC2VkAAkygSEm1H21l74gNtgEAB20AAzYE",
+                        "file_unique_id": "AQAD2VkAAkygSEly",
+                        "file_size": 7062,
+                        "width": 320,
+                        "height": 78
+                    },
+                    "file_id": "BQACAgIAAxkBAANnZyjkmm-fe-G6jyYtGKrlbcOqCcgAAtlZAAJMoEhJtR9tZe-IDbY2BA",
+                    "file_unique_id": "AgAD2VkAAkygSEk",
+                    "file_size": 15997
+                }
+            }
+        }
+    ]
+}
