@@ -22,6 +22,7 @@ final readonly class InlineKeyboardMarkupRequest implements RequestInterface
      */
     public function __construct(
         private int $chatId,
+        private string $text,
         private array $buttons,
     ) {
     }
@@ -39,14 +40,17 @@ final readonly class InlineKeyboardMarkupRequest implements RequestInterface
     public function getParameters(): array
     {
         return [
-            'chatId'          => $this->chatId,
-            'inline_keyboard' => array_map(
-                static fn (array $rowButtons): array => array_map(
-                    static fn (InlineKeyboardButton $button): array => ['text' => $button->getText()],
-                    $rowButtons,
+            'chat_id'      => $this->chatId,
+            'text'         => $this->text,
+            'reply_markup' => [
+                'inline_keyboard' => array_map(
+                    static fn (array $rowButtons): array => array_map(
+                        static fn (InlineKeyboardButton $button): array => $button->format(),
+                        $rowButtons,
+                    ),
+                    $this->buttons,
                 ),
-                $this->buttons,
-            ),
+            ],
         ];
     }
 }
