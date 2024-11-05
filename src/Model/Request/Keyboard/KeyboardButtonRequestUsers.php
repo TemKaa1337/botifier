@@ -6,6 +6,7 @@ namespace Temkaa\Botifier\Model\Request\Keyboard;
 
 use Temkaa\Botifier\Trait\NullableArrayFilterTrait;
 
+// TODO: add test on this
 final readonly class KeyboardButtonRequestUsers
 {
     use NullableArrayFilterTrait;

@@ -28,6 +28,7 @@ final readonly class MessageFactory
      */
     public function create(array $message): Message
     {
+        // TODO: add factory for keyboards
         $messageContent = $message['message'] ?? $message['edited_message'] ?? $message;
 
         $isReply = isset($messageContent['reply_to_message']);

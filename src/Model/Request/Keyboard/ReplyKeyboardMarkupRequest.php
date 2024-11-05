@@ -15,6 +15,7 @@ use Temkaa\Botifier\Trait\NullableArrayFilterTrait;
  *
  * @implements RequestInterface<SendMessageResponse>
  */
+// TODO: add test on this
 final readonly class ReplyKeyboardMarkupRequest implements RequestInterface
 {
     use NullableArrayFilterTrait;
@@ -24,6 +25,7 @@ final readonly class ReplyKeyboardMarkupRequest implements RequestInterface
      */
     public function __construct(
         private int $chatId,
+        private string $text,
         private array $buttons,
         private ?bool $isPersistent = null,
         private ?bool $resizeKeyboard = null,
@@ -47,8 +49,9 @@ final readonly class ReplyKeyboardMarkupRequest implements RequestInterface
     {
         return [
             'chat_id'      => $this->chatId,
+            'text'         => $this->text,
             'reply_markup' => [
-                $this->filter(
+                ...$this->filter(
                     [
                         'keyboard'                => array_map(
                             static fn (array $rowButtons): array => array_map(
