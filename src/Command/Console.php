@@ -23,6 +23,7 @@ final readonly class Console
 
     public function execute(?string $signature, Input $input): int
     {
+        // TODO: refactor
         $output = new Output(STDOUT);
 
         if ($signature === null) {

@@ -14,6 +14,9 @@ use Temkaa\Botifier\Model\Response\Message\ContentInterface;
  */
 final readonly class CommandFactory implements ContentFactoryInterface
 {
+    /**
+     * @param array{text: string} $message
+     */
     public function create(array $message): ContentInterface
     {
         $text = $message['text'];
@@ -30,6 +33,6 @@ final readonly class CommandFactory implements ContentFactoryInterface
 
     public function supports(array $message): bool
     {
-        return isset($message['text']) && str_starts_with($message['text'], '/');
+        return isset($message['text']) && is_string($message['text']) && str_starts_with($message['text'], '/');
     }
 }

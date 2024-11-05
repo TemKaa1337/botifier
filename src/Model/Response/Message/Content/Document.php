@@ -11,6 +11,7 @@ use Temkaa\Botifier\Model\Response\Message\ContentInterface;
 final readonly class Document implements ContentInterface
 {
     public function __construct(
+        private ?string $caption,
         private string $fileName,
         private string $mimeType,
         private ?Thumb $thumbNail,
@@ -44,6 +45,11 @@ final readonly class Document implements ContentInterface
     public function getMimeType(): string
     {
         return $this->mimeType;
+    }
+
+    public function getCaption(): ?string
+    {
+        return $this->caption;
     }
 
     public function getThumb(): ?Thumb

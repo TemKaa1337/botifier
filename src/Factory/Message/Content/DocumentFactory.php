@@ -16,15 +16,41 @@ final readonly class DocumentFactory implements ContentFactoryInterface
     ) {
     }
 
+    /**
+     * @param array{
+     *     caption?: string,
+     *     document: array{
+     *         file_name: string,
+     *         mime_type: string,
+     *         thumb?: array{
+     *             file_id: string,
+     *             file_unique_id: string,
+     *             file_size:int,
+     *             width:int,
+     *             height: int
+     *         },
+     *         thumbnail?: array{
+     *             file_id: string,
+     *             file_unique_id: string,
+     *             file_size:int,
+     *             width:int,
+     *             height: int
+     *         },
+     *         file_id: string,
+     *         file_unique_id: string,
+     *         file_size: int
+     *     }
+     * } $message
+     */
     public function create(array $message): ContentInterface
     {
-        // TODO: check if there can be text
         $document = $message['document'];
 
         $thumbnail = isset($document['thumbnail']) ? $this->thumbFactory->create($document['thumbnail']) : null;
         $thumb = isset($document['thumb']) ? $this->thumbFactory->create($document['thumb']) : null;
 
         return new Document(
+            $message['caption'] ?? null,
             $document['file_name'],
             $document['mime_type'],
             $thumbnail,

@@ -12,6 +12,17 @@ use Temkaa\Botifier\Model\Response\Message\User;
  */
 final readonly class UserFactory
 {
+    /**
+     * @param array{
+     *     from: array{
+     *         id: int,
+     *         username: string,
+     *         first_name: string,
+     *         is_bot: bool,
+     *         language_code?: string
+     *     }
+     * } $message
+     */
     public function create(array $message): User
     {
         $user = $message['from'];

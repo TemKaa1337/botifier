@@ -18,14 +18,14 @@ use Temkaa\Botifier\Model\Response\SendDocumentResponse;
 final readonly class DocumentRequest implements RequestInterface
 {
     // TODO: add tests on all of those
-    public static function fromFile(int $chatId, File $file, ?string $text = null): self
+    public static function fromFile(int $chatId, File $file, ?string $caption = null): self
     {
-        return new self($chatId, $file, $text);
+        return new self($chatId, $file, $caption);
     }
 
-    public static function fromFileId(int $chatId, string $fileId, ?string $text = null): self
+    public static function fromFileId(int $chatId, string $fileId, ?string $caption = null): self
     {
-        return new self($chatId, $fileId, $text);
+        return new self($chatId, $fileId, $caption);
     }
 
     public static function fromUrl(int $chatId, string $url, ?string $text = null): self
@@ -46,8 +46,8 @@ final readonly class DocumentRequest implements RequestInterface
     public function getParameters(): array
     {
         $data = ['chat_id' => $this->chatId, 'document' => $this->file];
-        if ($this->text !== null) {
-            $data['caption'] = $this->text;
+        if ($this->caption !== null) {
+            $data['caption'] = $this->caption;
         }
 
         return $data;
@@ -56,7 +56,7 @@ final readonly class DocumentRequest implements RequestInterface
     private function __construct(
         private int $chatId,
         private File|string $file,
-        private ?string $text = null,
+        private ?string $caption = null,
     ) {
     }
 }

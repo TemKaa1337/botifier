@@ -11,6 +11,16 @@ use Temkaa\Botifier\Model\Response\Message\Chat;
  */
 final readonly class ChatFactory
 {
+    /**
+     * @param array{
+     *     chat: array {
+     *         id: int,
+     *         username: string,
+     *         first_name: string,
+     *         type: string
+     *     }
+     * } $message
+     */
     public function create(array $message): Chat
     {
         $chat = $message['chat'];
