@@ -13,8 +13,8 @@ final readonly class Document implements ContentInterface
     public function __construct(
         private string $fileName,
         private string $mimeType,
-        private Thumb $thumbNail,
-        private Thumb $thumb,
+        private ?Thumb $thumbNail,
+        private ?Thumb $thumb,
         private string $fileId,
         private string $fileUniqueId,
         private int $fileSize,
@@ -46,12 +46,12 @@ final readonly class Document implements ContentInterface
         return $this->mimeType;
     }
 
-    public function getThumb(): Thumb
+    public function getThumb(): ?Thumb
     {
         return $this->thumb;
     }
 
-    public function getThumbNail(): Thumb
+    public function getThumbNail(): ?Thumb
     {
         return $this->thumbNail;
     }

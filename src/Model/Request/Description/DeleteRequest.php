@@ -16,6 +16,7 @@ use Temkaa\Botifier\Model\Response\GeneralResponse;
  */
 final readonly class DeleteRequest implements RequestInterface
 {
+    // TODO: name request classes fully eg like DeleteDescriptionRequest even though it is in Description folder
     public function __construct(
         private ?Language $language,
     ) {
