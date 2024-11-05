@@ -28,62 +28,18 @@ final readonly class InlineKeyboardButton
     public function format(): array
     {
         $data = [
-            'text' => $this->text,
-            'url' => $this->url,
-            'callback_data' => $this->callbackData,
-            'web_app' => $this->webApp?->format(),
-            'login_url' => $this->loginUrl?->format(),
-            'switch_inline_query' => $this->switchInlineQuery,
+            'text'                             => $this->text,
+            'url'                              => $this->url,
+            'callback_data'                    => $this->callbackData,
+            'web_app'                          => $this->webApp?->format() ?: null,
+            'login_url'                        => $this->loginUrl?->format() ?: null,
+            'switch_inline_query'              => $this->switchInlineQuery,
             'switch_inline_query_current_chat' => $this->switchInlineQueryCurrentChat,
-            'switch_inline_query_chosen_chat' => $this->switchInlineQueryChosenChat?->format(),
-            'copy_text' => $this->copyText?->format(),
-            'pay' => $this->pay,
+            'switch_inline_query_chosen_chat'  => $this->switchInlineQueryChosenChat?->format() ?: null,
+            'copy_text'                        => $this->copyText?->format() ?: null,
+            'pay'                              => $this->pay,
         ];
 
         return $this->filter($data);
-        // $data = ['text' => $this->text];
-        // if ($this->url !== null) {
-        //     $data['url'] = $this->url;
-        // }
-        //
-        // if ($this->callbackData !== null) {
-        //     $data['callback_data'] = $this->callbackData;
-        // }
-        //
-        // if ($webApp = $this->webApp?->format()) {
-        //     $data['web_app'] = $webApp;
-        // }
-        //
-        // $loginUrl = $this->loginUrl?->format();
-        // if ($loginUrl !== null && $loginUrl = $this->filter($loginUrl)) {
-        //     $data['login_url'] = $loginUrl;
-        // }
-        //
-        // if ($this->switchInlineQuery !== null) {
-        //     $data['switch_inline_query'] = $this->switchInlineQuery;
-        // }
-        //
-        // if ($this->switchInlineQueryCurrentChat !== null) {
-        //     $data['switch_inline_query_current_chat'] = $this->switchInlineQueryCurrentChat;
-        // }
-        //
-        // $switchInlineQueryChosenChat = $this->switchInlineQueryChosenChat?->format();
-        // if (
-        //     $switchInlineQueryChosenChat !== null
-        //     && $switchInlineQueryChosenChat = $this->filter($switchInlineQueryChosenChat)
-        // ) {
-        //     $data['switch_inline_query_chosen_chat'] = $switchInlineQueryChosenChat;
-        // }
-        //
-        // $copyText = $this->copyText?->format();
-        // if ($copyText !== null && $copyText = $this->filter($copyText)) {
-        //     $data['copy_text'] = $copyText;
-        // }
-        //
-        // if ($this->pay !== null) {
-        //     $data['pay'] = $this->pay;
-        // }
-
-        // return $data;
     }
 }
