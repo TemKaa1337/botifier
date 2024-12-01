@@ -7,13 +7,10 @@ namespace Temkaa\Botifier\DependencyInjection;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\HttpFactory;
 use ReflectionClass;
-use Temkaa\Botifier\Factory\Message\Content\UnknownContentFactory;
-use Temkaa\Botifier\Factory\Message\ContentFactory;
-use Temkaa\Botifier\Factory\Message\ContentFactoryInterface;
+use Temkaa\Botifier\Factory\ResponseFactory;
 use Temkaa\Botifier\Handler\HandlerInterface;
+use Temkaa\Botifier\Interface\Response\FactoryInterface;
 use Temkaa\Botifier\PollingRunner;
-use Temkaa\Botifier\Serializer\Action\SerializerInterface;
-use Temkaa\Botifier\Serializer\Serializer;
 use Temkaa\Botifier\Service\TelegramClient;
 use Temkaa\Botifier\Subscriber\SignalSubscriber;
 use Temkaa\Botifier\WebhookRunner;
@@ -55,25 +52,14 @@ final readonly class ConfigProvider implements ProviderInterface
                     ->build(),
             )
             ->bindClass(
-                ClassBuilder::make(ContentFactory::class)
-                    ->bindVariable(
-                        'factories',
-                        new InstanceOfIterator(
-                            ContentFactoryInterface::class,
-                            exclude: [UnknownContentFactory::class],
-                        ),
-                    )
+                ClassBuilder::make(ResponseFactory::class)
+                    ->bindVariable('factories', new InstanceOfIterator(FactoryInterface::class))
                     ->build(),
             )
             ->bindClass(
                 ClassBuilder::make(PollingRunner::class)
                     ->bindVariable('handlers', new InstanceOfIterator(HandlerInterface::class))
                     ->bindVariable('pollingInterval', 'env(BOT_POLLING_INTERVAL)')
-                    ->build(),
-            )
-            ->bindClass(
-                ClassBuilder::make(Serializer::class)
-                    ->bindVariable('handlers', new InstanceOfIterator(SerializerInterface::class))
                     ->build(),
             )
             ->bindClass(

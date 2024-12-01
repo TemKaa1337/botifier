@@ -6,6 +6,7 @@
         <cache>
           <versions>
             <info id="LocalE:\MYPROJECTS\simple-projects\botifier\vendor\autoload.php" version="10.5.0" />
+            <info id="Local\vendor/autoload.php" version="10.5.0" />
           </versions>
         </cache>
       </tool>

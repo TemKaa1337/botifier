@@ -6,7 +6,7 @@ namespace Tests\Helper\Service\Handler;
 
 use Psr\Log\LoggerInterface;
 use Temkaa\Botifier\Handler\UnsupportedHandlerInterface;
-use Temkaa\Botifier\Model\Response\Message;
+use Temkaa\Botifier\Model\Response\Nested\Update;
 
 final readonly class CustomUnsupportedMessageHandler implements UnsupportedHandlerInterface
 {
@@ -15,7 +15,7 @@ final readonly class CustomUnsupportedMessageHandler implements UnsupportedHandl
     ) {
     }
 
-    public function handle(Message $message): void
+    public function handle(Update $update): void
     {
         $this->logger->warning('This message type is unsupported');
     }

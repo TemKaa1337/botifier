@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+// THIS FILE IS GENERATED AUTOMATICALLY, DO NOT CHANGE IT MANUALLY
+
 namespace Temkaa\Botifier\Enum;
 
 /**

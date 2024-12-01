@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Temkaa\Botifier\Provider\Webhook;
 
 use JsonException;
-use Temkaa\Botifier\Model\Response\Message;
-use Temkaa\Botifier\Serializer\Action\MessageSerializer;
+use Temkaa\Botifier\Factory\Response\Nested\UpdateFactory;
+use Temkaa\Botifier\Model\Response\Nested\Update;
 
 /**
  * @internal
@@ -14,17 +14,17 @@ use Temkaa\Botifier\Serializer\Action\MessageSerializer;
 final readonly class MessageProvider
 {
     public function __construct(
-        private MessageSerializer $messageSerializer,
+        private UpdateFactory $updateFactory,
     ) {
     }
 
     /**
      * @throws JsonException
      */
-    public function provide(): Message
+    public function provide(): Update
     {
         $message = file_get_contents('php://input');
 
-        return $this->messageSerializer->deserialize(json_decode($message, true, 512, JSON_THROW_ON_ERROR));
+        return $this->updateFactory->create(json_decode($message, true, 512, JSON_THROW_ON_ERROR));
     }
 }

@@ -1,31 +1,39 @@
 <?php
 
+// THIS FILE IS GENERATED AUTOMATICALLY, DO NOT CHANGE IT MANUALLY
+
 declare(strict_types=1);
 
 namespace Temkaa\Botifier\Model\Request;
 
 use Temkaa\Botifier\Enum\ApiMethod;
 use Temkaa\Botifier\Enum\HttpMethod;
-use Temkaa\Botifier\Enum\UpdateType;
-use Temkaa\Botifier\Model\RequestInterface;
+use Temkaa\Botifier\Interface\RequestInterface;
 use Temkaa\Botifier\Model\Response\GetUpdatesResponse;
+use Temkaa\Botifier\Trait\ArrayFilterTrait;
 
 /**
  * @api
+ *
  * @implements RequestInterface<GetUpdatesResponse>
  */
 final readonly class GetUpdatesRequest implements RequestInterface
 {
+    use ArrayFilterTrait;
+
     /**
-     * @param int          $limit
-     * @param int          $offset
-     * @param UpdateType[] $updateTypes
+     * @param string[]|null $allowedUpdates
      */
     public function __construct(
-        private int $limit,
-        private int $offset,
-        private array $updateTypes = [],
-    ) {
+        public ?int $offset = null,
+        public ?int $limit = null,
+        public ?int $timeout = null,
+        public ?array $allowedUpdates = null
+    ) {}
+
+    public function getHttpMethod(): HttpMethod
+    {
+        return HttpMethod::Post;
     }
 
     public function getApiMethod(): ApiMethod
@@ -33,22 +41,15 @@ final readonly class GetUpdatesRequest implements RequestInterface
         return ApiMethod::GetUpdates;
     }
 
-    public function getHttpMethod(): HttpMethod
+    public function getData(): array
     {
-        return HttpMethod::Get;
-    }
-
-    public function getParameters(): array
-    {
-        // TODO: add test on allowed_updates from polling runner
-        // TODO: add test on allowed_updates when setting webhook
-        return [
-            'limit'           => $this->limit,
-            'offset'          => $this->offset,
-            'allowed_updates' => array_map(
-                static fn (UpdateType $updateType): string => $updateType->value,
-                $this->updateTypes,
-            ),
-        ];
+        return $this->filterNullable(
+            [
+                'offset'          => $this->offset,
+                'limit'           => $this->limit,
+                'timeout'         => $this->timeout,
+                'allowed_updates' => $this->allowedUpdates,
+            ]
+        );
     }
 }

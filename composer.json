@@ -16,6 +16,13 @@
             "email": "temakomarov98@gmail.com"
         }
     ],
+    "repositories": [
+        {
+            "url": "https://github.com/TemKaa1337/botifier-stub-generator",
+            "type": "vcs"
+        }
+    ],
+    "minimum-stability": "dev",
     "require": {
         "php": "^8.3",
         "temkaa/container": "^0.2.5",

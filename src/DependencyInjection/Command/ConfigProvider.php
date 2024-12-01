@@ -10,11 +10,8 @@ use ReflectionClass;
 use Temkaa\Botifier\Command\CommandInterface;
 use Temkaa\Botifier\Command\Console;
 use Temkaa\Botifier\Command\Handler\HelpCommand;
-use Temkaa\Botifier\Factory\Message\Content\UnknownContentFactory;
-use Temkaa\Botifier\Factory\Message\ContentFactory;
-use Temkaa\Botifier\Factory\Message\ContentFactoryInterface;
-use Temkaa\Botifier\Serializer\Action\SerializerInterface;
-use Temkaa\Botifier\Serializer\Serializer;
+use Temkaa\Botifier\Factory\ResponseFactory;
+use Temkaa\Botifier\Interface\Response\FactoryInterface;
 use Temkaa\Botifier\Service\TelegramClient;
 use Temkaa\Container\Attribute\Bind\InstanceOfIterator;
 use Temkaa\Container\Builder\Config\ClassBuilder;
@@ -33,9 +30,9 @@ final readonly class ConfigProvider implements ProviderInterface
             ->include(__DIR__.'/../../Command/')
             ->include(__DIR__.'/../../Service/')
             ->include(__DIR__.'/../../Factory/')
+            ->exclude(__DIR__.'/../../Model/')
             ->include((new ReflectionClass(Client::class))->getFileName())
             ->include((new ReflectionClass(HttpFactory::class))->getFileName())
-            ->include(__DIR__.'/../../Serializer/')
             ->exclude(__DIR__.'/../../Command/Input.php')
             ->exclude(__DIR__.'/../../Command/Output.php')
             ->bindClass(
@@ -60,19 +57,8 @@ final readonly class ConfigProvider implements ProviderInterface
                     ->build(),
             )
             ->bindClass(
-                ClassBuilder::make(ContentFactory::class)
-                    ->bindVariable(
-                        'factories',
-                        new InstanceOfIterator(
-                            ContentFactoryInterface::class,
-                            exclude: [UnknownContentFactory::class],
-                        ),
-                    )
-                    ->build(),
-            )
-            ->bindClass(
-                ClassBuilder::make(Serializer::class)
-                    ->bindVariable('handlers', new InstanceOfIterator(SerializerInterface::class))
+                ClassBuilder::make(ResponseFactory::class)
+                    ->bindVariable('factories', new InstanceOfIterator(FactoryInterface::class))
                     ->build(),
             )
             ->build();

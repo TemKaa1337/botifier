@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Temkaa\Botifier\Service;
 
-use Temkaa\Botifier\Model\RequestInterface;
-use Temkaa\Botifier\Model\Response\Message;
-use Temkaa\Botifier\Model\ResponseInterface;
+use Temkaa\Botifier\Interface\RequestInterface;
+use Temkaa\Botifier\Interface\ResponseInterface;
+use Temkaa\Botifier\Model\Response\Nested\Update;
 
 /**
  * @api
@@ -20,7 +20,7 @@ interface TelegramClientInterface
      *
      * @return TResponse
      */
-    public function reply(RequestInterface $request, Message $replyTo): ResponseInterface;
+    public function reply(RequestInterface $request, Update $update): ResponseInterface;
 
     /**
      * @template TResponse of ResponseInterface

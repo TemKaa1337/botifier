@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Temkaa\Botifier\Handler;
 
-use Temkaa\Botifier\Model\Response\Message;
+use Temkaa\Botifier\Model\Response\Nested\Update;
 
 /**
  * @api
  */
 interface HandlerInterface
 {
-    public function handle(Message $message): void;
+    public function handle(Update $update): void;
 
-    public function supports(Message $message): bool;
+    public function supports(Update $update): bool;
 }

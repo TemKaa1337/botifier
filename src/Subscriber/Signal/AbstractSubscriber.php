@@ -12,12 +12,6 @@ use Psr\Log\NullLogger;
  */
 abstract class AbstractSubscriber implements SubscriberInterface
 {
-    private const array SIGNAL_SIGNATURE_MAP = [
-        0  => 'PHP_WINDOWS_EVENT_CTRL_C',
-        1  => 'PHP_WINDOWS_EVENT_CTRL_BREAK',
-        15 => 'SIGTERM',
-    ];
-
     private bool $isTriggered = false;
 
     public function __construct(
@@ -31,12 +25,7 @@ abstract class AbstractSubscriber implements SubscriberInterface
 
         $subscribedSignal = $this->getSubscribedSignal();
 
-        $this->logger->warning(
-            sprintf(
-                'Received "%s" signal.',
-                self::SIGNAL_SIGNATURE_MAP[$subscribedSignal] ?? $subscribedSignal,
-            ),
-        );
+        $this->logger->warning(sprintf('Received "%s" signal.', $subscribedSignal));
     }
 
     public function isTriggered(): bool

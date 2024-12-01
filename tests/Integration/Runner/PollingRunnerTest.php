@@ -12,14 +12,13 @@ use ReflectionException;
 use Temkaa\Botifier\DependencyInjection\ConfigProvider as PollingRunnerContainerConfigProvider;
 use Temkaa\Botifier\Enum\ApiMethod;
 use Temkaa\Botifier\Enum\Language;
-use Temkaa\Botifier\Enum\Message\Content\Type;
+use Temkaa\Botifier\Factory\ResponseFactory;
 use Temkaa\Botifier\Handler\UnsupportedHandlerInterface;
-use Temkaa\Botifier\Model\Response\Message;
-use Temkaa\Botifier\Model\Response\Message\Content\Command;
-use Temkaa\Botifier\Model\Response\Message\Content\Text;
-use Temkaa\Botifier\Model\Response\Message\Content\UnknownContent;
+use Temkaa\Botifier\Model\Response\Nested\Chat;
+use Temkaa\Botifier\Model\Response\Nested\Message;
+use Temkaa\Botifier\Model\Response\Nested\Update;
+use Temkaa\Botifier\Model\Shared\User;
 use Temkaa\Botifier\PollingRunner;
-use Temkaa\Botifier\Serializer\SerializerInterface;
 use Temkaa\Botifier\Service\TelegramClientInterface;
 use Temkaa\Container\Builder\ContainerBuilder;
 use Tests\Helper\DependencyInjection\ConfigProvider;
@@ -55,47 +54,42 @@ final class PollingRunnerTest extends AbstractRunnerTestCase
             'result' => [$message],
         ];
 
-        /** @var SerializerInterface $serializer */
-        $serializer = $this->container->get(SerializerInterface::class);
+        /** @var ResponseFactory $responseFactory */
+        $responseFactory = $this->container->get(ResponseFactory::class);
+
         /** @var TelegramClient $telegramClient */
         $telegramClient = $this->container->get(TelegramClientInterface::class);
         $telegramClient->setResponses(
             [
-                $serializer->deserialize(ApiMethod::GetUpdates, json_encode($message, JSON_THROW_ON_ERROR)),
+                $responseFactory->create(ApiMethod::GetUpdates, json_encode($message, JSON_THROW_ON_ERROR)),
             ],
         );
 
-        // todo: rename USER to FROM in models?
-        CallbackHandler::setSupportsCallback(static fn (Message $message): bool => true);
-        CallbackHandler::setHandleCallback(function (Message $message) use ($now): void {
-            self::assertSame(1234567, $message->getId());
-            self::assertSame(836780966, $message->getUpdateId());
-            self::assertFalse($message->isEdit());
-            self::assertFalse($message->isReply());
-            self::assertNull($message->getRepliedTo());
-            self::assertNull($message->getEditedAt());
-            self::assertEquals($now, $message->getCreatedAt());
+        CallbackHandler::setSupportsCallback(static fn (Update $update): bool => true);
+        CallbackHandler::setHandleCallback(function (Update $update) use ($now): void {
+            $expectedUpdate = new Update(
+                updateId: 836780966,
+                message: new Message(
+                    messageId: 1234567,
+                    date: $now,
+                    chat: new Chat(
+                        id: 772517840,
+                        type: 'private',
+                        username: 'username',
+                        firstName: 'first_name',
+                    ),
+                    from: new User(
+                        id: 123451222,
+                        isBot: false,
+                        firstName: 'first_name',
+                        username: 'username',
+                        languageCode: Language::Russian,
+                    ),
+                    text: '/start asd asd',
+                ),
+            );
 
-            $user = $message->getUser();
-            self::assertSame(123451222, $user->getId());
-            self::assertFalse($user->isBot());
-            self::assertSame('first_name', $user->getFirstName());
-            self::assertSame('username', $user->getUsername());
-            self::assertSame(Language::Russian, $user->getLanguage());
-
-            $chat = $message->getChat();
-            self::assertSame(772517840, $chat->getId());
-            self::assertSame('first_name', $chat->getFirstName());
-            self::assertSame('username', $chat->getUsername());
-            self::assertSame('private', $chat->getType());
-
-            $content = $message->getContent();
-            self::assertInstanceOf(Command::class, $content);
-
-            /** @var Command $content */
-            self::assertSame('start', $content->getSignature());
-            self::assertSame('asd asd', $content->getParameters());
-            self::assertSame(Type::Command, $content->getType());
+            self::assertEquals($expectedUpdate, $update);
         });
 
         $runner = $this->getRunner(PollingRunner::class);
@@ -128,17 +122,18 @@ final class PollingRunnerTest extends AbstractRunnerTestCase
             'result' => [$message],
         ];
 
-        /** @var SerializerInterface $serializer */
-        $serializer = $this->container->get(SerializerInterface::class);
+        /** @var ResponseFactory $responseFactory */
+        $responseFactory = $this->container->get(ResponseFactory::class);
+
         /** @var TelegramClient $telegramClient */
         $telegramClient = $this->container->get(TelegramClientInterface::class);
         $telegramClient->setResponses(
             [
-                $serializer->deserialize(ApiMethod::GetUpdates, json_encode($message, JSON_THROW_ON_ERROR)),
+                $responseFactory->create(ApiMethod::GetUpdates, json_encode($message, JSON_THROW_ON_ERROR)),
             ],
         );
 
-        CallbackHandler::setSupportsCallback(static fn (Message $message): bool => false);
+        CallbackHandler::setSupportsCallback(static fn (Update $update): bool => false);
 
         $this->getRunner(PollingRunner::class)->run();
 
@@ -174,13 +169,14 @@ final class PollingRunnerTest extends AbstractRunnerTestCase
             'result' => [$message],
         ];
 
-        /** @var SerializerInterface $serializer */
-        $serializer = $this->container->get(SerializerInterface::class);
+        /** @var ResponseFactory $responseFactory */
+        $responseFactory = $this->container->get(ResponseFactory::class);
+
         /** @var TelegramClient $telegramClient */
         $telegramClient = $this->container->get(TelegramClientInterface::class);
         $telegramClient->setResponses(
             [
-                $serializer->deserialize(ApiMethod::GetUpdates, json_encode($message, JSON_THROW_ON_ERROR)),
+                $responseFactory->create(ApiMethod::GetUpdates, json_encode($message, JSON_THROW_ON_ERROR)),
             ],
         );
 
@@ -192,12 +188,9 @@ final class PollingRunnerTest extends AbstractRunnerTestCase
         self::assertSame(
             [
                 'warning' => [
-                    sprintf(
-                        'Could not find suitable handler for message "%s".',
-                        json_encode($message['result'][0], JSON_THROW_ON_ERROR),
-                    ),
+                    'Could not find suitable handler for update id "836780966".',
                 ],
-                'info' => ['Exiting from PollingRunner.']
+                'info'    => ['Exiting from PollingRunner.'],
             ],
             $logger->getMessages(),
         );
@@ -218,45 +211,43 @@ final class PollingRunnerTest extends AbstractRunnerTestCase
             'result' => [$message],
         ];
 
-        /** @var SerializerInterface $serializer */
-        $serializer = $this->container->get(SerializerInterface::class);
+        /** @var ResponseFactory $responseFactory */
+        $responseFactory = $this->container->get(ResponseFactory::class);
+
         /** @var TelegramClient $telegramClient */
         $telegramClient = $this->container->get(TelegramClientInterface::class);
         $telegramClient->setResponses(
             [
-                $serializer->deserialize(ApiMethod::GetUpdates, json_encode($message, JSON_THROW_ON_ERROR)),
+                $responseFactory->create(ApiMethod::GetUpdates, json_encode($message, JSON_THROW_ON_ERROR)),
             ],
         );
 
-        CallbackHandler::setSupportsCallback(static fn (Message $message): bool => true);
-        CallbackHandler::setHandleCallback(function (Message $message) use ($createdAt, $editedAt): void {
-            self::assertSame(1234567, $message->getId());
-            self::assertSame(836780966, $message->getUpdateId());
-            self::assertTrue($message->isEdit());
-            self::assertFalse($message->isReply());
-            self::assertNull($message->getRepliedTo());
-            self::assertEquals($editedAt, $message->getEditedAt());
-            self::assertEquals($createdAt, $message->getCreatedAt());
+        CallbackHandler::setSupportsCallback(static fn (Update $update): bool => true);
+        CallbackHandler::setHandleCallback(function (Update $update) use ($createdAt, $editedAt): void {
+            $expectedUpdate = new Update(
+                updateId: 836780966,
+                editedMessage: new Message(
+                    messageId: 1234567,
+                    date: $createdAt,
+                    chat: new Chat(
+                        id: 772517840,
+                        type: 'private',
+                        username: 'username',
+                        firstName: 'first_name',
+                    ),
+                    from: new User(
+                        id: 123451222,
+                        isBot: false,
+                        firstName: 'first_name',
+                        username: 'username',
+                        languageCode: Language::Russian,
+                    ),
+                    editDate: $editedAt,
+                    text: 'non command message',
+                ),
+            );
 
-            $user = $message->getUser();
-            self::assertSame(123451222, $user->getId());
-            self::assertFalse($user->isBot());
-            self::assertSame('first_name', $user->getFirstName());
-            self::assertSame('username', $user->getUsername());
-            self::assertSame(Language::Russian, $user->getLanguage());
-
-            $chat = $message->getChat();
-            self::assertSame(772517840, $chat->getId());
-            self::assertSame('first_name', $chat->getFirstName());
-            self::assertSame('username', $chat->getUsername());
-            self::assertSame('private', $chat->getType());
-
-            $content = $message->getContent();
-            self::assertInstanceOf(Text::class, $content);
-
-            /** @var Text $content */
-            self::assertSame('non command message', $content->getText());
-            self::assertSame(Type::Text, $content->getType());
+            self::assertEquals($expectedUpdate, $update);
         });
 
         $runner = $this->getRunner(PollingRunner::class);
@@ -285,74 +276,61 @@ final class PollingRunnerTest extends AbstractRunnerTestCase
             'result' => [$message],
         ];
 
-        /** @var SerializerInterface $serializer */
-        $serializer = $this->container->get(SerializerInterface::class);
+        /** @var ResponseFactory $responseFactory */
+        $responseFactory = $this->container->get(ResponseFactory::class);
+
         /** @var TelegramClient $telegramClient */
         $telegramClient = $this->container->get(TelegramClientInterface::class);
         $telegramClient->setResponses(
             [
-                $serializer->deserialize(ApiMethod::GetUpdates, json_encode($message, JSON_THROW_ON_ERROR)),
+                $responseFactory->create(ApiMethod::GetUpdates, json_encode($message, JSON_THROW_ON_ERROR)),
             ],
         );
 
-        CallbackHandler::setSupportsCallback(static fn (Message $message): bool => true);
+        CallbackHandler::setSupportsCallback(static fn (Update $update): bool => true);
         CallbackHandler::setHandleCallback(
-            function (Message $message) use ($replyToMessageCreatedAt, $repliedCreatedAt, $repliedUpdatedAt): void {
-                $repliedToMessage = $message->getRepliedTo();
-                self::assertSame(1234567, $message->getId());
-                self::assertSame(836780966, $message->getUpdateId());
-                self::assertTrue($message->isEdit());
-                self::assertTrue($message->isReply());
-                self::assertInstanceOf(Message::class, $repliedToMessage);
-                self::assertEquals($repliedUpdatedAt, $message->getEditedAt());
-                self::assertEquals($repliedCreatedAt, $message->getCreatedAt());
-
-                $user = $message->getUser();
-                self::assertSame(123451222, $user->getId());
-                self::assertFalse($user->isBot());
-                self::assertSame('first_name', $user->getFirstName());
-                self::assertSame('username', $user->getUsername());
-                self::assertSame(Language::Russian, $user->getLanguage());
-
-                $chat = $message->getChat();
-                self::assertSame(772517840, $chat->getId());
-                self::assertSame('first_name', $chat->getFirstName());
-                self::assertSame('username', $chat->getUsername());
-                self::assertSame('private', $chat->getType());
-
-                $content = $message->getContent();
-                self::assertInstanceOf(Text::class, $content);
-
-                /** @var Text $content */
-                self::assertSame('edited reply message', $content->getText());
-                self::assertSame(Type::Text, $content->getType());
-
-                self::assertSame(12345678, $repliedToMessage->getId());
-                self::assertNull($repliedToMessage->getUpdateId());
-                self::assertFalse($repliedToMessage->isEdit());
-                self::assertFalse($repliedToMessage->isReply());
-                self::assertNull($repliedToMessage->getEditedAt());
-                self::assertEquals($replyToMessageCreatedAt, $repliedToMessage->getCreatedAt());
-
-                $user = $repliedToMessage->getUser();
-                self::assertSame(123451222, $user->getId());
-                self::assertFalse($user->isBot());
-                self::assertSame('first_name', $user->getFirstName());
-                self::assertSame('username', $user->getUsername());
-                self::assertSame(Language::Russian, $user->getLanguage());
-
-                $chat = $repliedToMessage->getChat();
-                self::assertSame(772517840, $chat->getId());
-                self::assertSame('first_name', $chat->getFirstName());
-                self::assertSame('username', $chat->getUsername());
-                self::assertSame('private', $chat->getType());
-
-                $content = $repliedToMessage->getContent();
-                self::assertInstanceOf(Text::class, $content);
-
-                /** @var Text $content */
-                self::assertSame('replied to message', $content->getText());
-                self::assertSame(Type::Text, $content->getType());
+            function (Update $update) use ($replyToMessageCreatedAt, $repliedCreatedAt, $repliedUpdatedAt): void {
+                $expectedUpdate = new Update(
+                    updateId: 836780966,
+                    editedMessage: new Message(
+                        messageId: 1234567,
+                        date: $repliedCreatedAt,
+                        chat: new Chat(
+                            id: 772517840,
+                            type: 'private',
+                            username: 'username',
+                            firstName: 'first_name',
+                        ),
+                        from: new User(
+                            id: 123451222,
+                            isBot: false,
+                            firstName: 'first_name',
+                            username: 'username',
+                            languageCode: Language::Russian,
+                        ),
+                        replyToMessage: new Message(
+                            messageId: 12345678,
+                            date: $replyToMessageCreatedAt,
+                            chat: new Chat(
+                                id: 772517840,
+                                type: 'private',
+                                username: 'username',
+                                firstName: 'first_name',
+                            ),
+                            from: new User(
+                                id: 123451222,
+                                isBot: false,
+                                firstName: 'first_name',
+                                username: 'username',
+                                languageCode: Language::Russian,
+                            ),
+                            text: 'replied to message',
+                        ),
+                        editDate: $repliedUpdatedAt,
+                        text: 'edited reply message',
+                    ),
+                );
+                self::assertEquals($expectedUpdate, $update);
             },
         );
 
@@ -374,45 +352,42 @@ final class PollingRunnerTest extends AbstractRunnerTestCase
             'result' => [$message],
         ];
 
-        /** @var SerializerInterface $serializer */
-        $serializer = $this->container->get(SerializerInterface::class);
+        /** @var ResponseFactory $responseFactory */
+        $responseFactory = $this->container->get(ResponseFactory::class);
+
         /** @var TelegramClient $telegramClient */
         $telegramClient = $this->container->get(TelegramClientInterface::class);
         $telegramClient->setResponses(
             [
-                $serializer->deserialize(ApiMethod::GetUpdates, json_encode($message, JSON_THROW_ON_ERROR)),
+                $responseFactory->create(ApiMethod::GetUpdates, json_encode($message, JSON_THROW_ON_ERROR)),
             ],
         );
 
-        CallbackHandler::setSupportsCallback(static fn (Message $message): bool => true);
-        CallbackHandler::setHandleCallback(function (Message $message) use ($now): void {
-            self::assertSame(1234567, $message->getId());
-            self::assertSame(836780966, $message->getUpdateId());
-            self::assertFalse($message->isEdit());
-            self::assertFalse($message->isReply());
-            self::assertNull($message->getRepliedTo());
-            self::assertNull($message->getEditedAt());
-            self::assertEquals($now, $message->getCreatedAt());
+        CallbackHandler::setSupportsCallback(static fn (Update $update): bool => true);
+        CallbackHandler::setHandleCallback(function (Update $update) use ($now): void {
+            $expectedUpdate = new Update(
+                updateId: 836780966,
+                message: new Message(
+                    messageId: 1234567,
+                    date: $now,
+                    chat: new Chat(
+                        id: 772517840,
+                        type: 'private',
+                        username: 'username',
+                        firstName: 'first_name',
+                    ),
+                    from: new User(
+                        id: 123451222,
+                        isBot: false,
+                        firstName: 'first_name',
+                        username: 'username',
+                        languageCode: Language::Russian,
+                    ),
+                    text: 'non command message',
+                ),
+            );
 
-            $user = $message->getUser();
-            self::assertSame(123451222, $user->getId());
-            self::assertFalse($user->isBot());
-            self::assertSame('first_name', $user->getFirstName());
-            self::assertSame('username', $user->getUsername());
-            self::assertSame(Language::Russian, $user->getLanguage());
-
-            $chat = $message->getChat();
-            self::assertSame(772517840, $chat->getId());
-            self::assertSame('first_name', $chat->getFirstName());
-            self::assertSame('username', $chat->getUsername());
-            self::assertSame('private', $chat->getType());
-
-            $content = $message->getContent();
-            self::assertInstanceOf(Text::class, $content);
-
-            /** @var Text $content */
-            self::assertSame('non command message', $content->getText());
-            self::assertSame(Type::Text, $content->getType());
+            self::assertEquals($expectedUpdate, $update);
         });
 
         $runner = $this->getRunner(PollingRunner::class);
@@ -439,162 +414,59 @@ final class PollingRunnerTest extends AbstractRunnerTestCase
             'result' => [$message],
         ];
 
-        /** @var SerializerInterface $serializer */
-        $serializer = $this->container->get(SerializerInterface::class);
+        /** @var ResponseFactory $responseFactory */
+        $responseFactory = $this->container->get(ResponseFactory::class);
+
         /** @var TelegramClient $telegramClient */
         $telegramClient = $this->container->get(TelegramClientInterface::class);
         $telegramClient->setResponses(
             [
-                $serializer->deserialize(ApiMethod::GetUpdates, json_encode($message, JSON_THROW_ON_ERROR)),
+                $responseFactory->create(ApiMethod::GetUpdates, json_encode($message, JSON_THROW_ON_ERROR)),
             ],
         );
 
-        CallbackHandler::setSupportsCallback(static fn (Message $message): bool => true);
-        CallbackHandler::setHandleCallback(function (Message $message) use ($createdAt, $repliedCreatedAt): void {
-            $repliedToMessage = $message->getRepliedTo();
-            self::assertSame(1234567, $message->getId());
-            self::assertSame(836780966, $message->getUpdateId());
-            self::assertFalse($message->isEdit());
-            self::assertTrue($message->isReply());
-            self::assertInstanceOf(Message::class, $repliedToMessage);
-            self::assertNull($message->getEditedAt());
-            self::assertEquals($createdAt, $message->getCreatedAt());
-
-            $user = $message->getUser();
-            self::assertSame(123451222, $user->getId());
-            self::assertFalse($user->isBot());
-            self::assertSame('first_name', $user->getFirstName());
-            self::assertSame('username', $user->getUsername());
-            self::assertSame(Language::Russian, $user->getLanguage());
-
-            $chat = $message->getChat();
-            self::assertSame(772517840, $chat->getId());
-            self::assertSame('first_name', $chat->getFirstName());
-            self::assertSame('username', $chat->getUsername());
-            self::assertSame('private', $chat->getType());
-
-            $content = $message->getContent();
-            self::assertInstanceOf(Text::class, $content);
-
-            /** @var Text $content */
-            self::assertSame('original message', $content->getText());
-            self::assertSame(Type::Text, $content->getType());
-
-            self::assertSame(12345678, $repliedToMessage->getId());
-            self::assertNull($repliedToMessage->getUpdateId());
-            self::assertFalse($repliedToMessage->isEdit());
-            self::assertFalse($repliedToMessage->isReply());
-            self::assertNull($repliedToMessage->getRepliedTo());
-            self::assertNull($repliedToMessage->getEditedAt());
-            self::assertEquals($repliedCreatedAt, $repliedToMessage->getCreatedAt());
-
-            $user = $repliedToMessage->getUser();
-            self::assertSame(123451222, $user->getId());
-            self::assertFalse($user->isBot());
-            self::assertSame('first_name', $user->getFirstName());
-            self::assertSame('username', $user->getUsername());
-            self::assertSame(Language::Russian, $user->getLanguage());
-
-            $chat = $repliedToMessage->getChat();
-            self::assertSame(772517840, $chat->getId());
-            self::assertSame('first_name', $chat->getFirstName());
-            self::assertSame('username', $chat->getUsername());
-            self::assertSame('private', $chat->getType());
-
-            $content = $repliedToMessage->getContent();
-            self::assertInstanceOf(Text::class, $content);
-
-            /** @var Text $content */
-            self::assertSame('reply message', $content->getText());
-            self::assertSame(Type::Text, $content->getType());
-        });
-
-        $runner = $this->getRunner(PollingRunner::class);
-        $runner->run();
-    }
-
-    /**
-     * @throws ContainerExceptionInterface
-     * @throws JsonException
-     * @throws NotFoundExceptionInterface
-     */
-    public function testRunWithUnknownMessageContentType(): void
-    {
-        $createdAt = (new DateTimeImmutable())->setTime(0, 0, microsecond: 0);
-        $message = $this->getStickerMessage($createdAt);
-        $message = [
-            'ok'     => true,
-            'result' => [$message],
-        ];
-
-        /** @var SerializerInterface $serializer */
-        $serializer = $this->container->get(SerializerInterface::class);
-        /** @var TelegramClient $telegramClient */
-        $telegramClient = $this->container->get(TelegramClientInterface::class);
-        $telegramClient->setResponses(
-            [
-                $serializer->deserialize(ApiMethod::GetUpdates, json_encode($message, JSON_THROW_ON_ERROR)),
-            ],
-        );
-
-        CallbackHandler::setSupportsCallback(static fn (Message $message): bool => true);
-        CallbackHandler::setHandleCallback(function (Message $message) use ($createdAt): void {
-            self::assertSame(1234567, $message->getId());
-            self::assertSame(836780966, $message->getUpdateId());
-            self::assertFalse($message->isEdit());
-            self::assertFalse($message->isReply());
-            self::assertNull($message->getRepliedTo());
-            self::assertNull($message->getEditedAt());
-            self::assertEquals($createdAt, $message->getCreatedAt());
-
-            $user = $message->getUser();
-            self::assertSame(123451222, $user->getId());
-            self::assertFalse($user->isBot());
-            self::assertSame('first_name', $user->getFirstName());
-            self::assertSame('username', $user->getUsername());
-            self::assertSame(Language::Russian, $user->getLanguage());
-
-            $chat = $message->getChat();
-            self::assertSame(772517840, $chat->getId());
-            self::assertSame('first_name', $chat->getFirstName());
-            self::assertSame('username', $chat->getUsername());
-            self::assertSame('private', $chat->getType());
-
-            $content = $message->getContent();
-            self::assertInstanceOf(UnknownContent::class, $content);
-
-            /** @var UnknownContent $content */
-            self::assertSame(
-                [
-                    'width'          => 512,
-                    'height'         => 512,
-                    'emoji'          => '\ud83e\udd7a',
-                    'set_name'       => 'Barbiturato',
-                    'is_animated'    => false,
-                    'is_video'       => false,
-                    'type'           => 'regular',
-                    'thumbnail'      => [
-                        'file_id'        => 'AAMCAgADGQEAAy1m-UGDBm2AlDMv2l-JT4a_u_AGTAACxAADmlyrHXTaQf0e-7R3AQAHbQADNgQ',
-                        'file_unique_id' => 'AQADxAADmlyrHXI',
-                        'file_size'      => 9306,
-                        'width'          => 320,
-                        'height'         => 320,
-                    ],
-                    'thumb'          => [
-                        'file_id'        => 'AAMCAgADGQEAAy1m-UGDBm2AlDMv2l-JT4a_u_AGTAACxAADmlyrHXTaQf0e-7R3AQAHbQADNgQ',
-                        'file_unique_id' => 'AQADxAADmlyrHXI',
-                        'file_size'      => 9306,
-                        'width'          => 320,
-                        'height'         => 320,
-                    ],
-                    'file_id'        => 'CAACAgIAAxkBAAMtZvlBgwZtgJQzL9pfiU-Gv7vwBkwAAsQAA5pcqx102kH9Hvu0dzYE',
-                    'file_unique_id' => 'AgADxAADmlyrHQ',
-                    'file_size'      => 17354,
-                ],
-                $content->getMessage(),
+        CallbackHandler::setSupportsCallback(static fn (Update $update): bool => true);
+        CallbackHandler::setHandleCallback(function (Update $update) use ($createdAt, $repliedCreatedAt): void {
+            $expectedUpdate = new Update(
+                updateId: 836780966,
+                message: new Message(
+                    messageId: 1234567,
+                    date: $createdAt,
+                    chat: new Chat(
+                        id: 772517840,
+                        type: 'private',
+                        username: 'username',
+                        firstName: 'first_name',
+                    ),
+                    from: new User(
+                        id: 123451222,
+                        isBot: false,
+                        firstName: 'first_name',
+                        username: 'username',
+                        languageCode: Language::Russian,
+                    ),
+                    replyToMessage: new Message(
+                        messageId: 12345678,
+                        date: $repliedCreatedAt,
+                        chat: new Chat(
+                            id: 772517840,
+                            type: 'private',
+                            username: 'username',
+                            firstName: 'first_name',
+                        ),
+                        from: new User(
+                            id: 123451222,
+                            isBot: false,
+                            firstName: 'first_name',
+                            username: 'username',
+                            languageCode: Language::Russian,
+                        ),
+                        text: 'reply message',
+                    ),
+                    text: 'original message',
+                ),
             );
-            self::assertSame(Type::Unknown, $content->getType());
-            self::assertSame('sticker', $content->getKey());
+            self::assertEquals($expectedUpdate, $update);
         });
 
         $runner = $this->getRunner(PollingRunner::class);

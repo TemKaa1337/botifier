@@ -11,6 +11,7 @@ use Temkaa\Botifier\Command\InputInterface;
 use Temkaa\Botifier\Command\OutputInterface;
 use Temkaa\Botifier\Enum\Command\Argument;
 use Temkaa\Botifier\Enum\Command\ExitCode;
+use Temkaa\Botifier\Model\Request\GetWebhookInfoRequest;
 use Temkaa\Botifier\Model\Request\Webhook\GetInfoRequest;
 use Temkaa\Botifier\Service\TelegramClientInterface;
 
@@ -37,19 +38,17 @@ final readonly class InfoCommand extends BaseCommand implements CommandInterface
     {
         $this->validateArguments($input, self::ARGUMENTS, self::SIGNATURE);
 
-        $response = $this->client->send(
-            new GetInfoRequest(),
-        );
+        $response = $this->client->send(new GetWebhookInfoRequest());
 
         $output->writeln(
-            $response->success()
+            $response->ok
                 ? 'Successfully retrieved webhook info.'
                 : 'An error occurred when trying retrieve bot webhook info.',
         );
 
         $output->writeln(json_encode($response->raw(), JSON_THROW_ON_ERROR));
 
-        return $response->success() ? ExitCode::Success->value : ExitCode::Failure->value;
+        return $response->ok ? ExitCode::Success->value : ExitCode::Failure->value;
     }
 
     public function getDescription(): string

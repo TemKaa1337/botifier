@@ -13,9 +13,9 @@ use Psr\Http\Message\StreamFactoryInterface;
 use Psr\Http\Message\StreamInterface;
 use Temkaa\Botifier\Enum\ApiMethod;
 use Temkaa\Botifier\Enum\HttpMethod;
-use Temkaa\Botifier\Model\RequestInterface;
-use Temkaa\Botifier\Model\Response\Message;
-use Temkaa\Botifier\Serializer\SerializerInterface;
+use Temkaa\Botifier\Factory\ResponseFactory;
+use Temkaa\Botifier\Interface\RequestInterface;
+use Temkaa\Botifier\Model\Response\Nested\Update;
 use Temkaa\Botifier\Service\TelegramClient;
 
 final class TelegramClientTest extends TestCase
@@ -68,10 +68,11 @@ final class TelegramClientTest extends TestCase
             ->with(json_encode(['text' => 'some text here', 'reply_to_message_id' => 100]))
             ->willReturn($body);
 
-        $serializer = $this->createMock(SerializerInterface::class);
-        $serializer
+        /** @noinspection ClassMockingCorrectnessInspection, PhpUnitInvalidMockingEntityInspection */
+        $responseFactory = $this->createMock(ResponseFactory::class);
+        $responseFactory
             ->expects($this->once())
-            ->method('deserialize');
+            ->method('create');
 
         $request = $this->createMock(RequestInterface::class);
         $request
@@ -84,17 +85,18 @@ final class TelegramClientTest extends TestCase
             ->willReturn(HttpMethod::Post);
         $request
             ->expects($this->once())
-            ->method('getParameters')
+            ->method('getData')
             ->willReturn(['text' => 'some text here']);
 
-        /** @noinspection PhpUnitInvalidMockingEntityInspection */
-        $message = $this->createMock(Message::class);
-        $message
-            ->expects($this->once())
-            ->method('getId')
-            ->willReturn(100);
+        /** @noinspection ClassMockingCorrectnessInspection, PhpUnitInvalidMockingEntityInspection */
+        $message = $this->createMock(Update::class);
+        $message->updateId = 100;
+        // $message
+        //     ->expects($this->once())
+        //     ->method('getId')
+        //     ->willReturn(100);
 
-        $client = new TelegramClient($httpClient, $requestFactory, $streamFactory, $serializer, 'bot_token');
+        $client = new TelegramClient($httpClient, $requestFactory, $streamFactory, $responseFactory, 'bot_token');
         $client->reply($request, $message);
     }
 
@@ -146,10 +148,11 @@ final class TelegramClientTest extends TestCase
             ->with(json_encode(['text' => 'some text here']))
             ->willReturn($body);
 
-        $serializer = $this->createMock(SerializerInterface::class);
-        $serializer
+        /** @noinspection ClassMockingCorrectnessInspection, PhpUnitInvalidMockingEntityInspection */
+        $responseFactory = $this->createMock(ResponseFactory::class);
+        $responseFactory
             ->expects($this->once())
-            ->method('deserialize');
+            ->method('create');
 
         $request = $this->createMock(RequestInterface::class);
         $request
@@ -162,10 +165,10 @@ final class TelegramClientTest extends TestCase
             ->willReturn(HttpMethod::Post);
         $request
             ->expects($this->once())
-            ->method('getParameters')
+            ->method('getData')
             ->willReturn(['text' => 'some text here']);
 
-        $client = new TelegramClient($httpClient, $requestFactory, $streamFactory, $serializer, 'bot_token');
+        $client = new TelegramClient($httpClient, $requestFactory, $streamFactory, $responseFactory, 'bot_token');
         $client->send($request);
     }
 }

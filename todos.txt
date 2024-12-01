@@ -1,7 +1,3 @@
-+ 1. fix in container if env variable is missing from attribute but property has default value, then do not fail
-+ 2. test base functionality in real world with test project (webhook info, webhook set/unset, description etc - all the commands)
-+ 3. if 2 item does not work, fix it
-+ 6. add reply option to bot
 
 4. test allowed updates for getUpdates
 7. add keyboards to bot

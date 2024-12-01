@@ -12,6 +12,7 @@ use Temkaa\Botifier\Enum\Command\Argument;
 use Temkaa\Botifier\Enum\Command\ExitCode;
 use Temkaa\Botifier\Exception\Command\InvalidCommandArgumentException;
 use Temkaa\Botifier\Model\Response\GetWebhookInfoResponse;
+use Temkaa\Botifier\Model\Response\Nested\WebhookInfo;
 use Tests\Helper\Service\Command\Output;
 use Tests\Helper\Service\TelegramClient;
 use Tests\Integration\Command\Handler\AbstractCommandTestCase;
@@ -44,18 +45,19 @@ final class InfoCommandTest extends AbstractCommandTestCase
         $this->client->setResponses(
             [
                 new GetWebhookInfoResponse(
-                    success: true,
+                    true,
+                    result: new WebhookInfo(
+                        url: 'someurl.com',
+                        hasCustomCertificate: true,
+                        pendingUpdateCount: 0,
+                        ipAddress: '192.168.200.6',
+                        lastErrorDate: $now,
+                        lastErrorMessage: 'last_error_message',
+                        maxConnections: 20,
+                        allowedUpdates: []
+                    ),
                     description: null,
                     errorCode: null,
-                    url: 'someurl.com',
-                    hasCustomCertificate: true,
-                    pendingUpdatesCount: 0,
-                    ip: '192.168.200.6',
-                    lastErrorDateTime: $now,
-                    lastErrorMessage: 'last_error_message',
-                    maxConnections: 20,
-                    allowedUpdates: [],
-                    raw: $raw,
                 ),
             ],
         );

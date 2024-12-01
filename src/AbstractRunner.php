@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Temkaa\Botifier;
 
 use Temkaa\Botifier\Handler\HandlerInterface;
-use Temkaa\Botifier\Model\Response\Message;
+use Temkaa\Botifier\Model\Response\Nested\Update;
 
 /**
  * @internal
@@ -20,10 +20,10 @@ abstract readonly class AbstractRunner
     ) {
     }
 
-    protected function getHandler(Message $message): ?HandlerInterface
+    protected function getHandler(Update $update): ?HandlerInterface
     {
         foreach ($this->handlers as $handler) {
-            if ($handler->supports($message)) {
+            if ($handler->supports($update)) {
                 return $handler;
             }
         }

@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Tests\Helper\Service;
 
 use LogicException;
-use Temkaa\Botifier\Model\RequestInterface;
-use Temkaa\Botifier\Model\Response\Message;
-use Temkaa\Botifier\Model\ResponseInterface;
+use Temkaa\Botifier\Interface\RequestInterface;
+use Temkaa\Botifier\Interface\ResponseInterface;
+use Temkaa\Botifier\Model\Response\Nested\Update;
 use Temkaa\Botifier\Service\TelegramClientInterface;
 
 final class TelegramClient implements TelegramClientInterface
@@ -17,9 +17,9 @@ final class TelegramClient implements TelegramClientInterface
      */
     private array $responses = [];
 
-    public function reply(RequestInterface $request, Message $replyTo): ResponseInterface
+    public function reply(RequestInterface $request, Update $update): ResponseInterface
     {
-        throw new LogicException('Not implemented.');
+        throw new LogicException('Not implemented');
     }
 
     public function reset(): void

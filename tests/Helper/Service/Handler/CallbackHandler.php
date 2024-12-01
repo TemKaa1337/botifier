@@ -6,7 +6,7 @@ namespace Tests\Helper\Service\Handler;
 
 use Closure;
 use Temkaa\Botifier\Handler\HandlerInterface;
-use Temkaa\Botifier\Model\Response\Message;
+use Temkaa\Botifier\Model\Response\Nested\Update;
 
 final class CallbackHandler implements HandlerInterface
 {
@@ -30,13 +30,13 @@ final class CallbackHandler implements HandlerInterface
         self::$supportsCallback = $callback;
     }
 
-    public function handle(Message $message): void
+    public function handle(Update $update): void
     {
-        (self::$handleCallback)($message);
+        (self::$handleCallback)($update);
     }
 
-    public function supports(Message $message): bool
+    public function supports(Update $update): bool
     {
-        return self::$supportsCallback !== null ? (self::$supportsCallback)($message) : false;
+        return self::$supportsCallback !== null ? (self::$supportsCallback)($update) : false;
     }
 }

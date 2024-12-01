@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Temkaa\Botifier\Handler;
 
-use Temkaa\Botifier\Model\Response\Message;
+use Temkaa\Botifier\Model\Response\Nested\Update;
 
 /**
  * @api
  */
 interface UnsupportedHandlerInterface
 {
-    public function handle(Message $message): void;
+    public function handle(Update $update): void;
 }

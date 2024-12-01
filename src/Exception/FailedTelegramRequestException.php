@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Temkaa\Botifier\Exception;
 
 use RuntimeException;
-use Temkaa\Botifier\Model\ResponseInterface;
+use Temkaa\Botifier\Interface\ResponseInterface;
 
 final class FailedTelegramRequestException extends RuntimeException implements BotifierExceptionInterface
 {

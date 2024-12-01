@@ -1,25 +1,22 @@
 <?php
 
+// THIS FILE IS GENERATED AUTOMATICALLY, DO NOT CHANGE IT MANUALLY
+
 declare(strict_types=1);
 
 namespace Temkaa\Botifier\Model\Response;
 
-use Temkaa\Botifier\Model\ResponseInterface;
+use Temkaa\Botifier\Interface\ResponseInterface;
+use Temkaa\Botifier\Model\Response\Nested\Message;
+use Temkaa\Botifier\Model\Response\Nested\ResponseParameters;
 
-final readonly class SendDocumentResponse extends AbstractResponse implements ResponseInterface
+final readonly class SendDocumentResponse implements ResponseInterface
 {
     public function __construct(
-        bool $success,
-        ?string $description,
-        ?int $errorCode,
-        private Message|bool|null $result,
-        array $raw,
-    ) {
-        parent::__construct($success, $description, $errorCode, $raw);
-    }
-
-    public function getResult(): Message|bool|null
-    {
-        return $this->result;
-    }
+        public bool $ok,
+        public ?Message $result = null,
+        public ?string $description = null,
+        public ?int $errorCode = null,
+        public ?ResponseParameters $parameters = null
+    ) {}
 }

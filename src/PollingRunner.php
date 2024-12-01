@@ -10,7 +10,6 @@ use Temkaa\Botifier\Exception\FailedTelegramRequestException;
 use Temkaa\Botifier\Handler\HandlerInterface;
 use Temkaa\Botifier\Handler\UnsupportedHandlerInterface;
 use Temkaa\Botifier\Model\Request\GetUpdatesRequest;
-use Temkaa\Botifier\Model\Response\Message;
 use Temkaa\Botifier\Service\TelegramClientInterface;
 use Temkaa\Botifier\Subscriber\SignalSubscriberInterface;
 
@@ -47,19 +46,18 @@ final readonly class PollingRunner extends AbstractRunner implements RunnerInter
             $latestOffset ??= self::START_OFFSET;
             $response = $this->client->send(new GetUpdatesRequest(self::LIMIT, $latestOffset));
 
-            if (!$response->success()) {
+            if (!$response->ok || $response->result === null) {
                 // TODO: add some king of exit handler for user
                 // TODO: add just a test now
+                // TODO: maybe name it something like 'strategy' or so
                 throw new FailedTelegramRequestException('Got unsuccessful telegram response.', $response);
             }
 
-            /** @var Message[] $messages */
-            $messages = $response->getResult();
-            foreach ($messages as $message) {
-                $handler = $this->getHandler($message) ?? $this->unsupportedHandler;
-                $handler->handle($message);
+            foreach ($response->result as $update) {
+                $handler = $this->getHandler($update) ?? $this->unsupportedHandler;
+                $handler->handle($update);
 
-                $latestOffset = (int) $message->getUpdateId() + 1;
+                $latestOffset = (int) $update->updateId + 1;
             }
 
             usleep((int) $this->pollingInterval * 1_000_000);
