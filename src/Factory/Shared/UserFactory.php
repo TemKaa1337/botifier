@@ -19,7 +19,7 @@ final readonly class UserFactory
             $message['first_name'],
             $message['last_name'] ?? null,
             $message['username'] ?? null,
-            $message['language_code'] === null ? null : Language::from($message['language_code']),
+            isset($message['language_code']) ? Language::from($message['language_code']) : null,
             $message['is_premium'] ?? null,
             $message['added_to_attachment_menu'] ?? null,
             $message['can_join_groups'] ?? null,
