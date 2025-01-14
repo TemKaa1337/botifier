@@ -14,13 +14,13 @@ use Temkaa\Botifier\Enum\Command\ExitCode;
 use Temkaa\Botifier\Exception\Command\InvalidCommandArgumentException;
 use Temkaa\Botifier\Model\Response\GeneralResponse;
 use Tests\Helper\Service\Command\Output;
-use Tests\Helper\Service\TelegramClient;
+use Tests\Helper\Service\Client;
 use Tests\Integration\Command\Handler\AbstractCommandTestCase;
 
 final class SetCommandTest extends AbstractCommandTestCase
 {
     /** @psalm-suppress PropertyNotSetInConstructor */
-    private TelegramClient $client;
+    private Client $client;
 
     public static function getDataForExecuteWithInvalidCertificatePathTest(): iterable
     {
@@ -183,7 +183,7 @@ final class SetCommandTest extends AbstractCommandTestCase
     {
         parent::setUp();
 
-        $this->client = new TelegramClient();
+        $this->client = new Client();
         $this->client->reset();
     }
 }

@@ -6,7 +6,6 @@ declare(strict_types=1);
 
 namespace Temkaa\Botifier\Model\Response;
 
-use Temkaa\Botifier\Interface\ResponseInterface;
 use Temkaa\Botifier\Model\Response\Nested\ChatMemberAdministrator;
 use Temkaa\Botifier\Model\Response\Nested\ChatMemberBanned;
 use Temkaa\Botifier\Model\Response\Nested\ChatMemberLeft;
@@ -14,6 +13,7 @@ use Temkaa\Botifier\Model\Response\Nested\ChatMemberMember;
 use Temkaa\Botifier\Model\Response\Nested\ChatMemberOwner;
 use Temkaa\Botifier\Model\Response\Nested\ChatMemberRestricted;
 use Temkaa\Botifier\Model\Response\Nested\ResponseParameters;
+use Temkaa\Botifier\Model\ResponseInterface;
 
 final readonly class GetChatMemberResponse implements ResponseInterface
 {

@@ -16,7 +16,7 @@ use Temkaa\Botifier\Enum\UpdateType;
 use Temkaa\Botifier\Exception\Command\InvalidCommandArgumentException;
 use Temkaa\Botifier\Model\File;
 use Temkaa\Botifier\Model\Request\Webhook\SetRequest;
-use Temkaa\Botifier\Service\TelegramClientInterface;
+use Temkaa\Botifier\Service\Telegram\ClientInterface;
 
 /**
  * @internal
@@ -39,7 +39,7 @@ final readonly class SetCommand extends BaseCommand implements CommandInterface
     private const string SIGNATURE = 'webhook:set';
 
     public function __construct(
-        private TelegramClientInterface $client,
+        private ClientInterface $client,
     ) {
     }
 

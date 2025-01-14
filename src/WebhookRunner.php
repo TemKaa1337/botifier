@@ -4,35 +4,24 @@ declare(strict_types=1);
 
 namespace Temkaa\Botifier;
 
-use JsonException;
-use Temkaa\Botifier\Handler\HandlerInterface;
-use Temkaa\Botifier\Handler\UnsupportedHandlerInterface;
-use Temkaa\Botifier\Provider\Webhook\MessageProvider;
+use Temkaa\Botifier\Processor\UpdateProcessor;
+use Temkaa\Botifier\Provider\Webhook\UpdateProviderInterface;
 
 /**
  * @api
  */
-final readonly class WebhookRunner extends AbstractRunner implements RunnerInterface
+final readonly class WebhookRunner implements RunnerInterface
 {
-    /**
-     * @param HandlerInterface[] $handlers
-     */
     public function __construct(
-        array $handlers,
-        private MessageProvider $messageProvider,
-        private UnsupportedHandlerInterface $unsupportedHandler,
+        private UpdateProcessor $updateProcessor,
+        private UpdateProviderInterface $updateProvider,
     ) {
-        parent::__construct($handlers);
     }
 
-    /**
-     * @throws JsonException
-     */
     public function run(): void
     {
-        $message = $this->messageProvider->provide();
+        $update = $this->updateProvider->provide();
 
-        $handler = $this->getHandler($message) ?? $this->unsupportedHandler;
-        $handler->handle($message);
+        $this->updateProcessor->process($update);
     }
 }

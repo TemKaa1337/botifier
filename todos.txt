@@ -1,16 +1,10 @@
-
-4. test allowed updates for getUpdates
-7. add keyboards to bot
-8. test keyboards
-9. add interceptors
-10. add config for setting allowed updates ?
-
-8. uncomment tag publishing (set up branch protection and etc) (set minimal readme)
-9. update changelog
-10. start fixing todos in code/github issues
-11. add docs
-12. add examples
-13. set readme
-14. fix infection errors
-15. fix psalm errors
-16. fix coverage numbers to 100%
+0. allowed updates for polling and for webhook setting
+1. interceptors
+2. state machines
+3. docs
+4. examples
+5. readme
+6. infection
+7. psalm
+8. phpmd
+9. add some logic for user-specific fallback when on getupdates we receive exception

@@ -9,11 +9,14 @@ use DateTimeZone;
 use JsonException;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use Temkaa\Botifier\DependencyInjection\Command\ConfigProvider;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
+use ReflectionClass;
+use ReflectionException;
 use Temkaa\Botifier\Enum\ApiMethod;
 use Temkaa\Botifier\Enum\Language;
+use Temkaa\Botifier\Factory\FactoryInterface;
 use Temkaa\Botifier\Factory\ResponseFactory;
-use Temkaa\Botifier\Interface\ResponseInterface;
 use Temkaa\Botifier\Model\Response\DeleteWebhookResponse;
 use Temkaa\Botifier\Model\Response\GetUpdatesResponse;
 use Temkaa\Botifier\Model\Response\GetWebhookInfoResponse;
@@ -24,12 +27,18 @@ use Temkaa\Botifier\Model\Response\Nested\WebhookInfo;
 use Temkaa\Botifier\Model\Response\SendMessageResponse;
 use Temkaa\Botifier\Model\Response\SetMyDescriptionResponse;
 use Temkaa\Botifier\Model\Response\SetWebhookResponse;
+use Temkaa\Botifier\Model\ResponseInterface;
 use Temkaa\Botifier\Model\Shared\User;
+use Temkaa\Container\Attribute\Bind\InstanceOfIterator;
+use Temkaa\Container\Builder\Config\ClassBuilder;
+use Temkaa\Container\Builder\ConfigBuilder;
 use Temkaa\Container\Builder\ContainerBuilder;
+use function dirname;
+use function json_encode;
 
 final class ResponseFactoryTest extends TestCase
 {
-    private readonly ResponseFactory $responseFactory;
+    private static ResponseFactory $responseFactory;
 
     public static function getDataForCreateTest(): iterable
     {
@@ -164,7 +173,11 @@ final class ResponseFactoryTest extends TestCase
                     (new DateTimeImmutable())->setTimestamp(1633088562)->setTimezone(new DateTimeZone('UTC')),
                     chat: new Chat(1234, 'private', username: 'username', firstName: 'first_name'),
                     from: new User(
-                        1234, isBot: false, firstName: 'first_name', username: 'username', languageCode: Language::Russian,
+                        1234,
+                        isBot: false,
+                        firstName: 'first_name',
+                        username: 'username',
+                        languageCode: Language::Russian,
                     ),
                     text: 'message text',
                 ),
@@ -303,21 +316,42 @@ final class ResponseFactoryTest extends TestCase
     }
 
     /**
+     * @return void
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     * @throws ReflectionException
+     */
+    public static function setUpBeforeClass(): void
+    {
+        parent::setUpBeforeClass();
+
+        $config = ConfigBuilder::make()
+            ->include(
+                dirname(
+                    (new ReflectionClass(ResponseFactory::class))->getFileName(),
+                ),
+            )
+            ->configure(
+                ClassBuilder::make(ResponseFactory::class)
+                    ->bindVariable('$factories', new InstanceOfIterator(FactoryInterface::class))
+                    ->build(),
+            )
+            ->build();
+
+        $container = ContainerBuilder::make()
+            ->add($config)
+            ->build();
+
+        self::$responseFactory = $container->get(ResponseFactory::class);
+    }
+
+    /**
      * @throws JsonException
      */
     #[DataProvider('getDataForCreateTest')]
     public function testCreate(ApiMethod $method, array $message, ResponseInterface $expectedResponse): void
     {
-        $actualResponse = $this->responseFactory->create($method, json_encode($message, JSON_THROW_ON_ERROR));
+        $actualResponse = self::$responseFactory->create($method, json_encode($message, JSON_THROW_ON_ERROR));
         self::assertEquals($expectedResponse, $actualResponse);
-    }
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $container = ContainerBuilder::make()->add(new ConfigProvider())->build();
-
-        $this->responseFactory = $container->get(ResponseFactory::class);
     }
 }

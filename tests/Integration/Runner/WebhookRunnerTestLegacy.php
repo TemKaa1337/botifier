@@ -6,65 +6,58 @@ namespace Runner;
 
 use DateTimeImmutable;
 use JsonException;
+use phpmock\Mock;
+use phpmock\MockBuilder;
+use phpmock\MockEnabledException;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use ReflectionException;
-use Temkaa\Botifier\DependencyInjection\ConfigProvider as PollingRunnerContainerConfigProvider;
-use Temkaa\Botifier\Enum\ApiMethod;
+use Temkaa\Botifier\DependencyInjection\ConfigProvider as WebhookRunnerContainerConfigProvider;
 use Temkaa\Botifier\Enum\Language;
-use Temkaa\Botifier\Factory\ResponseFactory;
 use Temkaa\Botifier\Handler\UnsupportedHandlerInterface;
 use Temkaa\Botifier\Model\Response\Nested\Chat;
 use Temkaa\Botifier\Model\Response\Nested\Message;
 use Temkaa\Botifier\Model\Response\Nested\Update;
 use Temkaa\Botifier\Model\Shared\User;
-use Temkaa\Botifier\PollingRunner;
-use Temkaa\Botifier\Service\TelegramClientInterface;
+use Temkaa\Botifier\WebhookRunner;
 use Temkaa\Container\Builder\ContainerBuilder;
 use Tests\Helper\DependencyInjection\ConfigProvider;
 use Tests\Helper\Service\Handler\CallbackHandler;
 use Tests\Helper\Service\Handler\CustomUnsupportedMessageHandler;
 use Tests\Helper\Service\Logger;
-use Tests\Helper\Service\TelegramClient;
-use Tests\Integration\Runner\AbstractRunnerTestCase;
+use Tests\Integration\Runner\LegacyAbstractRunnerTestCase;
+use function json_encode;
 
 /**
  * @psalm-suppress PropertyNotSetInConstructor
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
-final class PollingRunnerTest extends AbstractRunnerTestCase
+final class WebhookRunnerTestLegacy extends LegacyAbstractRunnerTestCase
 {
+    /**
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     * @throws ReflectionException
+     */
     public function testBootsWithContainer(): void
     {
-        $container = ContainerBuilder::make()->add(new PollingRunnerContainerConfigProvider())->build();
-        $runner = $container->get(PollingRunner::class);
-        self::assertInstanceOf(PollingRunner::class, $runner);
+        $container = ContainerBuilder::make()->add(new WebhookRunnerContainerConfigProvider())->build();
+
+        self::assertInstanceOf(WebhookRunner::class, $container->get(WebhookRunner::class));
     }
 
     /**
-     * @throws JsonException
      * @throws ContainerExceptionInterface
+     * @throws MockEnabledException
      * @throws NotFoundExceptionInterface
      */
     public function testRun(): void
     {
         $now = (new DateTimeImmutable())->setTime(0, 0, microsecond: 0);
-        $message = $this->getTextMessage('/start asd asd', createdAt: $now);
-        $message = [
-            'ok'     => true,
-            'result' => [$message],
-        ];
+        $mock = $this->getInputMock($this->getTextMessage('/start asd asd', createdAt: $now));
+        $mock->enable();
 
-        /** @var ResponseFactory $responseFactory */
-        $responseFactory = $this->container->get(ResponseFactory::class);
-
-        /** @var TelegramClient $telegramClient */
-        $telegramClient = $this->container->get(TelegramClientInterface::class);
-        $telegramClient->setResponses(
-            [
-                $responseFactory->create(ApiMethod::GetUpdates, json_encode($message, JSON_THROW_ON_ERROR)),
-            ],
-        );
-
+        // todo: rename USER to FROM in models?
         CallbackHandler::setSupportsCallback(static fn (Update $update): bool => true);
         CallbackHandler::setHandleCallback(function (Update $update) use ($now): void {
             $expectedUpdate = new Update(
@@ -92,19 +85,21 @@ final class PollingRunnerTest extends AbstractRunnerTestCase
             self::assertEquals($expectedUpdate, $update);
         });
 
-        $runner = $this->getRunner(PollingRunner::class);
+        $runner = $this->getRunner(WebhookRunner::class);
         $runner->run();
+
+        $mock->disable();
     }
 
     /**
      * @throws ContainerExceptionInterface
-     * @throws JsonException
+     * @throws MockEnabledException
      * @throws NotFoundExceptionInterface
      * @throws ReflectionException
      */
     public function testRunWithCustomUnsupportedMessageHandler(): void
     {
-        $this->container = ContainerBuilder::make()
+        $container = ContainerBuilder::make()
             ->add(
                 (new ConfigProvider())
                     ->getBuilder()
@@ -116,44 +111,34 @@ final class PollingRunnerTest extends AbstractRunnerTestCase
             ->build();
 
         $now = (new DateTimeImmutable())->setTime(0, 0, microsecond: 0);
-        $message = $this->getTextMessage('/start asd asd', createdAt: $now);
-        $message = [
-            'ok'     => true,
-            'result' => [$message],
-        ];
-
-        /** @var ResponseFactory $responseFactory */
-        $responseFactory = $this->container->get(ResponseFactory::class);
-
-        /** @var TelegramClient $telegramClient */
-        $telegramClient = $this->container->get(TelegramClientInterface::class);
-        $telegramClient->setResponses(
-            [
-                $responseFactory->create(ApiMethod::GetUpdates, json_encode($message, JSON_THROW_ON_ERROR)),
-            ],
-        );
+        $mock = $this->getInputMock($this->getTextMessage('/start asd asd', createdAt: $now));
+        $mock->enable();
 
         CallbackHandler::setSupportsCallback(static fn (Update $update): bool => false);
 
-        $this->getRunner(PollingRunner::class)->run();
+        $runner = $this->getRunner(WebhookRunner::class);
+        $runner->run();
 
-        $logger = $this->container->get(Logger::class);
+        $logger = $container->get(Logger::class);
 
-        self::assertEqualsCanonicalizing(
-            ['warning' => ['This message type is unsupported'], 'info' => ['Exiting from PollingRunner.']],
+        self::assertSame(
+            ['warning' => ['This message type is unsupported']],
             $logger->getMessages(),
         );
+
+        $mock->disable();
     }
 
     /**
-     * @throws ContainerExceptionInterface
      * @throws JsonException
+     * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      * @throws ReflectionException
+     * @throws MockEnabledException
      */
     public function testRunWithDefaultUnsupportedMessageHandler(): void
     {
-        $this->container = ContainerBuilder::make()
+        $container = ContainerBuilder::make()
             ->add(
                 (new ConfigProvider())
                     ->getBuilder()
@@ -164,63 +149,37 @@ final class PollingRunnerTest extends AbstractRunnerTestCase
 
         $now = (new DateTimeImmutable())->setTime(0, 0, microsecond: 0);
         $message = $this->getTextMessage('/start asd asd', createdAt: $now);
-        $message = [
-            'ok'     => true,
-            'result' => [$message],
-        ];
+        $mock = $this->getInputMock($message);
+        $mock->enable();
 
-        /** @var ResponseFactory $responseFactory */
-        $responseFactory = $this->container->get(ResponseFactory::class);
-
-        /** @var TelegramClient $telegramClient */
-        $telegramClient = $this->container->get(TelegramClientInterface::class);
-        $telegramClient->setResponses(
-            [
-                $responseFactory->create(ApiMethod::GetUpdates, json_encode($message, JSON_THROW_ON_ERROR)),
-            ],
-        );
-
-        $runner = $this->getRunner(PollingRunner::class);
+        $runner = $this->getRunner(WebhookRunner::class);
         $runner->run();
 
-        $logger = $this->container->get(Logger::class);
+        $logger = $container->get(Logger::class);
 
         self::assertSame(
             [
                 'warning' => [
                     'Could not find suitable handler for update id "836780966".',
                 ],
-                'info'    => ['Exiting from PollingRunner.'],
             ],
             $logger->getMessages(),
         );
+
+        $mock->disable();
     }
 
     /**
      * @throws ContainerExceptionInterface
-     * @throws JsonException
+     * @throws MockEnabledException
      * @throws NotFoundExceptionInterface
      */
     public function testRunWithEditedMessage(): void
     {
         $createdAt = (new DateTimeImmutable())->setTime(0, 0, microsecond: 0);
         $editedAt = (new DateTimeImmutable('-1 day'))->setTime(0, 0, microsecond: 0);
-        $message = $this->getEditedTextMessage('non command message', $createdAt, $editedAt);
-        $message = [
-            'ok'     => true,
-            'result' => [$message],
-        ];
-
-        /** @var ResponseFactory $responseFactory */
-        $responseFactory = $this->container->get(ResponseFactory::class);
-
-        /** @var TelegramClient $telegramClient */
-        $telegramClient = $this->container->get(TelegramClientInterface::class);
-        $telegramClient->setResponses(
-            [
-                $responseFactory->create(ApiMethod::GetUpdates, json_encode($message, JSON_THROW_ON_ERROR)),
-            ],
-        );
+        $mock = $this->getInputMock($this->getEditedTextMessage('non command message', $createdAt, $editedAt));
+        $mock->enable();
 
         CallbackHandler::setSupportsCallback(static fn (Update $update): bool => true);
         CallbackHandler::setHandleCallback(function (Update $update) use ($createdAt, $editedAt): void {
@@ -250,13 +209,15 @@ final class PollingRunnerTest extends AbstractRunnerTestCase
             self::assertEquals($expectedUpdate, $update);
         });
 
-        $runner = $this->getRunner(PollingRunner::class);
+        $runner = $this->getRunner(WebhookRunner::class);
         $runner->run();
+
+        $mock->disable();
     }
 
     /**
      * @throws ContainerExceptionInterface
-     * @throws JsonException
+     * @throws MockEnabledException
      * @throws NotFoundExceptionInterface
      */
     public function testRunWithEditedRepliedMessage(): void
@@ -264,28 +225,16 @@ final class PollingRunnerTest extends AbstractRunnerTestCase
         $replyToMessageCreatedAt = (new DateTimeImmutable())->setTime(0, 0, microsecond: 0);
         $repliedCreatedAt = (new DateTimeImmutable('-1 day'))->setTime(0, 0, microsecond: 0);
         $repliedUpdatedAt = (new DateTimeImmutable('-2 day'))->setTime(0, 0, microsecond: 0);
-        $message = $this->getEditedReplyTextMessage(
-            repliedToMessage: 'replied to message',
-            editedReplyMessage: 'edited reply message',
-            repliedToMessageCreatedAt: $replyToMessageCreatedAt,
-            editedReplyMessageCreatedAt: $repliedCreatedAt,
-            editedReplyMessageUpdatedAt: $repliedUpdatedAt,
+        $mock = $this->getInputMock(
+            $this->getEditedReplyTextMessage(
+                repliedToMessage: 'replied to message',
+                editedReplyMessage: 'edited reply message',
+                repliedToMessageCreatedAt: $replyToMessageCreatedAt,
+                editedReplyMessageCreatedAt: $repliedCreatedAt,
+                editedReplyMessageUpdatedAt: $repliedUpdatedAt,
+            ),
         );
-        $message = [
-            'ok'     => true,
-            'result' => [$message],
-        ];
-
-        /** @var ResponseFactory $responseFactory */
-        $responseFactory = $this->container->get(ResponseFactory::class);
-
-        /** @var TelegramClient $telegramClient */
-        $telegramClient = $this->container->get(TelegramClientInterface::class);
-        $telegramClient->setResponses(
-            [
-                $responseFactory->create(ApiMethod::GetUpdates, json_encode($message, JSON_THROW_ON_ERROR)),
-            ],
-        );
+        $mock->enable();
 
         CallbackHandler::setSupportsCallback(static fn (Update $update): bool => true);
         CallbackHandler::setHandleCallback(
@@ -334,34 +283,22 @@ final class PollingRunnerTest extends AbstractRunnerTestCase
             },
         );
 
-        $runner = $this->getRunner(PollingRunner::class);
+        $runner = $this->getRunner(WebhookRunner::class);
         $runner->run();
+
+        $mock->disable();
     }
 
     /**
      * @throws ContainerExceptionInterface
-     * @throws JsonException
+     * @throws MockEnabledException
      * @throws NotFoundExceptionInterface
      */
     public function testRunWithNonCommandTextMessage(): void
     {
         $now = (new DateTimeImmutable())->setTime(0, 0, microsecond: 0);
-        $message = $this->getTextMessage('non command message', createdAt: $now);
-        $message = [
-            'ok'     => true,
-            'result' => [$message],
-        ];
-
-        /** @var ResponseFactory $responseFactory */
-        $responseFactory = $this->container->get(ResponseFactory::class);
-
-        /** @var TelegramClient $telegramClient */
-        $telegramClient = $this->container->get(TelegramClientInterface::class);
-        $telegramClient->setResponses(
-            [
-                $responseFactory->create(ApiMethod::GetUpdates, json_encode($message, JSON_THROW_ON_ERROR)),
-            ],
-        );
+        $mock = $this->getInputMock($this->getTextMessage('non command message', createdAt: $now));
+        $mock->enable();
 
         CallbackHandler::setSupportsCallback(static fn (Update $update): bool => true);
         CallbackHandler::setHandleCallback(function (Update $update) use ($now): void {
@@ -390,40 +327,30 @@ final class PollingRunnerTest extends AbstractRunnerTestCase
             self::assertEquals($expectedUpdate, $update);
         });
 
-        $runner = $this->getRunner(PollingRunner::class);
+        $runner = $this->getRunner(WebhookRunner::class);
         $runner->run();
+
+        $mock->disable();
     }
 
     /**
      * @throws ContainerExceptionInterface
-     * @throws JsonException
+     * @throws MockEnabledException
      * @throws NotFoundExceptionInterface
      */
     public function testRunWithRepliedMessage(): void
     {
         $createdAt = (new DateTimeImmutable())->setTime(0, 0, microsecond: 0);
         $repliedCreatedAt = (new DateTimeImmutable('-1 day'))->setTime(0, 0, microsecond: 0);
-        $message = $this->getRepliedTextMessage(
-            originalMessage: 'original message',
-            replyMessage: 'reply message',
-            originalMessageCreatedAt: $createdAt,
-            replyMessageCreatedAt: $repliedCreatedAt,
+        $mock = $this->getInputMock(
+            $this->getRepliedTextMessage(
+                originalMessage: 'original message',
+                replyMessage: 'reply message',
+                originalMessageCreatedAt: $createdAt,
+                replyMessageCreatedAt: $repliedCreatedAt,
+            ),
         );
-        $message = [
-            'ok'     => true,
-            'result' => [$message],
-        ];
-
-        /** @var ResponseFactory $responseFactory */
-        $responseFactory = $this->container->get(ResponseFactory::class);
-
-        /** @var TelegramClient $telegramClient */
-        $telegramClient = $this->container->get(TelegramClientInterface::class);
-        $telegramClient->setResponses(
-            [
-                $responseFactory->create(ApiMethod::GetUpdates, json_encode($message, JSON_THROW_ON_ERROR)),
-            ],
-        );
+        $mock->enable();
 
         CallbackHandler::setSupportsCallback(static fn (Update $update): bool => true);
         CallbackHandler::setHandleCallback(function (Update $update) use ($createdAt, $repliedCreatedAt): void {
@@ -469,7 +396,18 @@ final class PollingRunnerTest extends AbstractRunnerTestCase
             self::assertEquals($expectedUpdate, $update);
         });
 
-        $runner = $this->getRunner(PollingRunner::class);
+        $runner = $this->getRunner(WebhookRunner::class);
         $runner->run();
+
+        $mock->disable();
+    }
+
+    private function getInputMock(array $input): Mock
+    {
+        return (new MockBuilder())
+            ->setNamespace('Temkaa\Botifier\Provider\Webhook')
+            ->setName('file_get_contents')
+            ->setFunction(static fn (): string => json_encode($input, JSON_THROW_ON_ERROR))
+            ->build();
     }
 }

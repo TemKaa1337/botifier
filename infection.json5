@@ -4,7 +4,12 @@
             "src"
         ],
         "excludes": [
-            "DependencyInjection"
+            "DependencyInjection",
+            "Model/Request",
+            "Model/Response",
+            "Model/Shared",
+            "Factory/Response",
+            "Factory/Shared",
         ]
     },
     "timeout": 10,

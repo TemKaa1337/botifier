@@ -4,7 +4,7 @@
 
 declare(strict_types=1);
 
-namespace Temkaa\Botifier\Interface;
+namespace Temkaa\Botifier\Model;
 
 use Temkaa\Botifier\Enum\ApiMethod;
 use Temkaa\Botifier\Enum\HttpMethod;

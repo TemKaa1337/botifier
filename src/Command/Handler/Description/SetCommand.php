@@ -13,7 +13,7 @@ use Temkaa\Botifier\Enum\Command\Argument;
 use Temkaa\Botifier\Enum\Command\ExitCode;
 use Temkaa\Botifier\Enum\Language;
 use Temkaa\Botifier\Model\Request\Description\SetRequest;
-use Temkaa\Botifier\Service\TelegramClientInterface;
+use Temkaa\Botifier\Service\Telegram\ClientInterface;
 
 /**
  * @internal
@@ -32,7 +32,7 @@ final readonly class SetCommand extends BaseCommand implements CommandInterface
     private const string SIGNATURE = 'description:set';
 
     public function __construct(
-        private TelegramClientInterface $client,
+        private ClientInterface $client,
     ) {
     }
 

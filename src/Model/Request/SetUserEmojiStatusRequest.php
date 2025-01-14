@@ -10,7 +10,7 @@ use DateTimeImmutable;
 use DateTimeZone;
 use Temkaa\Botifier\Enum\ApiMethod;
 use Temkaa\Botifier\Enum\HttpMethod;
-use Temkaa\Botifier\Interface\RequestInterface;
+use Temkaa\Botifier\Model\RequestInterface;
 use Temkaa\Botifier\Model\Response\SetUserEmojiStatusResponse;
 use Temkaa\Botifier\Trait\ArrayFilterTrait;
 

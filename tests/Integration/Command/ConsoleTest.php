@@ -12,7 +12,7 @@ use Temkaa\Botifier\Command\Input;
 use Temkaa\Botifier\DependencyInjection\Command\ConfigProvider;
 use Temkaa\Botifier\Enum\Command\ExitCode;
 use Temkaa\Container\Builder\ContainerBuilder;
-use Tests\Helper\Service\TelegramClient;
+use Tests\Helper\Service\Client;
 use Tests\Helper\StreamInterceptor;
 
 final class ConsoleTest extends TestCase
@@ -34,7 +34,7 @@ final class ConsoleTest extends TestCase
 
     public function testExecuteTestCommand(): void
     {
-        $setSubscriptionCommand = new SetCommand(new TelegramClient());
+        $setSubscriptionCommand = new SetCommand(new Client());
         $console = new Console([new HelpCommand([$setSubscriptionCommand]), $setSubscriptionCommand]);
         $exitCode = $console->execute('help', new Input(['help']));
 
@@ -77,7 +77,7 @@ final class ConsoleTest extends TestCase
 
     public function testExecuteWithoutArguments(): void
     {
-        $setSubscriptionCommand = new SetCommand(new TelegramClient());
+        $setSubscriptionCommand = new SetCommand(new Client());
         $console = new Console([new HelpCommand([$setSubscriptionCommand]), $setSubscriptionCommand]);
         $exitCode = $console->execute(null, new Input([]));
 

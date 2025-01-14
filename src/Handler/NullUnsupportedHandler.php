@@ -6,8 +6,8 @@ namespace Temkaa\Botifier\Handler;
 
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
-use Temkaa\Botifier\Model\Response\Message;
 use Temkaa\Botifier\Model\Response\Nested\Update;
+use function sprintf;
 
 /**
  * @internal

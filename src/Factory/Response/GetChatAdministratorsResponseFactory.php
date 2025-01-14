@@ -8,6 +8,7 @@ namespace Temkaa\Botifier\Factory\Response;
 
 use InvalidArgumentException;
 use Temkaa\Botifier\Enum\ApiMethod;
+use Temkaa\Botifier\Factory\FactoryInterface;
 use Temkaa\Botifier\Factory\Response\Nested\ChatMemberAdministratorFactory;
 use Temkaa\Botifier\Factory\Response\Nested\ChatMemberBannedFactory;
 use Temkaa\Botifier\Factory\Response\Nested\ChatMemberLeftFactory;
@@ -15,8 +16,6 @@ use Temkaa\Botifier\Factory\Response\Nested\ChatMemberMemberFactory;
 use Temkaa\Botifier\Factory\Response\Nested\ChatMemberOwnerFactory;
 use Temkaa\Botifier\Factory\Response\Nested\ChatMemberRestrictedFactory;
 use Temkaa\Botifier\Factory\Response\Nested\ResponseParametersFactory;
-use Temkaa\Botifier\Interface\Response\FactoryInterface;
-use Temkaa\Botifier\Interface\ResponseInterface;
 use Temkaa\Botifier\Model\Response\GetChatAdministratorsResponse;
 use Temkaa\Botifier\Model\Response\Nested\ChatMemberAdministrator;
 use Temkaa\Botifier\Model\Response\Nested\ChatMemberBanned;
@@ -24,6 +23,7 @@ use Temkaa\Botifier\Model\Response\Nested\ChatMemberLeft;
 use Temkaa\Botifier\Model\Response\Nested\ChatMemberMember;
 use Temkaa\Botifier\Model\Response\Nested\ChatMemberOwner;
 use Temkaa\Botifier\Model\Response\Nested\ChatMemberRestricted;
+use Temkaa\Botifier\Model\ResponseInterface;
 
 final readonly class GetChatAdministratorsResponseFactory implements FactoryInterface
 {

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Service;
 
+use JsonException;
 use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Client\ClientInterface;
@@ -14,14 +15,16 @@ use Psr\Http\Message\StreamInterface;
 use Temkaa\Botifier\Enum\ApiMethod;
 use Temkaa\Botifier\Enum\HttpMethod;
 use Temkaa\Botifier\Factory\ResponseFactory;
-use Temkaa\Botifier\Interface\RequestInterface;
+use Temkaa\Botifier\Model\RequestInterface;
 use Temkaa\Botifier\Model\Response\Nested\Update;
-use Temkaa\Botifier\Service\TelegramClient;
+use Temkaa\Botifier\Service\Telegram\Client;
+use function json_encode;
 
 final class TelegramClientTest extends TestCase
 {
     /**
      * @throws Exception
+     * @throws JsonException
      */
     public function testReply(): void
     {
@@ -65,7 +68,7 @@ final class TelegramClientTest extends TestCase
         $streamFactory
             ->expects($this->once())
             ->method('createStream')
-            ->with(json_encode(['text' => 'some text here', 'reply_to_message_id' => 100]))
+            ->with(json_encode(['text' => 'some text here', 'reply_to_message_id' => 100], JSON_THROW_ON_ERROR))
             ->willReturn($body);
 
         /** @noinspection ClassMockingCorrectnessInspection, PhpUnitInvalidMockingEntityInspection */
@@ -90,18 +93,17 @@ final class TelegramClientTest extends TestCase
 
         /** @noinspection ClassMockingCorrectnessInspection, PhpUnitInvalidMockingEntityInspection */
         $message = $this->createMock(Update::class);
-        $message->updateId = 100;
-        // $message
-        //     ->expects($this->once())
-        //     ->method('getId')
-        //     ->willReturn(100);
 
-        $client = new TelegramClient($httpClient, $requestFactory, $streamFactory, $responseFactory, 'bot_token');
+        /** @noinspection PhpReadonlyPropertyWrittenOutsideDeclarationScopeInspection */
+        $message->updateId = 100;
+
+        $client = new Client($httpClient, $requestFactory, $streamFactory, $responseFactory, 'bot_token');
         $client->reply($request, $message);
     }
 
     /**
      * @throws Exception
+     * @throws JsonException
      */
     public function testSend(): void
     {
@@ -145,7 +147,7 @@ final class TelegramClientTest extends TestCase
         $streamFactory
             ->expects($this->once())
             ->method('createStream')
-            ->with(json_encode(['text' => 'some text here']))
+            ->with(json_encode(['text' => 'some text here'], JSON_THROW_ON_ERROR))
             ->willReturn($body);
 
         /** @noinspection ClassMockingCorrectnessInspection, PhpUnitInvalidMockingEntityInspection */
@@ -168,7 +170,7 @@ final class TelegramClientTest extends TestCase
             ->method('getData')
             ->willReturn(['text' => 'some text here']);
 
-        $client = new TelegramClient($httpClient, $requestFactory, $streamFactory, $responseFactory, 'bot_token');
+        $client = new Client($httpClient, $requestFactory, $streamFactory, $responseFactory, 'bot_token');
         $client->send($request);
     }
 }

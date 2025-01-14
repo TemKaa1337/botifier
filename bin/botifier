@@ -9,7 +9,6 @@ use Temkaa\Container\Builder\ContainerBuilder;
 
 require_once sprintf('%s/vendor/autoload.php', getcwd());
 
-var_dump($argv);
 $arguments = array_shift($argv);
 
 $input = new Input($arguments);

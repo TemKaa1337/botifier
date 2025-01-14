@@ -9,7 +9,7 @@ namespace Temkaa\Botifier\Model\Request;
 use Temkaa\Botifier\Enum\ApiMethod;
 use Temkaa\Botifier\Enum\HttpMethod;
 use Temkaa\Botifier\Enum\Language;
-use Temkaa\Botifier\Interface\RequestInterface;
+use Temkaa\Botifier\Model\RequestInterface;
 use Temkaa\Botifier\Model\Response\GetMyCommandsResponse;
 use Temkaa\Botifier\Model\Shared\BotCommandScopeAllChatAdministrators;
 use Temkaa\Botifier\Model\Shared\BotCommandScopeAllGroupChats;

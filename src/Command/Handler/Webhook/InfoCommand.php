@@ -13,7 +13,7 @@ use Temkaa\Botifier\Enum\Command\Argument;
 use Temkaa\Botifier\Enum\Command\ExitCode;
 use Temkaa\Botifier\Model\Request\GetWebhookInfoRequest;
 use Temkaa\Botifier\Model\Request\Webhook\GetInfoRequest;
-use Temkaa\Botifier\Service\TelegramClientInterface;
+use Temkaa\Botifier\Service\Telegram\ClientInterface;
 
 /**
  * @internal
@@ -27,7 +27,7 @@ final readonly class InfoCommand extends BaseCommand implements CommandInterface
     private const string SIGNATURE = 'webhook:info';
 
     public function __construct(
-        private TelegramClientInterface $client,
+        private ClientInterface $client,
     ) {
     }
 

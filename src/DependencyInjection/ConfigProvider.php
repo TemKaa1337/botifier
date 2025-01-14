@@ -7,16 +7,19 @@ namespace Temkaa\Botifier\DependencyInjection;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\HttpFactory;
 use ReflectionClass;
+use Temkaa\Botifier\Factory\FactoryInterface;
 use Temkaa\Botifier\Factory\ResponseFactory;
-use Temkaa\Botifier\Handler\HandlerInterface;
-use Temkaa\Botifier\Interface\Response\FactoryInterface;
 use Temkaa\Botifier\PollingRunner;
-use Temkaa\Botifier\Service\TelegramClient;
+use Temkaa\Botifier\Processor\ConversationFallbackProcessorInterface;
+use Temkaa\Botifier\Processor\ConversationProcessorInterface;
+use Temkaa\Botifier\Processor\StatelessProcessorInterface;
+use Temkaa\Botifier\Processor\UpdateProcessor;
+use Temkaa\Botifier\Service\Telegram\Client as TelegramClient;
 use Temkaa\Botifier\Subscriber\SignalSubscriber;
-use Temkaa\Botifier\WebhookRunner;
 use Temkaa\Container\Attribute\Bind\InstanceOfIterator;
 use Temkaa\Container\Builder\Config\ClassBuilder;
 use Temkaa\Container\Builder\ConfigBuilder;
+use Temkaa\Container\Enum\Attribute\Bind\IteratorFormat;
 use Temkaa\Container\Model\Config;
 use Temkaa\Container\Provider\Config\ProviderInterface;
 use Temkaa\Signal\SignalManager;
@@ -41,30 +44,33 @@ final readonly class ConfigProvider implements ProviderInterface
             ->include((new ReflectionClass(Client::class))->getFileName())
             ->include((new ReflectionClass(HttpFactory::class))->getFileName())
             ->include((new ReflectionClass(SignalManager::class))->getFileName())
-            ->bindClass(
-                ClassBuilder::make(TelegramClient::class)
-                    ->bindVariable('token', 'env(BOT_TOKEN)')
-                    ->build(),
-            )
-            ->bindClass(
+            ->configure(
                 ClassBuilder::make(SignalSubscriber::class)
                     ->bindVariable('$signalSubscribers', new InstanceOfIterator(SignalSubscriberInterface::class))
                     ->build(),
             )
-            ->bindClass(
+            ->configure(
                 ClassBuilder::make(ResponseFactory::class)
                     ->bindVariable('factories', new InstanceOfIterator(FactoryInterface::class))
                     ->build(),
             )
-            ->bindClass(
-                ClassBuilder::make(PollingRunner::class)
-                    ->bindVariable('handlers', new InstanceOfIterator(HandlerInterface::class))
-                    ->bindVariable('pollingInterval', 'env(BOT_POLLING_INTERVAL)')
-                    ->build(),
-            )
-            ->bindClass(
-                ClassBuilder::make(WebhookRunner::class)
-                    ->bindVariable('handlers', new InstanceOfIterator(HandlerInterface::class))
+            ->configure(
+                ClassBuilder::make(UpdateProcessor::class)
+                    ->bindVariable(
+                        '$statefulFallbackProcessors',
+                        new InstanceOfIterator(
+                            ConversationFallbackProcessorInterface::class,
+                            format: IteratorFormat::ArrayWithClassNamespaceKey,
+                        ),
+                    )
+                    ->bindVariable(
+                        '$statefulProcessors',
+                        new InstanceOfIterator(
+                            ConversationProcessorInterface::class,
+                            format: IteratorFormat::ArrayWithClassNamespaceKey,
+                        ),
+                    )
+                    ->bindVariable('$statelessProcessors', new InstanceOfIterator(StatelessProcessorInterface::class))
                     ->build(),
             );
     }

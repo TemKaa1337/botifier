@@ -7,44 +7,41 @@ namespace Temkaa\Botifier;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Temkaa\Botifier\Exception\FailedTelegramRequestException;
-use Temkaa\Botifier\Handler\HandlerInterface;
-use Temkaa\Botifier\Handler\UnsupportedHandlerInterface;
 use Temkaa\Botifier\Model\Request\GetUpdatesRequest;
-use Temkaa\Botifier\Service\TelegramClientInterface;
+use Temkaa\Botifier\Processor\UpdateProcessor;
+use Temkaa\Botifier\Service\Telegram\ClientInterface;
 use Temkaa\Botifier\Subscriber\SignalSubscriberInterface;
+use function usleep;
 
 /**
  * @api
  */
-final readonly class PollingRunner extends AbstractRunner implements RunnerInterface
+final readonly class PollingRunner implements RunnerInterface
 {
+    public const float DEFAULT_POLLING_INTERVAL = 3;
     private const int LIMIT = 10;
     private const int START_OFFSET = 0;
 
     /**
-     * @param TelegramClientInterface     $client
-     * @param HandlerInterface[]          $handlers
-     * @param SignalSubscriberInterface   $signalSubscriber
-     * @param UnsupportedHandlerInterface $unsupportedHandler
-     * @param LoggerInterface             $logger
-     * @param float                       $pollingInterval
+     * @param list<string> $allowedUpdates
      */
     public function __construct(
-        private TelegramClientInterface $client,
-        array $handlers,
+        private array $allowedUpdates,
+        private ClientInterface $client,
+        private float $pollingInterval,
         private SignalSubscriberInterface $signalSubscriber,
-        private UnsupportedHandlerInterface $unsupportedHandler,
+        private UpdateProcessor $updateProcessor,
         private LoggerInterface $logger = new NullLogger(),
-        private float $pollingInterval = 3,
     ) {
-        parent::__construct($handlers);
     }
 
     public function run(): void
     {
         while (!$this->signalSubscriber->terminate()) {
             $latestOffset ??= self::START_OFFSET;
-            $response = $this->client->send(new GetUpdatesRequest(self::LIMIT, $latestOffset));
+            $response = $this->client->send(
+                new GetUpdatesRequest($latestOffset, self::LIMIT, allowedUpdates: $this->allowedUpdates),
+            );
 
             if (!$response->ok || $response->result === null) {
                 // TODO: add some king of exit handler for user
@@ -54,15 +51,15 @@ final readonly class PollingRunner extends AbstractRunner implements RunnerInter
             }
 
             foreach ($response->result as $update) {
-                $handler = $this->getHandler($update) ?? $this->unsupportedHandler;
-                $handler->handle($update);
+                $this->updateProcessor->process($update);
 
-                $latestOffset = (int) $update->updateId + 1;
+                $latestOffset = $update->updateId + 1;
             }
 
             usleep((int) $this->pollingInterval * 1_000_000);
         }
 
+        // TODO: change log type everywhere?
         $this->logger->info('Exiting from PollingRunner.');
     }
 }

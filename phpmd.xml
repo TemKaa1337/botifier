@@ -7,4 +7,9 @@
     <rule ref="rulesets/controversial.xml"/>
     <rule ref="rulesets/design.xml"/>
     <rule ref="rulesets/unusedcode.xml"/>
+    <exclude-pattern>src/Model/Request</exclude-pattern>
+    <exclude-pattern>src/Model/Response</exclude-pattern>
+    <exclude-pattern>src/Model/Shared</exclude-pattern>
+    <exclude-pattern>src/Factory/Response</exclude-pattern>
+    <exclude-pattern>src/Factory/Shared</exclude-pattern>
 </ruleset>

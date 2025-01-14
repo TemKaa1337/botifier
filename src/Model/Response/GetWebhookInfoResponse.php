@@ -6,9 +6,9 @@ declare(strict_types=1);
 
 namespace Temkaa\Botifier\Model\Response;
 
-use Temkaa\Botifier\Interface\ResponseInterface;
 use Temkaa\Botifier\Model\Response\Nested\ResponseParameters;
 use Temkaa\Botifier\Model\Response\Nested\WebhookInfo;
+use Temkaa\Botifier\Model\ResponseInterface;
 
 final readonly class GetWebhookInfoResponse implements ResponseInterface
 {

@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace Tests\Helper;
 
 use php_user_filter;
+use function stream_bucket_append;
+use function stream_bucket_make_writeable;
+use const PSFS_PASS_ON;
 
 final class StreamInterceptor extends php_user_filter
 {

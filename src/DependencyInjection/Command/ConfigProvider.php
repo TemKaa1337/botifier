@@ -10,9 +10,9 @@ use ReflectionClass;
 use Temkaa\Botifier\Command\CommandInterface;
 use Temkaa\Botifier\Command\Console;
 use Temkaa\Botifier\Command\Handler\HelpCommand;
+use Temkaa\Botifier\Factory\FactoryInterface;
 use Temkaa\Botifier\Factory\ResponseFactory;
-use Temkaa\Botifier\Interface\Response\FactoryInterface;
-use Temkaa\Botifier\Service\TelegramClient;
+use Temkaa\Botifier\Service\Telegram\Client as TelegramClient;
 use Temkaa\Container\Attribute\Bind\InstanceOfIterator;
 use Temkaa\Container\Builder\Config\ClassBuilder;
 use Temkaa\Container\Builder\ConfigBuilder;
@@ -35,12 +35,12 @@ final readonly class ConfigProvider implements ProviderInterface
             ->include((new ReflectionClass(HttpFactory::class))->getFileName())
             ->exclude(__DIR__.'/../../Command/Input.php')
             ->exclude(__DIR__.'/../../Command/Output.php')
-            ->bindClass(
+            ->configure(
                 ClassBuilder::make(TelegramClient::class)
                     ->bindVariable('token', 'env(BOT_TOKEN)')
                     ->build(),
             )
-            ->bindClass(
+            ->configure(
                 ClassBuilder::make(HelpCommand::class)
                     ->bindVariable(
                         'commands',
@@ -51,12 +51,12 @@ final readonly class ConfigProvider implements ProviderInterface
                     )
                     ->build(),
             )
-            ->bindClass(
+            ->configure(
                 ClassBuilder::make(Console::class)
                     ->bindVariable('commands', new InstanceOfIterator(CommandInterface::class))
                     ->build(),
             )
-            ->bindClass(
+            ->configure(
                 ClassBuilder::make(ResponseFactory::class)
                     ->bindVariable('factories', new InstanceOfIterator(FactoryInterface::class))
                     ->build(),

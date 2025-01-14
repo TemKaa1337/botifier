@@ -14,13 +14,13 @@ use Temkaa\Botifier\Exception\Command\InvalidCommandArgumentException;
 use Temkaa\Botifier\Model\Response\GetWebhookInfoResponse;
 use Temkaa\Botifier\Model\Response\Nested\WebhookInfo;
 use Tests\Helper\Service\Command\Output;
-use Tests\Helper\Service\TelegramClient;
+use Tests\Helper\Service\Client;
 use Tests\Integration\Command\Handler\AbstractCommandTestCase;
 
 final class InfoCommandTest extends AbstractCommandTestCase
 {
     /** @psalm-suppress PropertyNotSetInConstructor */
-    private TelegramClient $client;
+    private Client $client;
 
     /**
      * @throws JsonException
@@ -217,7 +217,7 @@ final class InfoCommandTest extends AbstractCommandTestCase
     {
         parent::setUp();
 
-        $this->client = new TelegramClient();
+        $this->client = new Client();
         $this->client->reset();
     }
 }

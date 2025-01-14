@@ -11,6 +11,21 @@
         <ignoreFiles>
             <directory name="vendor" />
         </ignoreFiles>
+        <ignoreFiles>
+            <directory name="src/Model/Request" />
+        </ignoreFiles>
+        <ignoreFiles>
+            <directory name="src/Model/Response" />
+        </ignoreFiles>
+        <ignoreFiles>
+            <directory name="src/Model/Shared" />
+        </ignoreFiles>
+        <ignoreFiles>
+            <directory name="src/Factory/Response" />
+        </ignoreFiles>
+        <ignoreFiles>
+            <directory name="src/Factory/Shared" />
+        </ignoreFiles>
     </projectFiles>
     <issueHandlers>
         <MixedAssignment errorLevel="suppress" />

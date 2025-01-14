@@ -4,235 +4,115 @@ declare(strict_types=1);
 
 namespace Tests\Integration\Runner;
 
-use DateTimeImmutable;
+use Composer\Autoload\ClassLoader;
 use PHPUnit\Framework\TestCase;
-use Psr\Container\ContainerExceptionInterface;
-use Psr\Container\ContainerInterface;
-use Psr\Container\NotFoundExceptionInterface;
+use Psr\Log\LoggerInterface;
+use ReflectionClass;
+use Temkaa\Botifier\Builder\RunnerBuilder;
+use Temkaa\Botifier\Model\Config\Conversation;
+use Temkaa\Botifier\Processor\UnsupportedStatelessProcessorInterface;
 use Temkaa\Botifier\RunnerInterface;
-use Temkaa\Container\Builder\ContainerBuilder;
-use Tests\Helper\DependencyInjection\ConfigProvider;
-use Tests\Helper\Service\Handler\CallbackHandler;
+use Temkaa\Container\Builder\ConfigBuilder;
+use Temkaa\Container\Model\Config;
+use Tests\Helper\Processor\CallbackProcessor;
+use Tests\Helper\Provider\Webhook\UpdateProvider;
+use Tests\Helper\Service\Client;
+use Tests\Helper\Subscriber\SignalSubscriber;
+use function dirname;
+use function is_dir;
+use function md5;
+use function rmdir;
+use function sprintf;
 
 abstract class AbstractRunnerTestCase extends TestCase
 {
-    protected ContainerInterface $container;
+    protected static RunnerInterface $runner;
 
-    protected function getEditedReplyTextMessage(
-        string $repliedToMessage,
-        string $editedReplyMessage,
-        DateTimeImmutable $repliedToMessageCreatedAt,
-        DateTimeImmutable $editedReplyMessageCreatedAt,
-        DateTimeImmutable $editedReplyMessageUpdatedAt,
-    ): array {
-        return [
-            'update_id'      => 836780966,
-            'edited_message' => [
-                'message_id'       => 1234567,
-                'from'             => [
-                    'id'            => 123451222,
-                    'is_bot'        => false,
-                    'first_name'    => 'first_name',
-                    'username'      => 'username',
-                    'language_code' => 'ru',
-                ],
-                'chat'             => [
-                    'id'         => 772517840,
-                    'first_name' => 'first_name',
-                    'username'   => 'username',
-                    'type'       => 'private',
-                ],
-                'date'             => $editedReplyMessageCreatedAt->getTimestamp(),
-                'edit_date'        => $editedReplyMessageUpdatedAt->getTimestamp(),
-                'reply_to_message' => [
-                    'message_id' => 12345678,
-                    'from'       => [
-                        'id'            => 123451222,
-                        'is_bot'        => false,
-                        'first_name'    => 'first_name',
-                        'username'      => 'username',
-                        'language_code' => 'ru',
-                    ],
-                    'chat'       => [
-                        'id'         => 772517840,
-                        'first_name' => 'first_name',
-                        'username'   => 'username',
-                        'type'       => 'private',
-                    ],
-                    'date'       => $repliedToMessageCreatedAt->getTimestamp(),
-                    'text'       => $repliedToMessage,
-                ],
-                'text'             => $editedReplyMessage,
-            ],
-        ];
+    public static function setUpBeforeClass(): void
+    {
+        parent::setUpBeforeClass();
+
+        self::$runner = self::getRunner();
     }
 
-    protected function getEditedTextMessage(
-        string $message,
-        DateTimeImmutable $createdAt,
-        DateTimeImmutable $editedAt,
-    ): array {
-        return [
-            'update_id'      => 836780966,
-            'edited_message' => [
-                'message_id' => 1234567,
-                'from'       => [
-                    'id'            => 123451222,
-                    'is_bot'        => false,
-                    'first_name'    => 'first_name',
-                    'username'      => 'username',
-                    'language_code' => 'ru',
-                ],
-                'chat'       => [
-                    'id'         => 772517840,
-                    'first_name' => 'first_name',
-                    'username'   => 'username',
-                    'type'       => 'private',
-                ],
-                'date'       => $createdAt->getTimestamp(),
-                'edit_date'  => $editedAt->getTimestamp(),
-                'text'       => $message,
-            ],
-        ];
+    public static function tearDownAfterClass(): void
+    {
+        parent::tearDownAfterClass();
+
+        $path = __DIR__.'/../../../var/conversation';
+        if (is_dir($path)) {
+            rmdir($path);
+        }
     }
 
-    protected function getRepliedTextMessage(
-        string $originalMessage,
-        string $replyMessage,
-        DateTimeImmutable $originalMessageCreatedAt,
-        DateTimeImmutable $replyMessageCreatedAt,
-    ): array {
-        return [
-            'update_id' => 836780966,
-            'message'   => [
-                'message_id'       => 1234567,
-                'from'             => [
-                    'id'            => 123451222,
-                    'is_bot'        => false,
-                    'first_name'    => 'first_name',
-                    'username'      => 'username',
-                    'language_code' => 'ru',
-                ],
-                'chat'             => [
-                    'id'         => 772517840,
-                    'first_name' => 'first_name',
-                    'username'   => 'username',
-                    'type'       => 'private',
-                ],
-                'date'             => $originalMessageCreatedAt->getTimestamp(),
-                'reply_to_message' => [
-                    'message_id' => 12345678,
-                    'from'       => [
-                        'id'            => 123451222,
-                        'is_bot'        => false,
-                        'first_name'    => 'first_name',
-                        'username'      => 'username',
-                        'language_code' => 'ru',
-                    ],
-                    'chat'       => [
-                        'id'         => 772517840,
-                        'first_name' => 'first_name',
-                        'username'   => 'username',
-                        'type'       => 'private',
-                    ],
-                    'date'       => $replyMessageCreatedAt->getTimestamp(),
-                    'text'       => $replyMessage,
-                ],
-                'text'             => $originalMessage,
-            ],
-        ];
+    protected static function getDefaultContainerConfigBuilder(): ConfigBuilder
+    {
+        return ConfigBuilder::make()
+            ->include((new ReflectionClass(CallbackProcessor::class))->getFileName());
+    }
+
+    protected function getConversationFolder(): string
+    {
+        $projectDirectory = dirname((new ReflectionClass(ClassLoader::class))->getFileName(), 3);
+
+        return "$projectDirectory/var/conversations";
     }
 
     /**
-     * @throws ContainerExceptionInterface
-     * @throws NotFoundExceptionInterface
+     * @param list<Conversation>|null            $conversations
+     * @param class-string<LoggerInterface>|null $logger
+     * @param class-string<UnsupportedStatelessProcessorInterface>|null $unsupportedStatelessProcessor
      */
-    protected function getRunner(string $runner): RunnerInterface
-    {
-        return $this->container->get($runner);
+    protected static function getRunner(
+        ?Config $config = null,
+        ?array $conversations = null,
+        ?string $logger = null,
+        ?string $unsupportedStatelessProcessor = null,
+    ): RunnerInterface {
+        if (!$config) {
+            $config = self::getDefaultContainerConfigBuilder()->build();
+        }
+
+        $builder = (new RunnerBuilder())
+            ->withTelegramClient(Client::class)
+            ->withUpdateProvider(UpdateProvider::class)
+            ->withConfig($config)
+            ->withRunner(static::getRunnerClass())
+            ->withToken('bot_token')
+            ->withPollingInterval(0.25)
+            ->withSignalSubscriber(SignalSubscriber::class);
+
+        if ($logger) {
+            $builder = $builder->withLogger($logger);
+        }
+
+        if ($unsupportedStatelessProcessor) {
+            $builder = $builder->withUnsupportedStatelessProcessor($unsupportedStatelessProcessor);
+        }
+
+        foreach ($conversations ?? [] as $conversation) {
+            $builder = $builder->addConversation($conversation);
+        }
+
+        return $builder->build();
     }
 
-    protected function getStickerMessage(DateTimeImmutable $createdAt): array
-    {
-        return [
-            'update_id' => 836780966,
-            'message'   => [
-                'message_id' => 1234567,
-                'from'       => [
-                    'id'            => 123451222,
-                    'is_bot'        => false,
-                    'first_name'    => 'first_name',
-                    'username'      => 'username',
-                    'language_code' => 'ru',
-                ],
-                'chat'       => [
-                    'id'         => 772517840,
-                    'first_name' => 'first_name',
-                    'username'   => 'username',
-                    'type'       => 'private',
-                ],
-                'date'       => $createdAt->getTimestamp(),
-                'sticker'    => [
-                    'width'          => 512,
-                    'height'         => 512,
-                    'emoji'          => '\ud83e\udd7a',
-                    'set_name'       => 'Barbiturato',
-                    'is_animated'    => false,
-                    'is_video'       => false,
-                    'type'           => 'regular',
-                    'thumbnail'      => [
-                        'file_id'        => 'AAMCAgADGQEAAy1m-UGDBm2AlDMv2l-JT4a_u_AGTAACxAADmlyrHXTaQf0e-7R3AQAHbQADNgQ',
-                        'file_unique_id' => 'AQADxAADmlyrHXI',
-                        'file_size'      => 9306,
-                        'width'          => 320,
-                        'height'         => 320,
-                    ],
-                    'thumb'          => [
-                        'file_id'        => 'AAMCAgADGQEAAy1m-UGDBm2AlDMv2l-JT4a_u_AGTAACxAADmlyrHXTaQf0e-7R3AQAHbQADNgQ',
-                        'file_unique_id' => 'AQADxAADmlyrHXI',
-                        'file_size'      => 9306,
-                        'width'          => 320,
-                        'height'         => 320,
-                    ],
-                    'file_id'        => 'CAACAgIAAxkBAAMtZvlBgwZtgJQzL9pfiU-Gv7vwBkwAAsQAA5pcqx102kH9Hvu0dzYE',
-                    'file_unique_id' => 'AgADxAADmlyrHQ',
-                    'file_size'      => 17354,
-                ],
-            ],
-        ];
-    }
+    /**
+     * @return class-string<RunnerInterface>
+     */
+    abstract protected static function getRunnerClass(): string;
 
-    protected function getTextMessage(string $message, DateTimeImmutable $createdAt): array
+    protected function executeRunner(): void
     {
-        return [
-            'update_id' => 836780966,
-            'message'   => [
-                'message_id' => 1234567,
-                'from'       => [
-                    'id'            => 123451222,
-                    'is_bot'        => false,
-                    'first_name'    => 'first_name',
-                    'username'      => 'username',
-                    'language_code' => 'ru',
-                ],
-                'chat'       => [
-                    'id'         => 772517840,
-                    'first_name' => 'first_name',
-                    'username'   => 'username',
-                    'type'       => 'private',
-                ],
-                'date'       => $createdAt->getTimestamp(),
-                'text'       => $message,
-            ],
-        ];
+        self::$runner->run();
     }
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->container = ContainerBuilder::make()->add(new ConfigProvider())->build();
-
-        CallbackHandler::reset();
+        CallbackProcessor::reset();
+        SignalSubscriber::reset();
+        Client::reset();
     }
 }

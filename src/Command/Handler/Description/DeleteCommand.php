@@ -13,7 +13,7 @@ use Temkaa\Botifier\Enum\Command\Argument;
 use Temkaa\Botifier\Enum\Command\ExitCode;
 use Temkaa\Botifier\Enum\Language;
 use Temkaa\Botifier\Model\Request\Description\DeleteRequest;
-use Temkaa\Botifier\Service\TelegramClientInterface;
+use Temkaa\Botifier\Service\Telegram\ClientInterface;
 
 /**
  * @internal
@@ -31,7 +31,7 @@ final readonly class DeleteCommand extends BaseCommand implements CommandInterfa
     private const string SIGNATURE = 'description:delete';
 
     public function __construct(
-        private TelegramClientInterface $client,
+        private ClientInterface $client,
     ) {
     }
 

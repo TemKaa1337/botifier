@@ -7,8 +7,10 @@ namespace Temkaa\Botifier\Factory;
 use InvalidArgumentException;
 use JsonException;
 use Temkaa\Botifier\Enum\ApiMethod;
-use Temkaa\Botifier\Interface\Response\FactoryInterface;
-use Temkaa\Botifier\Interface\ResponseInterface;
+
+use Temkaa\Botifier\Model\ResponseInterface;
+use function json_decode;
+use function sprintf;
 
 final readonly class ResponseFactory
 {
@@ -17,8 +19,7 @@ final readonly class ResponseFactory
      */
     public function __construct(
         private array $factories,
-    ) {
-    }
+    ) {}
 
     /**
      * @throws JsonException

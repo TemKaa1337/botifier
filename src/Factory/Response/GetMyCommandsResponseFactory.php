@@ -7,11 +7,11 @@ declare(strict_types=1);
 namespace Temkaa\Botifier\Factory\Response;
 
 use Temkaa\Botifier\Enum\ApiMethod;
+use Temkaa\Botifier\Factory\FactoryInterface;
 use Temkaa\Botifier\Factory\Response\Nested\ResponseParametersFactory;
 use Temkaa\Botifier\Factory\Shared\BotCommandFactory;
-use Temkaa\Botifier\Interface\Response\FactoryInterface;
-use Temkaa\Botifier\Interface\ResponseInterface;
 use Temkaa\Botifier\Model\Response\GetMyCommandsResponse;
+use Temkaa\Botifier\Model\ResponseInterface;
 use Temkaa\Botifier\Model\Shared\BotCommand;
 
 final readonly class GetMyCommandsResponseFactory implements FactoryInterface

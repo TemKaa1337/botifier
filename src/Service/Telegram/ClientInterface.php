@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Temkaa\Botifier\Service;
+namespace Temkaa\Botifier\Service\Telegram;
 
-use Temkaa\Botifier\Interface\RequestInterface;
-use Temkaa\Botifier\Interface\ResponseInterface;
+use Temkaa\Botifier\Model\RequestInterface;
 use Temkaa\Botifier\Model\Response\Nested\Update;
+use Temkaa\Botifier\Model\ResponseInterface;
 
 /**
  * @api
  */
-interface TelegramClientInterface
+interface ClientInterface
 {
     /**
      * @template TResponse of ResponseInterface

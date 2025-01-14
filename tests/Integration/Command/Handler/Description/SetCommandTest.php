@@ -13,14 +13,14 @@ use Temkaa\Botifier\Enum\Language;
 use Temkaa\Botifier\Exception\Command\InvalidCommandArgumentException;
 use Temkaa\Botifier\Model\Response\GeneralResponse;
 use Tests\Helper\Service\Command\Output;
-use Tests\Helper\Service\TelegramClient;
+use Tests\Helper\Service\Client;
 use Tests\Integration\Command\Handler\AbstractCommandTestCase;
 
 // TODO: rename integration or move some tests to unit folder?
 final class SetCommandTest extends AbstractCommandTestCase
 {
     /** @psalm-suppress PropertyNotSetInConstructor */
-    private TelegramClient $client;
+    private Client $client;
 
     /**
      * @throws JsonException
@@ -189,7 +189,7 @@ final class SetCommandTest extends AbstractCommandTestCase
     {
         parent::setUp();
 
-        $this->client = new TelegramClient();
+        $this->client = new Client();
         $this->client->reset();
     }
 }

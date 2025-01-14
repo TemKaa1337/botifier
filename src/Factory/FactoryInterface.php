@@ -4,10 +4,10 @@
 
 declare(strict_types=1);
 
-namespace Temkaa\Botifier\Interface\Response;
+namespace Temkaa\Botifier\Factory;
 
 use Temkaa\Botifier\Enum\ApiMethod;
-use Temkaa\Botifier\Interface\ResponseInterface;
+use Temkaa\Botifier\Model\ResponseInterface;
 
 /**
  * @api

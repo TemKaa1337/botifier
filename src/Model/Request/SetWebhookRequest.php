@@ -8,7 +8,7 @@ namespace Temkaa\Botifier\Model\Request;
 
 use Temkaa\Botifier\Enum\ApiMethod;
 use Temkaa\Botifier\Enum\HttpMethod;
-use Temkaa\Botifier\Interface\RequestInterface;
+use Temkaa\Botifier\Model\RequestInterface;
 use Temkaa\Botifier\Model\Response\SetWebhookResponse;
 use Temkaa\Botifier\Model\Shared\InputFile;
 use Temkaa\Botifier\Trait\ArrayFilterTrait;

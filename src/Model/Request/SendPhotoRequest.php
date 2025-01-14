@@ -8,7 +8,7 @@ namespace Temkaa\Botifier\Model\Request;
 
 use Temkaa\Botifier\Enum\ApiMethod;
 use Temkaa\Botifier\Enum\HttpMethod;
-use Temkaa\Botifier\Interface\RequestInterface;
+use Temkaa\Botifier\Model\RequestInterface;
 use Temkaa\Botifier\Model\Response\SendPhotoResponse;
 use Temkaa\Botifier\Model\Shared\ForceReply;
 use Temkaa\Botifier\Model\Shared\InlineKeyboardMarkup;

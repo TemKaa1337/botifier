@@ -8,7 +8,7 @@ namespace Temkaa\Botifier\Model\Request;
 
 use Temkaa\Botifier\Enum\ApiMethod;
 use Temkaa\Botifier\Enum\HttpMethod;
-use Temkaa\Botifier\Interface\RequestInterface;
+use Temkaa\Botifier\Model\RequestInterface;
 use Temkaa\Botifier\Model\Response\SetPassportDataErrorsResponse;
 use Temkaa\Botifier\Model\Shared\PassportElementErrorDataField;
 use Temkaa\Botifier\Model\Shared\PassportElementErrorFile;

@@ -12,13 +12,13 @@ use Temkaa\Botifier\Command\Handler\Webhook\SetCommand;
 use Temkaa\Botifier\Command\Input;
 use Temkaa\Botifier\Enum\Command\ExitCode;
 use Tests\Helper\Service\Command\Output;
-use Tests\Helper\Service\TelegramClient;
+use Tests\Helper\Service\Client;
 
 final class HelpCommandTest extends TestCase
 {
     public function testExecute(): void
     {
-        $client = new TelegramClient();
+        $client = new Client();
         $command = new HelpCommand([
             new \Temkaa\Botifier\Command\Handler\Description\SetCommand($client),
             new SetCommand($client),
