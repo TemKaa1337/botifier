@@ -9,12 +9,10 @@ use GuzzleHttp\Psr7\HttpFactory;
 use ReflectionClass;
 use Temkaa\Botifier\Factory\FactoryInterface;
 use Temkaa\Botifier\Factory\ResponseFactory;
-use Temkaa\Botifier\PollingRunner;
 use Temkaa\Botifier\Processor\ConversationFallbackProcessorInterface;
 use Temkaa\Botifier\Processor\ConversationProcessorInterface;
 use Temkaa\Botifier\Processor\StatelessProcessorInterface;
 use Temkaa\Botifier\Processor\UpdateProcessor;
-use Temkaa\Botifier\Service\Telegram\Client as TelegramClient;
 use Temkaa\Botifier\Subscriber\SignalSubscriber;
 use Temkaa\Container\Attribute\Bind\InstanceOfIterator;
 use Temkaa\Container\Builder\Config\ClassBuilder;
@@ -36,13 +34,14 @@ final readonly class ConfigProvider implements ProviderInterface
     {
         return ConfigBuilder::make()
             ->include(__DIR__.'/../')
-            ->exclude(__DIR__.'/../Command/')
-            ->exclude(__DIR__.'/Command')
             ->exclude(__DIR__.'/../Enum/')
             ->exclude(__DIR__.'/../Exception/')
             ->exclude(__DIR__.'/../Model/')
+            /** @phpstan-ignore argument.type */
             ->include((new ReflectionClass(Client::class))->getFileName())
+            /** @phpstan-ignore argument.type */
             ->include((new ReflectionClass(HttpFactory::class))->getFileName())
+            /** @phpstan-ignore argument.type */
             ->include((new ReflectionClass(SignalManager::class))->getFileName())
             ->configure(
                 ClassBuilder::make(SignalSubscriber::class)

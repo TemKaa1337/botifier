@@ -4,12 +4,15 @@ declare(strict_types=1);
 
 namespace Temkaa\Botifier\Model\CurrentConversation;
 
+use ArrayAccess;
 use InvalidArgumentException;
 use JsonSerializable;
 use function sprintf;
 
-// TODO: make it array access?
-final class Context implements JsonSerializable
+/**
+ * @template-implements ArrayAccess<string, mixed>
+ */
+final class Context implements ArrayAccess, JsonSerializable
 {
     /**
      * @param array<string, mixed> $map
@@ -33,9 +36,32 @@ final class Context implements JsonSerializable
         return isset($this->map[$key]);
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function jsonSerialize(): array
     {
         return $this->map;
+    }
+
+    public function offsetExists(mixed $offset): bool
+    {
+        return isset($this->map[$offset]);
+    }
+
+    public function offsetGet(mixed $offset): mixed
+    {
+        return $this->offsetExists($offset) ? $this->map[$offset] : null;
+    }
+
+    public function offsetSet(mixed $offset, mixed $value): void
+    {
+        $this->map[$offset] = $value;
+    }
+
+    public function offsetUnset(mixed $offset): void
+    {
+        unset($this->map[$offset]);
     }
 
     public function set(string $key, mixed $value): self

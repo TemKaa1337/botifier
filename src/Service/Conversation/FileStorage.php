@@ -6,6 +6,7 @@ namespace Temkaa\Botifier\Service\Conversation;
 
 use JsonException;
 use Temkaa\Botifier\Enum\Conversation\UnprocessedStrategy;
+use Temkaa\Botifier\Exception\Conversation\InvalidConversationFileException;
 use Temkaa\Botifier\Model\CurrentConversation;
 use Temkaa\Botifier\Model\CurrentConversation\Context;
 use function file_exists;
@@ -18,6 +19,7 @@ use function md5;
 use function rtrim;
 use function sprintf;
 use function unlink;
+use const DIRECTORY_SEPARATOR;
 
 final readonly class FileStorage implements StorageInterface
 {
@@ -37,9 +39,6 @@ final readonly class FileStorage implements StorageInterface
         return unlink($conversationFileName);
     }
 
-    /**
-     * @throws JsonException
-     */
     public function get(int|string $chatId, int $userId): ?CurrentConversation
     {
         $conversationFileName = $this->getFileName($chatId, $userId);
@@ -49,16 +48,28 @@ final readonly class FileStorage implements StorageInterface
         }
 
         $json = file_get_contents($conversationFileName);
+        if ($json === false) {
+            throw new InvalidConversationFileException(
+                sprintf('Cannot get contents of conversation file "%s".', $conversationFileName),
+            );
+        }
 
-        /**
-         * @var array{
-         *     conversation: string,
-         *     state: string,
-         *     data: array<string, mixed>,
-         *     unprocessedStrategy: string
-         * } $data
-         */
-        $data = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
+        try {
+            /**
+             * @var array{
+             *     conversation: string,
+             *     state: string,
+             *     data: array<string, mixed>,
+             *     unprocessedStrategy: string
+             * } $data
+             */
+            $data = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
+        } catch (JsonException $e) {
+            throw new InvalidConversationFileException(
+                sprintf('Cannot decode conversation file content of file "%s".', $conversationFileName),
+                previous: $e,
+            );
+        }
 
         return new CurrentConversation(
             $chatId,
@@ -97,7 +108,7 @@ final readonly class FileStorage implements StorageInterface
     {
         return sprintf(
             '%s/%s.json',
-            rtrim($this->path, '/'),
+            rtrim($this->path, DIRECTORY_SEPARATOR),
             md5("$chatId|$userId"),
         );
     }

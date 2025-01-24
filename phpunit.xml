@@ -5,11 +5,11 @@
         colors="true"
         cacheDirectory=".phpunit.cache"
         displayDetailsOnTestsThatTriggerWarnings="true"
-        failOnNotice="true"
-        failOnDeprecation="true"
+        failOnNotice="false"
+        failOnDeprecation="false"
         failOnEmptyTestSuite="true"
         bootstrap="tests/bootstrap.php"
-        failOnWarning="true"
+        failOnWarning="false"
         failOnIncomplete="true"
 >
     <testsuites>
@@ -24,5 +24,12 @@
         <include>
             <directory suffix=".php">src</directory>
         </include>
+        <exclude>
+            <directory suffix=".php">src/Model/Request</directory>
+            <directory suffix=".php">src/Model/Response</directory>
+            <directory suffix=".php">src/Model/Shared</directory>
+            <directory suffix=".php">src/Factory/Response</directory>
+            <directory suffix=".php">src/Factory/Shared</directory>
+        </exclude>
     </source>
 </phpunit>

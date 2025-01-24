@@ -39,17 +39,35 @@ final readonly class Client implements ClientInterface
         $this->multipartStreamBuilder = new MultipartStreamBuilder($this->httpStreamFactory);
     }
 
+    /**
+     * @param RequestInterface<ResponseInterface> $request
+     *
+     * @return ResponseInterface
+     *
+     * @throws ClientExceptionInterface
+     * @throws JsonException
+     */
     public function reply(RequestInterface $request, Update $update): ResponseInterface
     {
         return $this->sendRequest($request, $update);
     }
 
+    /**
+     * @param RequestInterface<ResponseInterface> $request
+     *
+     * @return ResponseInterface
+     *
+     * @throws ClientExceptionInterface
+     * @throws JsonException
+     */
     public function send(RequestInterface $request): ResponseInterface
     {
         return $this->sendRequest($request);
     }
 
     /**
+     * @param RequestInterface<ResponseInterface> $request
+     *
      * @throws ClientExceptionInterface
      * @throws JsonException
      */

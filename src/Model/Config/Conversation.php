@@ -32,6 +32,7 @@ final readonly class Conversation
         public array $fallbacks,
         public UnprocessedStrategy $unprocessedStrategy,
     ) {
+        $this->validateName();
         $this->validateEntrypoint();
         $this->validateStartState();
         $this->validateFallbacks();
@@ -39,13 +40,14 @@ final readonly class Conversation
 
     private function validateEntrypoint(): void
     {
-        if (!in_array(StatelessProcessorInterface::class, class_implements($this->entrypoint), true)) {
+        $interfaces = class_implements($this->entrypoint);
+        if ($interfaces === false || !in_array(StatelessProcessorInterface::class, $interfaces, true)) {
             throw new InvalidConversationConfigurationException(
                 sprintf(
                     'Specified entrypoint "%s" for conversation "%s" must implement "%s" interface.',
                     $this->entrypoint,
                     $this->name,
-                    ConversationProcessorInterface::class,
+                    StatelessProcessorInterface::class,
                 ),
             );
         }
@@ -54,7 +56,11 @@ final readonly class Conversation
     private function validateFallbacks(): void
     {
         foreach ($this->fallbacks as $fallback) {
-            if (!in_array(ConversationFallbackProcessorInterface::class, class_implements($fallback), true)) {
+            $interfaces = class_implements($fallback);
+            if (
+                $interfaces === false
+                || !in_array(ConversationFallbackProcessorInterface::class, $interfaces, true)
+            ) {
                 throw new InvalidConversationConfigurationException(
                     sprintf(
                         'Specified fallback "%s" for conversation "%s" must implement "%s" interface.',
@@ -64,6 +70,13 @@ final readonly class Conversation
                     ),
                 );
             }
+        }
+    }
+
+    private function validateName(): void
+    {
+        if ($this->name === '') {
+            throw new InvalidConversationConfigurationException('Cannot create a conversation with empty name.');
         }
     }
 

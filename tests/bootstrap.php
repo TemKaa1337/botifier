@@ -6,4 +6,4 @@ namespace Tests;
 
 use DG\BypassFinals;
 
-// BypassFinals::enable();
+BypassFinals::enable();

@@ -25,7 +25,11 @@ final readonly class State
     private function validateProcessors(): void
     {
         foreach ($this->processors as $processor) {
-            if (!in_array(ConversationProcessorInterface::class, class_implements($processor), true)) {
+            $interfaces = class_implements($processor);
+            if (
+                $interfaces === false
+                || !in_array(ConversationProcessorInterface::class, class_implements($processor), true)
+            ) {
                 throw new InvalidConfigurationException(
                     sprintf(
                         'Specified processor "%s" for state "%s" must implement "%s" interface.',

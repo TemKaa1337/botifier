@@ -69,7 +69,7 @@ final class ConversationBuilder
 
     public function build(): Conversation
     {
-        // TODO: add test on empty states
+        // TODO: validate empty states + add test on empty states
         $this->validateInitialized(property: 'name');
         $this->validateInitialized(property: 'startState');
         $this->validateInitialized(property: 'endState');
@@ -105,6 +105,9 @@ final class ConversationBuilder
         return $instance;
     }
 
+    /**
+     * @param non-empty-string $name
+     */
     public function name(string $name): self
     {
         $instance = clone $this;

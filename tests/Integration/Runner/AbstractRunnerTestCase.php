@@ -17,6 +17,7 @@ use Temkaa\Container\Model\Config;
 use Tests\Helper\Processor\CallbackProcessor;
 use Tests\Helper\Provider\Webhook\UpdateProvider;
 use Tests\Helper\Service\Client;
+use Tests\Helper\Service\Logger;
 use Tests\Helper\Subscriber\SignalSubscriber;
 use function dirname;
 use function is_dir;
@@ -114,5 +115,6 @@ abstract class AbstractRunnerTestCase extends TestCase
         CallbackProcessor::reset();
         SignalSubscriber::reset();
         Client::reset();
+        Logger::reset();
     }
 }

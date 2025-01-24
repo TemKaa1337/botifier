@@ -56,7 +56,7 @@ final class Logger implements LoggerInterface
         self::$messages[__FUNCTION__][] = $message;
     }
 
-    public function reset(): void
+    public static function reset(): void
     {
         self::$messages = [];
     }

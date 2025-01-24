@@ -28,7 +28,10 @@ final readonly class ResponseFactory
     {
         foreach ($this->factories as $factory) {
             if ($factory->supports($apiMethod)) {
-                return $factory->create(json_decode($message, true, 512, JSON_THROW_ON_ERROR));
+                /** @var array<string, mixed> $decoded */
+                $decoded = json_decode($message, true, 512, JSON_THROW_ON_ERROR);
+
+                return $factory->create($decoded);
             }
         }
 

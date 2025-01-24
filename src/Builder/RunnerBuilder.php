@@ -42,7 +42,6 @@ use function dirname;
 use function in_array;
 use function is_dir;
 use function is_file;
-use function is_string;
 use function is_writable;
 use function mkdir;
 use function realpath;
@@ -53,16 +52,20 @@ use const DIRECTORY_SEPARATOR;
  * @api
  *
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ * @SuppressWarnings(PHPMD.TooManyFields)
  *
  * @psalm-suppress MissingConstructor, RedundantPropertyInitializationCheck
  *
  * @TODO           : withCallbackHandler for non-container usage
- * @TODO: add default env(BOT_TOKEN) for bot token
- * @TODO: allow adding multiple container configs
+ * @TODO           : add default env(BOT_TOKEN) for bot token
+ * @TODO           : allow adding multiple container configs
  */
 final class RunnerBuilder
 {
-    private Config|ProviderInterface $config;
+    /**
+     * @var list<Config|ProviderInterface>
+     */
+    private array $configs = [];
 
     /**
      * @var class-string<SearchIdentifierProviderInterface>
@@ -78,11 +81,6 @@ final class RunnerBuilder
      * @var class-string<StorageInterface>
      */
     private string $conversationStorage = FileStorage::class;
-
-    /**
-     * @var class-string<ClientInterface>
-     */
-    private string $telegramClient = Client::class;
 
     /**
      * @var list<Conversation>
@@ -108,6 +106,16 @@ final class RunnerBuilder
      */
     private string $runner = PollingRunner::class;
 
+    /**
+     * @var class-string<SignalSubscriberInterface>
+     */
+    private string $signalSubscriber = SignalSubscriber::class;
+
+    /**
+     * @var class-string<ClientInterface>
+     */
+    private string $telegramClient = Client::class;
+
     private string $token;
 
     /**
@@ -124,11 +132,6 @@ final class RunnerBuilder
      * @var class-string<UpdateProviderInterface>
      */
     private string $updateProvider = UpdateProvider::class;
-
-    /**
-     * @var class-string<SignalSubscriberInterface>
-     */
-    private string $signalSubscriber = SignalSubscriber::class;
 
     public function addConversation(Conversation $conversation): self
     {
@@ -147,7 +150,7 @@ final class RunnerBuilder
             throw new InvalidConfigurationException('Bot token is required.');
         }
 
-        if (!isset($this->config)) {
+        if (!$this->configs) {
             throw new InvalidConfigurationException('User-defined config is required.');
         }
 
@@ -200,6 +203,7 @@ final class RunnerBuilder
 
                 $storagePath = sprintf(
                     '%s%s%s%s%s',
+                    /** @phpstan-ignore argument.type */
                     dirname($classLoaderFile, 3),
                     DIRECTORY_SEPARATOR,
                     'var',
@@ -242,11 +246,15 @@ final class RunnerBuilder
             );
         }
 
-        $container = ContainerBuilder::make()
-            ->add($configBuilder->build())
-            ->add($this->config)
-            ->build();
+        $containerBuilder = ContainerBuilder::make()->add($configBuilder->build());
 
+        foreach ($this->configs as $config) {
+            $containerBuilder->add($config);
+        }
+
+        $container = $containerBuilder->build();
+
+        /** @var RunnerInterface */
         return $container->get(RunnerInterface::class);
     }
 
@@ -256,12 +264,6 @@ final class RunnerBuilder
     public function withAllowedUpdates(array $allowedUpdates): self
     {
         // TODO: bind in polling runner and for set webhook action
-        foreach ($allowedUpdates as $allowedUpdate) {
-            if (!is_string($allowedUpdate)) {
-                throw new InvalidConfigurationException('Allowed updates must be a list of strings.');
-            }
-        }
-
         $instance = clone $this;
         $instance->pollingAllowedUpdates = $allowedUpdates;
 
@@ -271,7 +273,10 @@ final class RunnerBuilder
     public function withConfig(Config|ProviderInterface $config): self
     {
         $instance = clone $this;
-        $instance->config = $config;
+        $configs = $instance->configs;
+        $configs[] = $config;
+
+        $instance->configs = $configs;
 
         return $instance;
     }
@@ -405,6 +410,48 @@ final class RunnerBuilder
         return $instance;
     }
 
+    /**
+     * This should be used only for testing purposes and only using PollingRunner
+     *
+     * @param class-string<SignalSubscriberInterface> $subscriber
+     */
+    public function withSignalSubscriber(string $subscriber): self
+    {
+        if (!in_array(SignalSubscriberInterface::class, class_implements($subscriber), true)) {
+            throw new InvalidConfigurationException(
+                sprintf(
+                    'Signal subscriber must implement "%s" interface.',
+                    SignalSubscriberInterface::class,
+                ),
+            );
+        }
+
+        $instance = clone $this;
+        $instance->signalSubscriber = $subscriber;
+
+        return $instance;
+    }
+
+    /**
+     * @param class-string<ClientInterface> $client
+     */
+    public function withTelegramClient(string $client): self
+    {
+        if (!in_array(ClientInterface::class, class_implements($client), true)) {
+            throw new InvalidConfigurationException(
+                sprintf(
+                    'Update provider must implement "%s" interface.',
+                    ClientInterface::class,
+                ),
+            );
+        }
+
+        $instance = clone $this;
+        $instance->telegramClient = $client;
+
+        return $instance;
+    }
+
     public function withToken(#[SensitiveParameter] string $token): self
     {
         $instance = clone $this;
@@ -473,50 +520,6 @@ final class RunnerBuilder
 
         $instance = clone $this;
         $instance->updateProvider = $provider;
-
-        return $instance;
-    }
-
-    /**
-     * This should be used only for testing purposes
-     *
-     * @param class-string<ClientInterface> $client
-     */
-    public function withTelegramClient(string $client): self
-    {
-        if (!in_array(ClientInterface::class, class_implements($client), true)) {
-            throw new InvalidConfigurationException(
-                sprintf(
-                    'Update provider must implement "%s" interface.',
-                    ClientInterface::class,
-                ),
-            );
-        }
-
-        $instance = clone $this;
-        $instance->telegramClient = $client;
-
-        return $instance;
-    }
-
-    /**
-     * This should be used only for testing purposes and only using PollingRunner
-     *
-     * @param class-string<SignalSubscriberInterface> $subscriber
-     */
-    public function withSignalSubscriber(string $subscriber): self
-    {
-        if (!in_array(SignalSubscriberInterface::class, class_implements($subscriber), true)) {
-            throw new InvalidConfigurationException(
-                sprintf(
-                    'Signal subscriber must implement "%s" interface.',
-                    SignalSubscriberInterface::class,
-                ),
-            );
-        }
-
-        $instance = clone $this;
-        $instance->signalSubscriber = $subscriber;
 
         return $instance;
     }

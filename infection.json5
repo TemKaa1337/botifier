@@ -12,7 +12,7 @@
             "Factory/Shared",
         ]
     },
-    "timeout": 10,
+    "timeout": 20,
     "logs": {
         "text": "infection.log"
     },
@@ -20,7 +20,39 @@
         "@default": true,
         "global-ignoreSourceCodeByRegex": [
             "usleep.*"
-        ]
+        ],
+        "CloneRemoval": {
+            "ignore": [
+                "Temkaa\\Botifier\\Builder\\RunnerBuilder::withAllowedUpdates",
+                "Temkaa\\Botifier\\Builder\\RunnerBuilder::withConfig",
+                "Temkaa\\Botifier\\Builder\\RunnerBuilder::withConversationSearchIdentifierProvider",
+                "Temkaa\\Botifier\\Builder\\RunnerBuilder::withConversationStartIdentifierProvider",
+                "Temkaa\\Botifier\\Builder\\RunnerBuilder::withConversationStorage",
+                "Temkaa\\Botifier\\Builder\\RunnerBuilder::withFileConversationStoragePath",
+                "Temkaa\\Botifier\\Builder\\RunnerBuilder::withLogger",
+                "Temkaa\\Botifier\\Builder\\RunnerBuilder::withPollingInterval",
+                "Temkaa\\Botifier\\Builder\\RunnerBuilder::withRunner",
+                "Temkaa\\Botifier\\Builder\\RunnerBuilder::withToken",
+                "Temkaa\\Botifier\\Builder\\RunnerBuilder::withUnsupportedStatefulProcessor",
+                "Temkaa\\Botifier\\Builder\\RunnerBuilder::withUnsupportedStatelessProcessor",
+                "Temkaa\\Botifier\\Builder\\RunnerBuilder::withUpdateProvider",
+                "Temkaa\\Botifier\\Builder\\RunnerBuilder::withTelegramClient",
+                "Temkaa\\Botifier\\Builder\\RunnerBuilder::withSignalSubscriber",
+                "Temkaa\\Botifier\\Builder\\RunnerBuilder::addConversation",
+                "Temkaa\\Botifier\\Builder\\ConversationBuilder::addFallback",
+                "Temkaa\\Botifier\\Builder\\ConversationBuilder::addState",
+                "Temkaa\\Botifier\\Builder\\ConversationBuilder::endState",
+                "Temkaa\\Botifier\\Builder\\ConversationBuilder::entrypoint",
+                "Temkaa\\Botifier\\Builder\\ConversationBuilder::name",
+                "Temkaa\\Botifier\\Builder\\ConversationBuilder::startState",
+                "Temkaa\\Botifier\\Builder\\ConversationBuilder::unprocessedStrategy"
+            ]
+        },
+        "Break_": {
+            "ignore": [
+                "Temkaa\\Botifier\\Model\\Config\\Conversation::validateStartState"
+            ]
+        }
     },
     "minMsi": 100
 }

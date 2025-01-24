@@ -631,8 +631,8 @@ final class StatefulRunnerTest extends AbstractRunnerTestCase
         );
     }
 
-    public function testRunWithCustomUnsupportedProcessor(): void
-    {
-
-    }
+    // public function testRunWithCustomUnsupportedProcessor(): void
+    // {
+    //
+    // }
 }

@@ -6,6 +6,7 @@ declare(strict_types=1);
 
 namespace Temkaa\Botifier\Trait;
 
+/** @phpstan-ignore trait.unused */
 trait ArrayFilterTrait
 {
     /**

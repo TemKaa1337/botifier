@@ -14,6 +14,9 @@ use Temkaa\Botifier\Model\ResponseInterface;
  */
 interface FactoryInterface
 {
+    /**
+     * @param array<string, mixed> $message
+     */
     public function create(array $message): ResponseInterface;
 
     public function supports(ApiMethod $method): bool;

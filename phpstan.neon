@@ -1,0 +1,16 @@
+parameters:
+	level: 10
+	paths:
+		- src
+	excludePaths:
+		- 'src/Model/Request/*'
+		- 'src/Model/Response/*'
+		- 'src/Model/Shared/*'
+		- 'src/Factory/Response/*'
+		- 'src/Factory/Shared/*'
+
+	ignoreErrors:
+		- '#PHPDoc tag @SuppressWarnings has invalid value\.*#'
+
+	parallel:
+		maximumNumberOfProcesses: 2
